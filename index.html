@@ -8,16 +8,49 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700;900&display=swap');
-        body { background-color: #020617; font-family: 'Inter', sans-serif; color: white; overflow-x: hidden; }
+        
+        body {
+            background-color: #020617;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
         .header-font { font-family: 'Orbitron', sans-serif; }
+
+        /* Tiers Styling */
         .conqueror-tier { background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0) 100%); border-left: 4px solid #ef4444; }
         .gold-tier { background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0) 100%); border-left: 4px solid #eab308; }
         .orange-tier { background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 100%); border-left: 4px solid #f97316; }
-        .live-pulse { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; display: inline-block; margin-right: 8px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
-        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .blue-tier { border-left: 4px solid #3b82f6; }
+        .slate-tier { border-left: 4px solid #475569; opacity: 0.8; }
+
+        .live-pulse {
+            width: 8px; height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
         .row-update { animation: highlight 2s ease-out; }
-        @keyframes highlight { 0% { background-color: rgba(59, 130, 246, 0.4); } 100% { background-color: transparent; } }
+        @keyframes highlight {
+            0% { background-color: rgba(59, 130, 246, 0.4); }
+            100% { background-color: transparent; }
+        }
     </style>
 </head>
 <body class="p-4 max-w-lg mx-auto pb-20">
@@ -27,7 +60,7 @@
             <span class="live-pulse"></span>
             <span class="text-[10px] font-black tracking-widest text-red-500 uppercase italic">Live Ytel Feed</span>
         </div>
-        <div id="timestamp" class="text-[10px] text-slate-500 font-bold uppercase italic">Connecting...</div>
+        <div id="timestamp" class="text-[10px] text-slate-500 font-bold uppercase italic">Updating...</div>
     </div>
 
     <div class="text-center mb-8">
@@ -48,10 +81,15 @@
         </div>
     </div>
 
-    <div id="leaderboard" class="space-y-3"></div>
+    <div class="flex justify-between items-end mb-4 px-2">
+        <h2 class="header-font text-[10px] font-black tracking-widest text-slate-500 uppercase italic">Current Rankings</h2>
+        <div class="text-[8px] text-slate-600 font-bold uppercase italic">Sorted by Performance</div>
+    </div>
+
+    <div id="leaderboard" class="space-y-3">
+        </div>
 
     <script>
-        // Replace with your current /exec URL
         const API_URL = 'https://script.google.com/macros/s/AKfycbz-qmWOX19RbkR9otfAQevAk-IuSQuy0f6tW4uLSq7Bq5PVWR4UbCAk1LrXmlVfmntlDw/exec';
         
         let agents = [];
@@ -61,17 +99,20 @@
                 const res = await fetch(API_URL);
                 const newData = await res.json();
                 
+                // Compare new data with old data for update glow
                 if (agents.length > 0) {
                     newData.forEach(nA => {
                         const oA = agents.find(o => o.name === nA.name);
                         if (oA && nA.leads > oA.leads) nA.lastUpdated = true;
                     });
                 }
+
                 agents = newData;
                 render();
-                document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString()}`;
+                document.getElementById('timestamp').innerText = `Live Sync: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
             } catch (e) {
-                document.getElementById('timestamp').innerText = "Sync Error";
+                console.error("API Error:", e);
+                document.getElementById('timestamp').innerText = "Sync Offline";
             }
         }
 
@@ -79,41 +120,56 @@
             if (l >= 17) return { title: "CONQUEROR", class: "conqueror-tier", icon: "fa-crown", color: "text-red-500" };
             if (l >= 11) return { title: "MASTER", class: "gold-tier", icon: "fa-star", color: "text-yellow-500" };
             if (l >= 7) return { title: "ELITE", class: "orange-tier", icon: "fa-fire", color: "text-orange-500" };
-            if (l >= 4) return { title: "PRO", class: "border-l-4 border-l-blue-500", icon: "fa-bolt", color: "text-blue-500" };
-            return { title: "ROOKIE", class: "opacity-60", icon: "fa-shield", color: "text-slate-500" };
+            if (l >= 4) return { title: "PRO", class: "blue-tier", icon: "fa-bolt", color: "text-blue-500" };
+            return { title: "ROOKIE", class: "slate-tier", icon: "fa-shield", color: "text-slate-500" };
         }
 
         function render() {
             const board = document.getElementById('leaderboard');
+            
+            // Sort agents: highest leads at the top
             agents.sort((a, b) => b.leads - a.leads);
-            let total = 0; let masters = 0;
 
-            board.innerHTML = agents.map((a, i) => {
-                const lvl = getLevel(a.leads);
-                total += a.leads; if(a.leads >= 11) masters++;
+            let totalLeads = 0;
+            let masters = 0;
+
+            board.innerHTML = agents.map((agent, index) => {
+                const lvl = getLevel(agent.leads);
+                totalLeads += agent.leads;
+                if(agent.leads >= 11) masters++;
+
                 return `
-                    <div class="glass p-4 rounded-xl flex justify-between items-center transition-all duration-700 ${lvl.class} ${a.lastUpdated ? 'row-update' : ''}">
+                    <div class="glass p-4 rounded-xl flex justify-between items-center transition-all duration-700 ${lvl.class} ${agent.lastUpdated ? 'row-update' : ''}">
                         <div class="flex items-center gap-4">
-                            <span class="text-lg font-black italic ${i < 3 ? 'text-white' : 'text-slate-700'}">${(i + 1).toString().padStart(2, '0')}</span>
+                            <span class="text-lg font-black italic ${index < 3 ? 'text-white' : 'text-slate-700'}">
+                                ${(index + 1).toString().padStart(2, '0')}
+                            </span>
+                            
                             <div>
-                                <div class="font-bold text-sm tracking-tight">${a.name}</div>
-                                <div class="flex items-center gap-1">
+                                <div class="font-bold text-sm tracking-tight text-white uppercase">${agent.name}</div>
+                                
+                                <div class="flex items-center gap-1 mt-0.5">
                                     <i class="fas ${lvl.icon} text-[8px] ${lvl.color}"></i>
                                     <div class="text-[8px] font-black uppercase tracking-widest ${lvl.color}">${lvl.title} LEVEL</div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="text-right">
-                            <div class="text-2xl font-black text-white">${a.leads}</div>
-                            <div class="text-[7px] text-slate-500 uppercase font-bold tracking-tighter">Transfers</div>
+                            <div class="text-2xl font-black text-white leading-none">${agent.leads}</div>
+                            <div class="text-[7px] text-slate-500 uppercase font-bold tracking-tighter mt-1">Transfers</div>
                         </div>
-                    </div>`;
+                    </div>
+                `;
             }).join('');
-            document.getElementById('floor-total').innerText = total;
+
+            // Update Top Stats
+            document.getElementById('floor-total').innerText = totalLeads;
             document.getElementById('master-count').innerText = masters.toString().padStart(2, '0');
         }
 
-        setInterval(updateDashboard, 10000); // Check every 10 seconds
+        // Check for updates every 10 seconds
+        setInterval(updateDashboard, 10000);
         updateDashboard();
     </script>
 </body>
