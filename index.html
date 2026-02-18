@@ -18,7 +18,7 @@
 
         .header-font { font-family: 'Orbitron', sans-serif; }
 
-        /* Level Specific Tiers */
+        /* Tiers Styling */
         .conqueror-tier {
             background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0) 100%);
             border-left: 4px solid #ef4444;
@@ -55,6 +55,7 @@
             backdrop-filter: blur(10px);
         }
 
+        /* Update Animation */
         .row-update { animation: highlight 2s ease-out; }
         @keyframes highlight {
             0% { background-color: rgba(59, 130, 246, 0.4); }
@@ -69,7 +70,7 @@
             <span class="live-pulse"></span>
             <span class="text-[10px] font-black tracking-widest text-red-500 uppercase italic">Live Ytel Feed</span>
         </div>
-        <div id="timestamp" class="text-[10px] text-slate-500 font-bold uppercase italic">Updating...</div>
+        <div id="timestamp" class="text-[10px] text-slate-500 font-bold uppercase italic">Connecting...</div>
     </div>
 
     <div class="text-center mb-8">
@@ -94,40 +95,31 @@
         </div>
 
     <script>
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPy9kTT7i2-ZdPOVy_mZHxwXeesZutdCkglc_3CjaJ0Qq5g_Mu20VdXN8ECiXUmVvSkLHg2tCukwXb/pub?gid=1903695275&single=true&output=csv';
+        // Your Google Apps Script Web App URL
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz-qmWOX19RbkR9otfAQevAk-IuSQuy0f6tW4uLSq7Bq5PVWR4UbCAk1LrXmlVfmntlDw/exec';
         
         let agents = [];
 
         async function updateDashboard() {
             try {
-                const res = await fetch(SHEET_URL);
-                const csv = await res.text();
-                const lines = csv.split('\n');
+                const res = await fetch(API_URL);
+                const newData = await res.json();
                 
-                // Starts at index 10 (Row 11)
-                const rawData = lines.slice(10);
-                
-                const newAgents = rawData.map(line => {
-                    const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    const name = cols[1]?.replace(/"/g, '').trim();
-                    const leads = parseInt(cols[2]) || 0;
-                    
-                    if(!name || name === "" || name === "Agent") return null;
-                    return { name, leads, lastUpdated: false };
-                }).filter(a => a !== null);
-
+                // Detection for "Blue Glow" update animation
                 if (agents.length > 0) {
-                    newAgents.forEach(nA => {
+                    newData.forEach(nA => {
                         const oA = agents.find(o => o.name === nA.name);
+                        // If leads increased, mark for animation
                         if (oA && nA.leads > oA.leads) nA.lastUpdated = true;
                     });
                 }
 
-                agents = newAgents;
+                agents = newData;
                 render();
+                document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}`;
             } catch (e) {
                 console.error("Fetch Error:", e);
-                document.getElementById('timestamp').innerText = "CONNECTION ERROR";
+                document.getElementById('timestamp').innerText = "Sync Error";
             }
         }
 
@@ -141,6 +133,8 @@
 
         function render() {
             const board = document.getElementById('leaderboard');
+            
+            // Sort agents: highest leads at the top
             agents.sort((a, b) => b.leads - a.leads);
 
             let total = 0;
@@ -173,11 +167,12 @@
 
             document.getElementById('floor-total').innerText = total;
             document.getElementById('master-count').innerText = masters.toString().padStart(2, '0');
-            document.getElementById('timestamp').innerText = `Last Sync: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
         }
 
-        // Set to check every 30 seconds
-        setInterval(updateDashboard, 30000);
+        // Check for updates every 10 seconds
+        setInterval(updateDashboard, 10000);
+        
+        // Initial load
         updateDashboard();
     </script>
 </body>
