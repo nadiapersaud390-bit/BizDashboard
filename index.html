@@ -90,7 +90,6 @@
         </div>
 
     <script>
-        // YOUR UPDATED API URL
         const API_URL = 'https://script.google.com/macros/s/AKfycby4jOyP2bnxA_0frzWXGpzmbYxLnHs-qlief2CXpgqAfPA50LpqsN_dl0C_o2cA6_IO-Q/exec';
         
         let agents = [];
@@ -100,14 +99,12 @@
                 const res = await fetch(API_URL);
                 const newData = await res.json();
                 
-                // Error check if Google Script returns an error object
                 if (newData.error) {
                     console.error("Script Error:", newData.error);
                     document.getElementById('timestamp').innerText = "Script Error";
                     return;
                 }
 
-                // Check for updates to trigger glow animation
                 if (agents.length > 0) {
                     newData.forEach(nA => {
                         const oA = agents.find(o => o.name === nA.name);
@@ -144,10 +141,11 @@
                 totalLeads += agent.leads;
                 if(agent.leads >= 11) masters++;
 
+                // This line below was changed to highlight the Top 5
                 return `
                     <div class="glass p-4 rounded-xl flex justify-between items-center transition-all duration-700 ${lvl.class} ${agent.lastUpdated ? 'row-update' : ''}">
                         <div class="flex items-center gap-4">
-                            <span class="text-lg font-black italic ${index < 3 ? 'text-white' : 'text-slate-700'}">
+                            <span class="text-lg font-black italic ${index < 5 ? 'text-white' : 'text-slate-700'}">
                                 ${(index + 1).toString().padStart(2, '0')}
                             </span>
                             <div>
@@ -170,7 +168,7 @@
             document.getElementById('master-count').innerText = masters.toString().padStart(2, '0');
         }
 
-        setInterval(updateDashboard, 15000); // Check every 15 seconds
+        setInterval(updateDashboard, 15000);
         updateDashboard();
     </script>
 </body>
