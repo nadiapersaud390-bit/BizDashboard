@@ -81,13 +81,40 @@
         </div>
     </div>
 
+    <!-- New Stats Section -->
+    <div class="grid grid-cols-2 gap-3 mb-8">
+        <!-- 12+ Proof -->
+        <div class="glass p-4 rounded-2xl border-b-2 border-b-red-500">
+            <div class="text-[9px] font-black text-red-500 uppercase mb-1">12+ Proof</div>
+            <div id="proof-12" class="text-3xl font-black text-white">0</div>
+        </div>
+
+        <!-- Conqueror Tier -->
+        <div class="glass p-4 rounded-2xl border-b-2 border-b-red-600">
+            <div class="text-[9px] font-black text-red-600 uppercase mb-1">Conqueror</div>
+            <div id="conqueror-count" class="text-3xl font-black text-white">0</div>
+        </div>
+
+        <!-- Active Reps -->
+        <div class="glass p-4 rounded-2xl border-b-2 border-b-blue-500">
+            <div class="text-[9px] font-black text-blue-500 uppercase mb-1">Active Reps</div>
+            <div id="active-reps" class="text-3xl font-black text-white">0 / 0</div>
+        </div>
+
+        <!-- Total Leads -->
+        <div class="glass p-4 rounded-2xl border-b-2 border-b-yellow-500">
+            <div class="text-[9px] font-black text-yellow-500 uppercase mb-1">Leads</div>
+            <div id="total-leads" class="text-3xl font-black text-white">0</div>
+        </div>
+    </div>
+
     <div class="flex justify-between items-end mb-4 px-2">
         <h2 class="header-font text-[10px] font-black tracking-widest text-slate-500 uppercase italic">Current Rankings</h2>
         <div class="text-[8px] text-slate-600 font-bold uppercase italic">Sorted by Performance</div>
     </div>
 
     <div id="leaderboard" class="space-y-3">
-        </div>
+    </div>
 
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycby4jOyP2bnxA_0frzWXGpzmbYxLnHs-qlief2CXpgqAfPA50LpqsN_dl0C_o2cA6_IO-Q/exec';
@@ -130,46 +157,4 @@
         }
 
         function render() {
-            const board = document.getElementById('leaderboard');
-            agents.sort((a, b) => b.leads - a.leads);
-
-            let totalLeads = 0;
-            let masters = 0;
-
-            board.innerHTML = agents.map((agent, index) => {
-                const lvl = getLevel(agent.leads);
-                totalLeads += agent.leads;
-                if(agent.leads >= 11) masters++;
-
-                // This line below was changed to highlight the Top 5
-                return `
-                    <div class="glass p-4 rounded-xl flex justify-between items-center transition-all duration-700 ${lvl.class} ${agent.lastUpdated ? 'row-update' : ''}">
-                        <div class="flex items-center gap-4">
-                            <span class="text-lg font-black italic ${index < 5 ? 'text-white' : 'text-slate-700'}">
-                                ${(index + 1).toString().padStart(2, '0')}
-                            </span>
-                            <div>
-                                <div class="font-bold text-sm tracking-tight text-white uppercase">${agent.name}</div>
-                                <div class="flex items-center gap-1 mt-0.5">
-                                    <i class="fas ${lvl.icon} text-[8px] ${lvl.color}"></i>
-                                    <div class="text-[8px] font-black uppercase tracking-widest ${lvl.color}">${lvl.title} LEVEL</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-2xl font-black text-white leading-none">${agent.leads}</div>
-                            <div class="text-[7px] text-slate-500 uppercase font-bold tracking-tighter mt-1">Transfers</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            document.getElementById('floor-total').innerText = totalLeads;
-            document.getElementById('master-count').innerText = masters.toString().padStart(2, '0');
-        }
-
-        setInterval(updateDashboard, 15000);
-        updateDashboard();
-    </script>
-</body>
-</html>
+            const board = document.getElementById
