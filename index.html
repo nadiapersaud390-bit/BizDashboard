@@ -8,59 +8,16 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700;900&display=swap');
-        
-        body {
-            background-color: #020617;
-            font-family: 'Inter', sans-serif;
-            color: white;
-            overflow-x: hidden;
-        }
-
+        body { background-color: #020617; font-family: 'Inter', sans-serif; color: white; overflow-x: hidden; }
         .header-font { font-family: 'Orbitron', sans-serif; }
-
-        /* Tiers Styling */
-        .conqueror-tier {
-            background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0) 100%);
-            border-left: 4px solid #ef4444;
-        }
-
-        .gold-tier {
-            background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0) 100%);
-            border-left: 4px solid #eab308;
-        }
-
-        .orange-tier {
-            background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 100%);
-            border-left: 4px solid #f97316;
-        }
-
-        .live-pulse {
-            width: 8px; height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.5; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        /* Update Animation */
+        .conqueror-tier { background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0) 100%); border-left: 4px solid #ef4444; }
+        .gold-tier { background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0) 100%); border-left: 4px solid #eab308; }
+        .orange-tier { background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 100%); border-left: 4px solid #f97316; }
+        .live-pulse { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; display: inline-block; margin-right: 8px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
         .row-update { animation: highlight 2s ease-out; }
-        @keyframes highlight {
-            0% { background-color: rgba(59, 130, 246, 0.4); }
-            100% { background-color: transparent; }
-        }
+        @keyframes highlight { 0% { background-color: rgba(59, 130, 246, 0.4); } 100% { background-color: transparent; } }
     </style>
 </head>
 <body class="p-4 max-w-lg mx-auto pb-20">
@@ -91,11 +48,10 @@
         </div>
     </div>
 
-    <div id="leaderboard" class="space-y-3">
-        </div>
+    <div id="leaderboard" class="space-y-3"></div>
 
     <script>
-        // Your Google Apps Script Web App URL
+        // Replace with your current /exec URL
         const API_URL = 'https://script.google.com/macros/s/AKfycbz-qmWOX19RbkR9otfAQevAk-IuSQuy0f6tW4uLSq7Bq5PVWR4UbCAk1LrXmlVfmntlDw/exec';
         
         let agents = [];
@@ -105,20 +61,16 @@
                 const res = await fetch(API_URL);
                 const newData = await res.json();
                 
-                // Detection for "Blue Glow" update animation
                 if (agents.length > 0) {
                     newData.forEach(nA => {
                         const oA = agents.find(o => o.name === nA.name);
-                        // If leads increased, mark for animation
                         if (oA && nA.leads > oA.leads) nA.lastUpdated = true;
                     });
                 }
-
                 agents = newData;
                 render();
-                document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}`;
+                document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString()}`;
             } catch (e) {
-                console.error("Fetch Error:", e);
                 document.getElementById('timestamp').innerText = "Sync Error";
             }
         }
@@ -133,18 +85,12 @@
 
         function render() {
             const board = document.getElementById('leaderboard');
-            
-            // Sort agents: highest leads at the top
             agents.sort((a, b) => b.leads - a.leads);
-
-            let total = 0;
-            let masters = 0;
+            let total = 0; let masters = 0;
 
             board.innerHTML = agents.map((a, i) => {
                 const lvl = getLevel(a.leads);
-                total += a.leads;
-                if(a.leads >= 11) masters++;
-
+                total += a.leads; if(a.leads >= 11) masters++;
                 return `
                     <div class="glass p-4 rounded-xl flex justify-between items-center transition-all duration-700 ${lvl.class} ${a.lastUpdated ? 'row-update' : ''}">
                         <div class="flex items-center gap-4">
@@ -161,18 +107,13 @@
                             <div class="text-2xl font-black text-white">${a.leads}</div>
                             <div class="text-[7px] text-slate-500 uppercase font-bold tracking-tighter">Transfers</div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
-
             document.getElementById('floor-total').innerText = total;
             document.getElementById('master-count').innerText = masters.toString().padStart(2, '0');
         }
 
-        // Check for updates every 10 seconds
-        setInterval(updateDashboard, 10000);
-        
-        // Initial load
+        setInterval(updateDashboard, 10000); // Check every 10 seconds
         updateDashboard();
     </script>
 </body>
