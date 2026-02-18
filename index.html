@@ -81,8 +81,8 @@
         </div>
     </div>
 
-    <!-- New Stats Section -->
-    <div class="grid grid-cols-2 gap-3 mb-8">
+    <!-- New Stats Section: Side by Side -->
+    <div class="grid grid-cols-4 gap-3 mb-8">
         <!-- 12+ Proof -->
         <div class="glass p-4 rounded-2xl border-b-2 border-b-red-500">
             <div class="text-[9px] font-black text-red-500 uppercase mb-1">12+ Proof</div>
@@ -103,7 +103,7 @@
 
         <!-- Total Leads -->
         <div class="glass p-4 rounded-2xl border-b-2 border-b-yellow-500">
-            <div class="text-[9px] font-black text-yellow-500 uppercase mb-1">Leads</div>
+            <div class="text-[9px] font-black text-yellow-500 uppercase mb-1">Total Leads</div>
             <div id="total-leads" class="text-3xl font-black text-white">0</div>
         </div>
     </div>
@@ -153,8 +153,4 @@
             if (l >= 11) return { title: "MASTER", class: "gold-tier", icon: "fa-star", color: "text-yellow-500" };
             if (l >= 7) return { title: "ELITE", class: "orange-tier", icon: "fa-fire", color: "text-orange-500" };
             if (l >= 4) return { title: "PRO", class: "blue-tier", icon: "fa-bolt", color: "text-blue-500" };
-            return { title: "ROOKIE", class: "slate-tier", icon: "fa-shield", color: "text-slate-500" };
-        }
-
-        function render() {
-            const board = document.getElementById
+            return { title: "ROOKIE", class: "slate-tier", icon: "fa-shield", color: "text-slate
