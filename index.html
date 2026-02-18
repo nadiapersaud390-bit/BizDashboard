@@ -58,7 +58,7 @@
     <div class="flex justify-between items-center mb-6 px-2">
         <div class="flex items-center">
             <span class="live-pulse"></span>
-            <span class="text-[10px] font-black tracking-widest text-red-500 uppercase italic">Live Ytel Feed</span>
+            <span class="text-[10px] font-black tracking-widest text-red-500 uppercase italic">Live Feed</span>
         </div>
         <div id="timestamp" class="text-[10px] text-slate-500 font-bold uppercase italic">Updating...</div>
     </div>
@@ -90,7 +90,8 @@
         </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbz-qmWOX19RbkR9otfAQevAk-IuSQuy0f6tW4uLSq7Bq5PVWR4UbCAk1LrXmlVfmntlDw/exec';
+        // YOUR UPDATED API URL
+        const API_URL = 'https://script.google.com/macros/s/AKfycby4jOyP2bnxA_0frzWXGpzmbYxLnHs-qlief2CXpgqAfPA50LpqsN_dl0C_o2cA6_IO-Q/exec';
         
         let agents = [];
 
@@ -99,7 +100,14 @@
                 const res = await fetch(API_URL);
                 const newData = await res.json();
                 
-                // Compare new data with old data for update glow
+                // Error check if Google Script returns an error object
+                if (newData.error) {
+                    console.error("Script Error:", newData.error);
+                    document.getElementById('timestamp').innerText = "Script Error";
+                    return;
+                }
+
+                // Check for updates to trigger glow animation
                 if (agents.length > 0) {
                     newData.forEach(nA => {
                         const oA = agents.find(o => o.name === nA.name);
@@ -126,8 +134,6 @@
 
         function render() {
             const board = document.getElementById('leaderboard');
-            
-            // Sort agents: highest leads at the top
             agents.sort((a, b) => b.leads - a.leads);
 
             let totalLeads = 0;
@@ -144,17 +150,14 @@
                             <span class="text-lg font-black italic ${index < 3 ? 'text-white' : 'text-slate-700'}">
                                 ${(index + 1).toString().padStart(2, '0')}
                             </span>
-                            
                             <div>
                                 <div class="font-bold text-sm tracking-tight text-white uppercase">${agent.name}</div>
-                                
                                 <div class="flex items-center gap-1 mt-0.5">
                                     <i class="fas ${lvl.icon} text-[8px] ${lvl.color}"></i>
                                     <div class="text-[8px] font-black uppercase tracking-widest ${lvl.color}">${lvl.title} LEVEL</div>
                                 </div>
                             </div>
                         </div>
-
                         <div class="text-right">
                             <div class="text-2xl font-black text-white leading-none">${agent.leads}</div>
                             <div class="text-[7px] text-slate-500 uppercase font-bold tracking-tighter mt-1">Transfers</div>
@@ -163,13 +166,11 @@
                 `;
             }).join('');
 
-            // Update Top Stats
             document.getElementById('floor-total').innerText = totalLeads;
             document.getElementById('master-count').innerText = masters.toString().padStart(2, '0');
         }
 
-        // Check for updates every 10 seconds
-        setInterval(updateDashboard, 10000);
+        setInterval(updateDashboard, 15000); // Check every 15 seconds
         updateDashboard();
     </script>
 </body>
