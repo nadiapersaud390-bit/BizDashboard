@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Up Dashboard | Live Performance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700;900&display=swap');
+        
+        body {
+            background-color: #020617;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .header-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .gold-tier {
+            background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0) 100%);
+            border-left: 4px solid #eab308;
+            box-shadow: 0 4px 15px rgba(234, 179, 8, 0.05);
+        }
+
+        .orange-tier {
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 100%);
+            border-left: 4px solid #f97316;
+        }
+
+        .live-pulse {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .row-update {
+            animation: highlight 2s ease-out;
+        }
+
+        @keyframes highlight {
+            0% { background-color: rgba(59, 130, 246, 0.2); }
+            100% { background-color: transparent; }
+        }
+    </style>
+</head>
+<body class="p-4 max-w-lg mx-auto pb-20">
+
+    <!-- Top Status Bar -->
+    <div class="flex justify-between items-center mb-6 px-2">
+        <div class="flex items-center">
+            <span class="live-pulse"></span>
+            <span class="text-[10px] font-black tracking-widest text-red-500 uppercase italic">Live Ytel Feed</span>
+        </div>
+        <div id="timestamp" class="text-[10px] text-slate-500 font-bold uppercase tracking-tighter italic">Updating...</div>
+    </div>
+
+    <!-- Main Branding Header -->
+    <div class="text-center mb-8">
+        <h1 class="header-font text-4xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic">
+            LEVEL UP DASHBOARD
+        </h1>
+        <p class="text-[9px] font-black tracking-[0.4em] text-slate-500 uppercase mt-2">Elite 48 Performance Tracker</p>
+    </div>
+
+    <!-- Hero Stats -->
+    <div class="grid grid-cols-2 gap-3 mb-8">
+        <div class="glass p-4 rounded-2xl border-b-2 border-b-yellow-500">
+            <div class="text-[9px] font-black text-yellow-500 uppercase mb-1">Master Tier</div>
+            <div id="master-count" class="text-3xl font-black">00</div>
+            <div class="text-[8px] text-slate-500 mt-1 uppercase">12+ Lead Target</div>
+        </div>
+        <div class="glass p-4 rounded-2xl border-b-2 border-b-blue-500 text-right">
+            <div class="text-[9px] font-black text-blue-500 uppercase mb-1">Floor Total</div>
+            <div id="floor-total" class="text-3xl font-black">0</div>
+            <div class="text-[8px] text-slate-500 mt-1 uppercase">Total Transfers</div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Header -->
+    <div class="flex justify-between items-end mb-4 px-2">
+        <h2 class="header-font text-[10px] font-black tracking-widest text-slate-500 uppercase italic">Current Rankings</h2>
+        <div class="text-[8px] text-slate-600 font-bold uppercase">Sorted by High Score</div>
+    </div>
+    
+    <div id="leaderboard" class="space-y-3">
+        <!-- Rows will be injected here by JavaScript -->
+    </div>
+
+    <!-- Branding Footer -->
+    <div class="mt-12 text-center border-t border-white/5 pt-8">
+        <p class="text-[9px] font-black tracking-[0.4em] text-slate-700 uppercase">System Architect: Rozita</p>
+        <p class="text-[8px] text-slate-800 mt-2 uppercase italic">"Building the Standard of Excellence"</p>
+    </div>
+
+    <script>
+        // Official Name List
+        const rawNames = [
+            "GYB Angelique Ramgobin", "GYB Babita Dookaran", "GYB Belinda Fraser", "GYB Deepamtali Datt",
+            "GYB Devyanie Mangru", "GYB Fidella Nicholson", "GYB Himant Mangal", "GYB Jennifer Lewis",
+            "GYB Kamaine Arjune", "GYB Karis Smith", "GYB Lakeram Seeraj", "GYB Lochelle Edwards",
+            "GYB Lovita Seeraj", "GYB Malanie Badal", "GYB Omadai Deen", "GYB Padmine Behari",
+            "GYB Romona Ross", "GYB Roshnie Jaipersaud", "GYB Serena Cobis", "GYB Shazeeda Saheed",
+            "GYB Subrina Karran", "GYB Tarmatie Singh"
+        ];
+
+        // Create initial data for 48 slots (as mentioned in your prompt)
+        // We'll use the unique names provided and fill the rest
+        let agents = rawNames.map(name => ({ name, leads: 0, lastUpdated: false }));
+        
+        // Add additional unique identifiers if we need to reach 48 total
+        while(agents.length < 48) {
+            agents.push({ name: `GYB Agent ${agents.length + 1}`, leads: 0, lastUpdated: false });
+        }
+
+        function getLevel(leads) {
+            if (leads >= 11) return { title: "MASTER", class: "gold-tier", icon: "fa-crown", color: "text-yellow-500" };
+            if (leads >= 7) return { title: "ELITE", class: "orange-tier", icon: "fa-fire", color: "text-orange-500" };
+            if (leads >= 4) return { title: "PRO", class: "border-l-4 border-l-blue-500", icon: "fa-sword", color: "text-blue-500" };
+            if (leads >= 1) return { title: "ROOKIE", class: "border-l-4 border-l-slate-600", icon: "fa-shield", color: "text-slate-500" };
+            return { title: "WAITING", class: "opacity-40", icon: "fa-clock", color: "text-slate-700" };
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('leaderboard');
+            const masterCountEl = document.getElementById('master-count');
+            const floorTotalEl = document.getElementById('floor-total');
+            const timestampEl = document.getElementById('timestamp');
+
+            // Sort agents
+            agents.sort((a, b) => b.leads - a.leads);
+
+            let floorTotal = 0;
+            let masterCount = 0;
+
+            board.innerHTML = agents.map((agent, index) => {
+                const level = getLevel(agent.leads);
+                floorTotal += agent.leads;
+                if(agent.leads >= 11) masterCount++;
+
+                return `
+                    <div class="glass p-4 rounded-xl flex justify-between items-center transition-all duration-500 ${level.class} ${agent.lastUpdated ? 'row-update' : ''}">
+                        <div class="flex items-center gap-4">
+                            <span class="text-lg font-black italic ${index < 3 ? 'text-white' : 'text-slate-700'}">${(index + 1).toString().padStart(2, '0')}</span>
+                            <div>
+                                <div class="font-bold text-xs md:text-sm tracking-tight">${agent.name}</div>
+                                <div class="flex items-center gap-1 mt-0.5">
+                                    <i class="fas ${level.icon} text-[8px] ${level.color}"></i>
+                                    <div class="text-[8px] font-black uppercase tracking-widest ${level.color}">${level.title} LEVEL</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-black text-white">${agent.leads}</div>
+                            <div class="text-[7px] text-slate-500 font-bold uppercase tracking-tighter">Transfers</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            masterCountEl.innerText = masterCount.toString().padStart(2, '0');
+            floorTotalEl.innerText = floorTotal;
+            
+            const now = new Date();
+            timestampEl.innerText = `Last Update: ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            
+            // Reset update highlight
+            agents.forEach(a => a.lastUpdated = false);
+        }
+
+        // SIMULATION: This represents Ytel activity
+        function simulateActivity() {
+            // Pick a random agent to get a transfer
+            const randIdx = Math.floor(Math.random() * agents.length);
+            agents[randIdx].leads += 1;
+            agents[randIdx].lastUpdated = true;
+            renderBoard();
+        }
+
+        // Start board
+        window.onload = () => {
+            // Initial data for visual demo
+            agents.forEach(a => a.leads = Math.floor(Math.random() * 5)); 
+            renderBoard();
+            
+            // Update every few seconds for the demo
+            setInterval(simulateActivity, 5000);
+        };
+    </script>
+</body>
+</html>
