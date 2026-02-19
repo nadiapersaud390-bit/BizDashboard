@@ -70,14 +70,18 @@
         <p class="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mt-2">One Team | One Goal | Level Up</p>
     </div>
 
-    <div class="grid grid-cols-2 gap-3 mb-8">
-        <div class="glass p-4 rounded-2xl border-b-2 border-b-yellow-500">
-            <div class="text-[9px] font-black text-yellow-500 uppercase mb-1">Master Tier</div>
-            <div id="master-count" class="text-3xl font-black text-white">00</div>
+    <div class="grid grid-cols-3 gap-2 mb-8">
+        <div class="glass p-3 rounded-2xl border-b-2 border-b-yellow-500">
+            <div class="text-[8px] font-black text-yellow-500 uppercase mb-1 leading-tight">12+ Proof (Masters)</div>
+            <div id="master-count" class="text-2xl font-black text-white">00</div>
         </div>
-        <div class="glass p-4 rounded-2xl border-b-2 border-b-blue-500 text-right">
-            <div class="text-[9px] font-black text-blue-500 uppercase mb-1">Floor Total</div>
-            <div id="floor-total" class="text-3xl font-black text-white">0</div>
+        <div class="glass p-3 rounded-2xl border-b-2 border-b-green-500 text-center">
+            <div class="text-[8px] font-black text-green-500 uppercase mb-1 leading-tight">Active Reps</div>
+            <div id="active-reps" class="text-2xl font-black text-white">0</div>
+        </div>
+        <div class="glass p-3 rounded-2xl border-b-2 border-b-blue-500 text-right">
+            <div class="text-[8px] font-black text-blue-500 uppercase mb-1 leading-tight">Floor Total</div>
+            <div id="floor-total" class="text-2xl font-black text-white">0</div>
         </div>
     </div>
 
@@ -86,8 +90,7 @@
         <div class="text-[8px] text-slate-600 font-bold uppercase italic">Sorted by Performance</div>
     </div>
 
-    <div id="leaderboard" class="space-y-3">
-        </div>
+    <div id="leaderboard" class="space-y-3"></div>
 
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycby4jOyP2bnxA_0frzWXGpzmbYxLnHs-qlief2CXpgqAfPA50LpqsN_dl0C_o2cA6_IO-Q/exec';
@@ -123,7 +126,7 @@
 
         function getLevel(l) {
             if (l >= 17) return { title: "CONQUEROR", class: "conqueror-tier", icon: "fa-crown", color: "text-red-500" };
-            if (l >= 11) return { title: "MASTER", class: "gold-tier", icon: "fa-star", color: "text-yellow-500" };
+            if (l >= 12) return { title: "MASTER", class: "gold-tier", icon: "fa-star", color: "text-yellow-500" };
             if (l >= 7) return { title: "ELITE", class: "orange-tier", icon: "fa-fire", color: "text-orange-500" };
             if (l >= 4) return { title: "PRO", class: "blue-tier", icon: "fa-bolt", color: "text-blue-500" };
             return { title: "ROOKIE", class: "slate-tier", icon: "fa-shield", color: "text-slate-500" };
@@ -135,13 +138,18 @@
 
             let totalLeads = 0;
             let masters = 0;
+            let activeReps = 0;
 
             board.innerHTML = agents.map((agent, index) => {
                 const lvl = getLevel(agent.leads);
                 totalLeads += agent.leads;
-                if(agent.leads >= 11) masters++;
+                
+                // Logic: Count as Master if 12 or more
+                if(agent.leads >= 12) masters++;
+                
+                // Logic: Count as Active Rep if they have 1 or more on the board
+                if(agent.leads > 0) activeReps++;
 
-                // This line below was changed to highlight the Top 5
                 return `
                     <div class="glass p-4 rounded-xl flex justify-between items-center transition-all duration-700 ${lvl.class} ${agent.lastUpdated ? 'row-update' : ''}">
                         <div class="flex items-center gap-4">
@@ -166,6 +174,7 @@
 
             document.getElementById('floor-total').innerText = totalLeads;
             document.getElementById('master-count').innerText = masters.toString().padStart(2, '0');
+            document.getElementById('active-reps').innerText = activeReps;
         }
 
         setInterval(updateDashboard, 15000);
