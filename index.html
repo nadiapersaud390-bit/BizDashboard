@@ -31,10 +31,10 @@
             <span class="live-pulse"></span>
             <div class="flex flex-col">
                 <span class="text-[10px] font-black tracking-widest text-red-500 uppercase italic leading-none">Live Performance</span>
-                <span id="timestamp" class="text-[8px] text-slate-500 font-bold uppercase mt-1">Syncing...</span>
+                <span id="timestamp" class="text-[8px] text-slate-500 font-bold uppercase mt-1">Establishing Sync...</span>
             </div>
         </div>
-        <button onclick="updateDashboard()" id="refresh-btn" class="glass p-2 px-3 rounded-lg hover:bg-white/10">
+        <button onclick="updateDashboard()" id="refresh-btn" class="glass p-2 px-3 rounded-lg hover:bg-white/10 transition-all active:scale-95">
             <i class="fas fa-sync-alt text-xs text-blue-400"></i>
         </button>
     </div>
@@ -52,14 +52,14 @@
     <div id="leaderboard-view">
         <div class="mb-8 px-2">
             <div class="flex justify-between items-end mb-2">
-                <span id="goal-label" class="text-[10px] font-black text-yellow-500 uppercase italic tracking-widest">Team Goal</span>
-                <span id="goal-percent" class="text-[10px] font-black text-white uppercase italic">0%</span>
+                <span id="goal-label" class="text-[10px] font-black text-yellow-500 uppercase italic">Team Goal</span>
+                <span id="goal-percent" class="text-[10px] font-black text-white italic">0%</span>
             </div>
-            <div class="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/10 p-[2px]">
+            <div class="w-full h-4 bg-white/5 rounded-full border border-white/10 p-[2px] overflow-hidden">
                 <div id="progress-bar" class="gold-progress h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
             </div>
             <div class="mt-2 flex justify-between items-center px-1">
-                <span id="day-indicator" class="text-[9px] font-black text-blue-400 uppercase italic tracking-widest">Detecting Day...</span>
+                <span id="day-indicator" class="text-[9px] font-black text-blue-400 uppercase italic">Loading...</span>
                 <span id="target-display" class="text-[9px] font-bold text-slate-500 uppercase">Target: 800</span>
             </div>
         </div>
@@ -81,34 +81,33 @@
         <div id="leaderboard" class="space-y-3 px-2"></div>
     </div>
 
-    <div id="playbook-view" class="hidden space-y-4 px-2">
+    <div id="playbook-view" class="hidden space-y-4 px-2 pb-10">
         <div class="glass p-5 rounded-2xl border-l-4 border-l-green-500 bg-green-500/5">
-            <h3 class="header-font text-[10px] font-black text-green-500 uppercase mb-3 italic">How to Qualify</h3>
-            <div class="text-[13px] leading-relaxed text-slate-200 space-y-1">
-                <p>1. [cite_start]Need to be in business for over 1 Year [cite: 11]</p>
-                <p>2. [cite_start]Primary Owner of the business 100% or at least 50% [cite: 12]</p>
-                <p>3. [cite_start]No Trucking Companies, No Van [cite: 13]</p>
-                <p>4. [cite_start]No attorneys, No Lawyers [cite: 14]</p>
-                [cite_start]<p>• Over 1 million - Line for xfer [cite: 15]</p>
-                [cite_start]<p>• Under 1 million (200k) the least - Line for xfer [cite: 16]</p>
-                [cite_start]<p class="text-red-400 font-bold italic mt-2">If these qualifiers are not met you cannot transfer the call!!! [cite: 17]</p>
-            </div>
+            <h3 class="header-font text-[10px] font-black text-green-500 uppercase mb-3 italic">Quality Guidelines</h3>
+            <ul class="text-[13px] leading-relaxed text-slate-200 space-y-2">
+                <li>• Must be in business for over 1 Year [cite: 2, 11]</li>
+                <li>• Primary Owner 100% or at least 50% [cite: 3, 12]</li>
+                <li>• NO Trucking or Van Companies [cite: 4, 13]</li>
+                <li>• NO Attorneys or Lawyers [cite: 5, 14]</li>
+                <li>• Over $1 Million: Line for transfer [cite: 6, 15]</li>
+                <li>• Under $1 Million (min. $200k): Line for transfer [cite: 7, 16]</li>
+                <li class="text-red-400 font-bold italic mt-2 underline">If qualifiers are not met, DO NOT transfer! [cite: 8, 17]</li>
+            </ul>
         </div>
         <div class="glass p-5 rounded-2xl border-l-4 border-l-red-500 bg-red-500/5">
             <h3 class="header-font text-[10px] font-black text-red-500 uppercase mb-3 italic">Rebuttals</h3>
             <div class="text-[13px] leading-relaxed text-slate-300 space-y-4">
                 <div>
-                    [cite_start]<p class="text-white font-bold italic">"Which company do you represent?" [cite: 19]</p>
-                    [cite_start]<p class="text-slate-400">"We're the Business Loan Division [cite: 20] [cite_start]we help connect business owners to the right lending programs through our partner network." [cite: 21, 22]</p>
+                    <p class="text-white font-bold italic">"Which company do you represent?"</p>
+                    <p class="text-slate-400">"We're the Business Loan Division. We help connect business owners to the right lending programs through our partner network." [cite: 19, 20, 21, 22]</p>
                 </div>
                 <div>
-                    [cite_start]<p class="text-white font-bold italic">"What company is this?" [cite: 23]</p>
-                    [cite_start]<p class="text-slate-400">"We're the Business Loan Division, a direct private lending group that provides working-capital programs or Business line of credit." [cite: 24]</p>
+                    <p class="text-white font-bold italic">"Is this a scam?"</p>
+                    <p class="text-slate-400">"This is a legitimate outreach from the Business Loan Division in California. We work only with licensed financial institutions. My part is to confirm basic details." [cite: 25, 26]</p>
                 </div>
                 <div>
-                    [cite_start]<p class="text-white font-bold italic">"Is this a scam?" [cite: 25]</p>
-                    [cite_start]<p class="text-slate-400">"I completely understand the concern. This is a legitimate outreach from the Business Loan Division in California. We work only with licensed financial institutions and verified business information. My part is just to confirm some basic details." [cite: 26]</p>
-                    [cite_start]<p class="text-slate-400 mt-2">OR: "I completely understand why you'd want to be cautious that's smart. [cite: 27, 28] [cite_start]I'm just calling to confirm basic business details for potential funding through our direct-lending division here in California. [cite: 29] [cite_start]It's a quick pre-qualification, no application or credit pull." [cite: 30]</p>
+                    <p class="text-white font-bold italic">"How does it work?"</p>
+                    <p class="text-slate-400">"It's a quick pre-qualification with no application or credit pull." [cite: 30]</p>
                 </div>
             </div>
         </div>
@@ -140,39 +139,40 @@
             render();
         }
 
-        function getTier(leads) {
-            if (leads >= 17) return { title: "CONQUEROR", class: "conqueror-tier", color: "text-red-500" };
-            if (leads >= 12) return { title: "MASTER", class: "gold-tier", color: "text-yellow-500" };
-            if (leads >= 7) return { title: "ELITE", class: "orange-tier", color: "text-orange-500" };
-            if (leads >= 4) return { title: "PRO", class: "blue-tier", color: "text-blue-500" };
+        function getTier(l) {
+            if (l >= 17) return { title: "CONQUEROR", class: "conqueror-tier", color: "text-red-500" };
+            if (l >= 12) return { title: "MASTER", class: "gold-tier", color: "text-yellow-500" };
+            if (l >= 7) return { title: "ELITE", class: "orange-tier", color: "text-orange-500" };
+            if (l >= 4) return { title: "PRO", class: "blue-tier", color: "text-blue-500" };
             return { title: "ROOKIE", class: "slate-tier", color: "text-slate-500" };
         }
 
         function render() {
-            const leaderboardView = document.getElementById('leaderboard-view');
-            const playbookView = document.getElementById('playbook-view');
+            const board = document.getElementById('leaderboard');
+            const lView = document.getElementById('leaderboard-view');
+            const pView = document.getElementById('playbook-view');
             
             if (currentTab === 'playbook') {
-                leaderboardView.classList.add('hidden');
-                playbookView.classList.remove('hidden');
+                lView.classList.add('hidden');
+                pView.classList.remove('hidden');
                 return;
             } 
             
-            leaderboardView.classList.remove('hidden');
-            playbookView.classList.add('hidden');
+            lView.classList.remove('hidden');
+            pView.classList.add('hidden');
 
             const isWeekly = currentTab === 'weekly';
-            const today = agents.length > 0 ? agents[0].todayName : "Today";
+            const today = agents.length > 0 ? agents[0].todayName : "Daily";
             document.getElementById('day-indicator').innerText = isWeekly ? "Weekly Sprint Status" : `${today} Performance Report`;
             document.getElementById('target-display').innerText = isWeekly ? "Target: 800" : "Target: 150";
 
-            const sortedData = agents.map(a => ({
+            const displayData = agents.map(a => ({
                 name: a.name,
                 leads: isWeekly ? a.weeklyLeads : a.dailyLeads
             })).sort((a, b) => b.leads - a.leads);
 
             let total = 0; let masters = 0; let active = 0;
-            document.getElementById('leaderboard').innerHTML = sortedData.map((agent, index) => {
+            board.innerHTML = displayData.map((agent, index) => {
                 total += agent.leads;
                 const tier = getTier(agent.leads);
                 if(agent.leads >= 12) masters++;
