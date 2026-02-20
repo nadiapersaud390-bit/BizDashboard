@@ -8,139 +8,161 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700;900&display=swap');
-        body { background-color: #020617; font-family: 'Inter', sans-serif; color: white; overflow-x: hidden; }
+        
+        body { 
+            background-color: #020617; 
+            font-family: 'Inter', sans-serif; 
+            color: white; 
+            overflow-x: hidden; 
+        }
+        
         .header-font { font-family: 'Orbitron', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
         
+        /* Rankings Tiers */
         .conqueror-tier { background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0) 100%); border-left: 4px solid #ef4444; }
         .gold-tier { background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0) 100%); border-left: 4px solid #eab308; }
         .orange-tier { background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 100%); border-left: 4px solid #f97316; }
         .blue-tier { border-left: 4px solid #3b82f6; }
         .slate-tier { border-left: 4px solid #475569; opacity: 0.8; }
 
-        .live-pulse { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; display: inline-block; margin-right: 8px; animation: pulse 1.5s infinite; }
+        /* Animations */
+        .live-pulse { width: 10px; height: 10px; background: #ef4444; border-radius: 50%; display: inline-block; margin-right: 10px; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
         .gold-progress { background: linear-gradient(90deg, #ca8a04, #facc15, #eab308); box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
         .tab-active { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6 !important; color: white !important; border-bottom: 2px solid #3b82f6; }
         .spin-anim { animation: spin 1s linear; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* Responsive scaling for PC */
+        @media (min-width: 1024px) {
+            .main-container { max-width: 1200px !important; }
+            .leaderboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+            .stat-card { padding: 30px !important; }
+            .stat-value { font-size: 3rem !important; }
+        }
     </style>
 </head>
-<body class="p-4 max-w-lg mx-auto pb-20">
+<body class="p-4 pb-20">
 
-    <div class="flex justify-between items-center mb-6 px-2">
-        <div class="flex items-center">
-            <span class="live-pulse"></span>
-            <div class="flex flex-col">
-                <span class="text-[10px] font-black tracking-widest text-red-500 uppercase italic leading-none">Live Performance</span>
-                <span id="timestamp" class="text-[8px] text-slate-500 font-bold uppercase mt-1">Syncing...</span>
-            </div>
-        </div>
-        <button onclick="updateDashboard()" id="refresh-btn" class="glass p-2 px-3 rounded-lg hover:bg-white/10 transition-all active:scale-95">
-            <i class="fas fa-sync-alt text-xs text-blue-400"></i>
-        </button>
-    </div>
-
-    <div class="text-center mb-6">
-        <h1 class="header-font text-3xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic leading-tight uppercase">
-            BIZ Level Up Dashboard
-        </h1>
-    </div>
-
-    <div class="flex gap-2 mb-6 px-2">
-        <button onclick="switchTab('weekly')" id="tab-weekly" class="flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all tab-active">Weekly</button>
-        <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-slate-500">Daily</button>
-        <button onclick="switchTab('playbook')" id="tab-playbook" class="flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
-    </div>
-
-    <div id="leaderboard-view">
-        <div class="mb-8 px-2">
-            <div class="flex justify-between items-end mb-2">
-                <span id="goal-label" class="text-[10px] font-black text-yellow-500 uppercase italic tracking-widest">Weekly Team Goal</span>
-                <span id="goal-percent" class="text-[10px] font-black text-white uppercase italic">0%</span>
-            </div>
-            <div class="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/10 p-[2px]">
-                <div id="progress-bar" class="gold-progress h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
-            </div>
-            <div class="flex justify-between mt-1 px-1">
-                <span id="current-leads-sum" class="text-[9px] font-bold text-slate-400">0 Leads</span>
-                <span id="target-display" class="text-[9px] font-bold text-slate-400">Target: 800</span>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-3 gap-2 mb-8 px-2">
-            <div class="glass p-3 rounded-2xl border-b-2 border-b-yellow-500 text-center">
-                <div class="text-[8px] font-black text-yellow-500 uppercase mb-1 leading-tight">12+ Proof</div>
-                <div id="master-count" class="text-2xl font-black text-white">00</div>
-            </div>
-            <div class="glass p-3 rounded-2xl border-b-2 border-b-green-500 text-center">
-                <div class="text-[8px] font-black text-green-500 uppercase mb-1 leading-tight">Active Reps</div>
-                <div id="active-reps" class="text-2xl font-black text-white">0</div>
-            </div>
-            <div class="glass p-3 rounded-2xl border-b-2 border-b-blue-500 text-center">
-                <div class="text-[8px] font-black text-blue-500 uppercase mb-1 leading-tight">Floor Total</div>
-                <div id="floor-total" class="text-2xl font-black text-white">0</div>
-            </div>
-        </div>
-
-        <div class="flex justify-between items-end mb-4 px-2">
-            <h2 id="ranking-title" class="header-font text-[10px] font-black tracking-widest text-slate-500 uppercase italic">Current Rankings</h2>
-            <div id="day-indicator" class="text-[8px] text-blue-500 font-bold uppercase italic">Detecting Day...</div>
-        </div>
-
-        <div id="leaderboard" class="space-y-3 px-2"></div>
-    </div>
-
-    <div id="playbook-view" class="hidden space-y-4 px-2 pb-10">
-        <div class="glass p-5 rounded-2xl border-l-4 border-l-green-500 bg-green-500/5">
-            <h3 class="header-font text-[10px] font-black text-green-500 uppercase mb-3 italic">Quality Guidelines</h3>
-            <div class="text-[13px] leading-relaxed text-slate-200 space-y-2">
-                <p>1. Need to be in business for over 1 Year</p>
-                <p>2. Primary Owner of the business 100% or at least 50%</p>
-                <p>3. No Trucking Companies, No Van</p>
-                <p>4. No attorneys, No Lawyers</p>
-                <p>• Over 1 million - Line for transfer</p>
-                <p>• Under 1 million (200k minimum) - Line for transfer</p>
-                <p class="text-red-400 font-bold italic mt-2 underline">If qualifiers are not met you cannot transfer!!!</p>
-            </div>
-        </div>
-
-        <div class="glass p-5 rounded-2xl border-l-4 border-l-red-500 bg-red-500/5">
-            <h3 class="header-font text-[10px] font-black text-red-500 uppercase mb-3 italic">Rebuttals</h3>
-            <div class="text-[13px] leading-relaxed text-slate-300 space-y-4">
-                <div>
-                    <p class="text-white font-bold italic">"Which company do you represent?"</p>
-                    <p class="text-slate-400 italic">"We're the Business Loan Division. We help connect business owners to the right lending programs through our partner network."</p>
-                </div>
-                <div>
-                    <p class="text-white font-bold italic">"Is this a scam?"</p>
-                    <p class="text-slate-400 italic">"I understand the concern. This is a legitimate outreach from the Business Loan Division in California. We work only with licensed financial institutions. My part is to confirm basic details."</p>
-                </div>
-                <div>
-                    <p class="text-white font-bold italic">"Can you email me something first?"</p>
-                    <p class="text-slate-400 italic">"Once I connect you with the senior advisor, they can send you all the information directly. I just need to confirm your business details first."</p>
-                </div>
-                <div>
-                    <p class="text-white font-bold italic">"Why are you calling me and not emailing first?"</p>
-                    <p class="text-slate-400 italic">"Phone is the quickest way to confirm eligibility and make sure the right person gets connected. It only takes a minute."</p>
-                </div>
-                <div>
-                    <p class="text-white font-bold italic">"Are You a Bank?"</p>
-                    <p class="text-slate-400 italic">"No, we’re a direct private lender. We work with business-funding programs that provide working capital and lines of credit directly."</p>
+    <div class="main-container max-w-lg mx-auto transition-all duration-500">
+        
+        <div class="flex justify-between items-center mb-8 px-2">
+            <div class="flex items-center">
+                <span class="live-pulse"></span>
+                <div class="flex flex-col">
+                    <span class="text-[10px] md:text-xs font-black tracking-widest text-red-500 uppercase italic leading-none">Live System Performance</span>
+                    <span id="timestamp" class="text-[8px] md:text-sm text-slate-500 font-bold uppercase mt-1">Syncing Data...</span>
                 </div>
             </div>
+            <button onclick="updateDashboard()" id="refresh-btn" class="glass p-3 px-4 rounded-xl hover:bg-white/10 transition-all active:scale-95">
+                <i class="fas fa-sync-alt text-sm text-blue-400"></i>
+            </button>
         </div>
 
-        <div class="glass p-5 rounded-2xl border-l-4 border-l-blue-500 bg-blue-500/5">
-            <h3 class="header-font text-[10px] font-black text-blue-500 uppercase mb-3 italic">Micro-Trust Tips</h3>
-            <div class="text-[13px] leading-relaxed text-slate-200">
-                <p class="mb-2 italic">After every 2 questions, give a short acknowledgment phrase like:</p>
-                <div class="space-y-1 text-blue-300 font-bold italic">
-                    <p>“Perfect, thank you.”</p>
-                    <p>“Got it, that helps.”</p>
-                    <p>“That’s great to know.”</p>
+        <div class="text-center mb-10">
+            <h1 class="header-font text-4xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic leading-tight uppercase">
+                BIZ Level Up Dashboard
+            </h1>
+        </div>
+
+        <div class="flex gap-3 mb-8 px-2 max-w-2xl mx-auto">
+            <button onclick="switchTab('weekly')" id="tab-weekly" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all tab-active">Weekly</button>
+            <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Daily</button>
+            <button onclick="switchTab('playbook')" id="tab-playbook" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
+        </div>
+
+        <div id="leaderboard-view">
+            <div class="mb-10 px-2 max-w-3xl mx-auto">
+                <div class="flex justify-between items-end mb-3">
+                    <span id="goal-label" class="text-xs md:text-sm font-black text-yellow-500 uppercase italic tracking-widest">Weekly Team Goal</span>
+                    <span id="goal-percent" class="text-xs md:text-sm font-black text-white uppercase italic">0%</span>
                 </div>
-                <p class="mt-3 text-[11px] text-slate-500 uppercase font-black tracking-widest leading-tight">Keep the rhythm human and build micro-trust.</p>
+                <div class="w-full h-6 bg-white/5 rounded-full overflow-hidden border border-white/10 p-[3px]">
+                    <div id="progress-bar" class="gold-progress h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between mt-2 px-1">
+                    <span id="current-leads-sum" class="text-xs font-bold text-slate-400">0 Leads</span>
+                    <span id="target-display" class="text-xs font-bold text-slate-400">Target: 800</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 mb-10 px-2">
+                <div class="glass p-4 md:p-8 rounded-3xl border-b-4 border-b-yellow-500 text-center stat-card">
+                    <div class="text-[10px] md:text-sm font-black text-yellow-500 uppercase mb-2 leading-tight">12+ Proof</div>
+                    <div id="master-count" class="text-3xl md:text-6xl font-black text-white stat-value">00</div>
+                </div>
+                <div class="glass p-4 md:p-8 rounded-3xl border-b-4 border-b-green-500 text-center stat-card">
+                    <div class="text-[10px] md:text-sm font-black text-green-500 uppercase mb-2 leading-tight">Active Reps</div>
+                    <div id="active-reps" class="text-3xl md:text-6xl font-black text-white stat-value">0</div>
+                </div>
+                <div class="glass p-4 md:p-8 rounded-3xl border-b-4 border-b-blue-500 text-center stat-card">
+                    <div class="text-[10px] md:text-sm font-black text-blue-500 uppercase mb-2 leading-tight">Floor Total</div>
+                    <div id="floor-total" class="text-3xl md:text-6xl font-black text-white stat-value">0</div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-end mb-6 px-4">
+                <h2 id="ranking-title" class="header-font text-xs md:text-lg font-black tracking-widest text-slate-500 uppercase italic">Live Rankings</h2>
+                <div id="day-indicator" class="text-xs md:text-sm text-blue-500 font-bold uppercase italic">Updating...</div>
+            </div>
+
+            <div id="leaderboard" class="leaderboard-grid space-y-3 md:space-y-0 px-2"></div>
+        </div>
+
+        <div id="playbook-view" class="hidden space-y-6 px-2 pb-20">
+            <div class="glass p-6 rounded-3xl border-l-8 border-l-green-500 bg-green-500/5">
+                <h3 class="header-font text-sm md:text-xl font-black text-green-500 uppercase mb-4 italic">Quality Guidelines</h3>
+                <div class="text-sm md:text-lg leading-relaxed text-slate-200 space-y-3">
+                    <p>1. Need to be in business for over 1 Year</p>
+                    <p>2. Primary Owner of the business 100% or at least 50%</p>
+                    <p>3. No Trucking Companies, No Van</p>
+                    <p>4. No attorneys, No Lawyers</p>
+                    <div class="pl-4 border-l-2 border-white/10 mt-4 space-y-2 text-white font-bold">
+                        <p>• Over 1 million — Line for transfer</p>
+                        <p>• Under 1 million (200k minimum) — Line for transfer</p>
+                    </div>
+                    <p class="text-red-400 font-black italic mt-6 border-t border-red-900/50 pt-4 uppercase text-center">If qualifiers are not met you cannot transfer!!!</p>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-3xl border-l-8 border-l-red-500 bg-red-500/5">
+                <h3 class="header-font text-sm md:text-xl font-black text-red-500 uppercase mb-4 italic">Rebuttals</h3>
+                <div class="text-sm md:text-lg leading-relaxed text-slate-300 space-y-6">
+                    <div>
+                        <p class="text-white font-black italic text-lg">"Which company do you represent?"</p>
+                        <p class="text-slate-400 italic">"We're the Business Loan Division. We help connect business owners to the right lending programs through our partner network."</p>
+                    </div>
+                    <div>
+                        <p class="text-white font-black italic text-lg">"Is this a scam?"</p>
+                        <p class="text-slate-400 italic">"I understand the concern. This is a legitimate outreach from the Business Loan Division in California. We work only with licensed financial institutions. My part is to confirm basic details."</p>
+                    </div>
+                    <div>
+                        <p class="text-white font-black italic text-lg">"Can you email me something first?"</p>
+                        <p class="text-slate-400 italic">"Once I connect you with the senior advisor, they can send you all the information directly. I just need to confirm your business details first."</p>
+                    </div>
+                    <div>
+                        <p class="text-white font-black italic text-lg">"Why are you calling me and not emailing first?"</p>
+                        <p class="text-slate-400 italic">"Phone is the quickest way to confirm eligibility and make sure the right person gets connected. It only takes a minute."</p>
+                    </div>
+                    <div>
+                        <p class="text-white font-black italic text-lg">"Are You a Bank?"</p>
+                        <p class="text-slate-400 italic">"No, we’re a direct private lender. We work with business-funding programs that provide working capital and lines of credit directly."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-3xl border-l-8 border-l-blue-500 bg-blue-500/5">
+                <h3 class="header-font text-sm md:text-xl font-black text-blue-500 uppercase mb-4 italic">Micro-Trust Tips</h3>
+                <div class="text-sm md:text-lg leading-relaxed text-slate-200">
+                    <p class="mb-4 italic">After every 2 questions, give a short acknowledgment phrase like:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-blue-300 font-black italic text-center">
+                        <p class="glass p-3 rounded-xl">“Perfect, thank you.”</p>
+                        <p class="glass p-3 rounded-xl">“Got it, that helps.”</p>
+                        <p class="glass p-3 rounded-xl">“That’s great to know.”</p>
+                    </div>
+                    <p class="mt-6 text-xs md:text-sm text-slate-500 uppercase font-black tracking-widest text-center">Keep the rhythm human and build micro-trust.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -157,15 +179,15 @@
                 const res = await fetch(API_URL);
                 agents = await res.json();
                 render();
-                document.getElementById('timestamp').innerText = `Updated: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            } catch (e) { document.getElementById('timestamp').innerText = "Offline"; }
+                document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}`;
+            } catch (e) { document.getElementById('timestamp').innerText = "System Offline"; }
             finally { setTimeout(() => btn.classList.remove('spin-anim'), 1000); }
         }
 
         function switchTab(tab) {
             currentTab = tab;
             ['weekly', 'daily', 'playbook'].forEach(t => {
-                document.getElementById(`tab-${t}`).className = `flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${tab === t ? 'tab-active' : 'text-slate-500'}`;
+                document.getElementById(`tab-${t}`).className = `flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all ${tab === t ? 'tab-active' : 'text-slate-500'}`;
             });
             render();
         }
@@ -198,7 +220,7 @@
 
             document.getElementById('goal-label').innerText = isWeekly ? "Weekly Team Goal" : `${today} Daily Goal`;
             document.getElementById('target-display').innerText = `Target: ${target}`;
-            document.getElementById('day-indicator').innerText = isWeekly ? "Weekly Sprint" : `${today} Report`;
+            document.getElementById('day-indicator').innerText = isWeekly ? "Weekly Sprint" : `${today} Performance`;
 
             const displayData = agents.map(a => ({
                 name: a.name,
@@ -214,17 +236,17 @@
                 if(agent.leads > 0) activeReps++;
 
                 return `
-                    <div class="glass p-4 rounded-xl flex justify-between items-center ${lvl.class}">
+                    <div class="glass p-5 rounded-2xl flex justify-between items-center transition-all hover:bg-white/5 ${lvl.class} mb-3 md:mb-0 md:m-2">
                         <div class="flex items-center gap-4">
-                            <span class="text-lg font-black italic ${index < 5 ? 'text-white' : 'text-slate-700'}">${(index+1).toString().padStart(2, '0')}</span>
+                            <span class="text-xl font-black italic ${index < 3 ? 'text-white' : 'text-slate-700'}">${(index+1).toString().padStart(2, '0')}</span>
                             <div>
-                                <div class="font-bold text-sm text-white uppercase">${agent.name}</div>
-                                <div class="text-[8px] font-black uppercase tracking-widest ${lvl.color}">${lvl.title} LEVEL</div>
+                                <div class="font-black text-sm md:text-lg text-white uppercase">${agent.name}</div>
+                                <div class="text-[9px] font-black uppercase tracking-widest ${lvl.color}">${lvl.title} STATUS</div>
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="text-2xl font-black text-white leading-none">${agent.leads}</div>
-                            <div class="text-[7px] text-slate-500 uppercase font-bold mt-1">Transfers</div>
+                            <div class="text-2xl md:text-3xl font-black text-white leading-none">${agent.leads}</div>
+                            <div class="text-[8px] text-slate-500 uppercase font-black mt-1">Transfers</div>
                         </div>
                     </div>`;
             }).join('');
