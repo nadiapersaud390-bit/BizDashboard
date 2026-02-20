@@ -11,7 +11,6 @@
         body { background-color: #020617; font-family: 'Inter', sans-serif; color: white; overflow-x: hidden; }
         .header-font { font-family: 'Orbitron', sans-serif; }
         
-        /* Tier Colors */
         .conqueror-tier { background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0) 100%); border-left: 4px solid #ef4444; }
         .gold-tier { background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0) 100%); border-left: 4px solid #eab308; }
         .orange-tier { background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 100%); border-left: 4px solid #f97316; }
@@ -46,7 +45,6 @@
         <h1 class="header-font text-4xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic leading-tight">
             LEVEL UP DASHBOARD
         </h1>
-        <p class="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mt-1">One Team | One Goal | Level Up</p>
     </div>
 
     <div class="flex gap-2 mb-6 px-2">
@@ -91,7 +89,7 @@
     <div id="leaderboard" class="space-y-3"></div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbw3sweWwO8qByAZ8JUn3ZGFMa3uaaRXIiMhvE9JsVLcWEXnkAvwyn6OBpHFPSyIRfsoiA/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbym2pxlhLnNDnELD5xAm8d-xiGP8_qy6UQVrBPkHbkF-G1b2EEbbBkc5SvMIMY1NSqXnw/exec';
         let agents = [];
         let currentTab = 'weekly';
 
@@ -100,21 +98,17 @@
             btn.classList.add('spin-anim');
             try {
                 const res = await fetch(API_URL);
-                const newData = await res.json();
-                agents = newData;
+                agents = await res.json();
                 render();
-                document.getElementById('timestamp').innerText = `Sync: ${new Date().toLocaleTimeString()}`;
-            } catch (e) { 
-                document.getElementById('timestamp').innerText = "Sync Error"; 
-            } finally { 
-                setTimeout(() => btn.classList.remove('spin-anim'), 1000); 
-            }
+                document.getElementById('timestamp').innerText = `Updated: ${new Date().toLocaleTimeString()}`;
+            } catch (e) { document.getElementById('timestamp').innerText = "Offline"; }
+            finally { setTimeout(() => btn.classList.remove('spin-anim'), 1000); }
         }
 
         function switchTab(tab) {
             currentTab = tab;
-            document.getElementById('tab-weekly').className = `flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${tab === 'weekly' ? 'tab-active' : 'text-slate-500'}`;
-            document.getElementById('tab-daily').className = `flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${tab === 'daily' ? 'tab-active' : 'text-slate-500'}`;
+            document.getElementById('tab-weekly').className = `flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest ${tab === 'weekly' ? 'tab-active' : 'text-slate-500'}`;
+            document.getElementById('tab-daily').className = `flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest ${tab === 'daily' ? 'tab-active' : 'text-slate-500'}`;
             render();
         }
 
