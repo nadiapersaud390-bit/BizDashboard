@@ -57,11 +57,15 @@
     <div id="leaderboard-view">
         <div class="mb-8 px-2">
             <div class="flex justify-between items-end mb-2">
-                <span id="goal-label" class="text-[10px] font-black text-yellow-500 uppercase italic tracking-widest">Weekly Team Goal</span>
+                <span id="goal-label" class="text-[10px] font-black text-yellow-500 uppercase italic tracking-widest">Team Goal</span>
                 <span id="goal-percent" class="text-[10px] font-black text-white uppercase italic">0%</span>
             </div>
             <div class="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/10 p-[2px]">
                 <div id="progress-bar" class="gold-progress h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between mt-2 px-1">
+                <span id="dynamic-day-status" class="text-[9px] font-black text-blue-400 uppercase tracking-widest italic">Detecting...</span>
+                <span id="target-display" class="text-[9px] font-bold text-slate-500 uppercase tracking-widest"></span>
             </div>
         </div>
 
@@ -100,6 +104,7 @@
         let agents = [];
         let playbookData = { qualify: "", rebuttals: "" };
         let currentTab = 'weekly';
+        let currentDayFromSheet = "";
 
         async function updateDashboard() {
             const btn = document.getElementById('refresh-btn');
@@ -108,9 +113,9 @@
                 const res = await fetch(API_URL);
                 const data = await res.json();
                 
-                // New script format returns { agents: [], playbook: {} }
                 agents = data.agents || [];
                 playbookData = data.playbook || { qualify: "Check Doc", rebuttals: "Check Doc" };
+                currentDayFromSheet = agents.length > 0 ? agents[0].todayName : "";
                 
                 render();
                 document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
@@ -142,6 +147,8 @@
             const leaderboardView = document.getElementById('leaderboard-view');
             const playbookView = document.getElementById('playbook-view');
             const board = document.getElementById('leaderboard');
+            const dayStatus = document.getElementById('dynamic-day-status');
+            const targetLabel = document.getElementById('target-display');
             
             document.getElementById('qualify-text').innerText = playbookData.qualify;
             document.getElementById('rebuttals-text').innerText = playbookData.rebuttals;
@@ -156,6 +163,16 @@
             playbookView.classList.add('hidden');
 
             const isWeekly = currentTab === 'weekly';
+            
+            // UPDATE DYNAMIC DAY LABELS
+            if (isWeekly) {
+                dayStatus.innerText = "Weekly Sprint Overview";
+                targetLabel.innerText = "Target: 800";
+            } else {
+                dayStatus.innerText = `${currentDayFromSheet} Performance Report`;
+                targetLabel.innerText = "Target: 150";
+            }
+
             const displayData = agents.map(a => ({
                 name: a.name,
                 leads: isWeekly ? a.weeklyLeads : a.dailyLeads
