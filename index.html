@@ -11,15 +11,17 @@
         body { background-color: #020617; font-family: 'Inter', sans-serif; color: white; overflow-x: hidden; }
         .header-font { font-family: 'Orbitron', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        
         .conqueror-tier { background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0) 100%); border-left: 4px solid #ef4444; }
         .gold-tier { background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0) 100%); border-left: 4px solid #eab308; }
         .orange-tier { background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 100%); border-left: 4px solid #f97316; }
         .blue-tier { border-left: 4px solid #3b82f6; }
         .slate-tier { border-left: 4px solid #475569; opacity: 0.8; }
-        .tab-active { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6 !important; color: white !important; border-bottom: 2px solid #3b82f6; }
-        .gold-progress { background: linear-gradient(90deg, #ca8a04, #facc15, #eab308); box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
+
         .live-pulse { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; display: inline-block; margin-right: 8px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.5; } }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+        .gold-progress { background: linear-gradient(90deg, #ca8a04, #facc15, #eab308); box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
+        .tab-active { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6 !important; color: white !important; border-bottom: 2px solid #3b82f6; }
         .spin-anim { animation: spin 1s linear; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
@@ -40,7 +42,9 @@
     </div>
 
     <div class="text-center mb-6">
-        <h1 class="header-font text-4xl font-black bg-gradient-to-r from-yellow-400 to-red-600 bg-clip-text text-transparent italic leading-tight">LEVEL UP</h1>
+        <h1 class="header-font text-4xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic leading-tight uppercase">
+            Level Up
+        </h1>
     </div>
 
     <div class="flex gap-2 mb-6 px-2">
@@ -52,69 +56,75 @@
     <div id="leaderboard-view">
         <div class="mb-8 px-2">
             <div class="flex justify-between items-end mb-2">
-                <span id="goal-label" class="text-[10px] font-black text-yellow-500 uppercase italic">Team Goal</span>
-                <span id="goal-percent" class="text-[10px] font-black text-white italic">0%</span>
+                <span id="goal-label" class="text-[10px] font-black text-yellow-500 uppercase italic tracking-widest">Weekly Team Goal</span>
+                <span id="goal-percent" class="text-[10px] font-black text-white uppercase italic">0%</span>
             </div>
-            <div class="w-full h-4 bg-white/5 rounded-full border border-white/10 p-[2px] overflow-hidden">
+            <div class="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/10 p-[2px]">
                 <div id="progress-bar" class="gold-progress h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
             </div>
-            <div class="mt-2 flex justify-between items-center px-1">
-                <span id="day-indicator" class="text-[9px] font-black text-blue-400 uppercase italic">Loading...</span>
-                <span id="target-display" class="text-[9px] font-bold text-slate-500 uppercase">Target: 800</span>
+            <div class="flex justify-between mt-1 px-1">
+                <span id="current-leads-sum" class="text-[9px] font-bold text-slate-400">0 Leads</span>
+                <span id="target-display" class="text-[9px] font-bold text-slate-400">Target: 800</span>
             </div>
         </div>
 
         <div class="grid grid-cols-3 gap-2 mb-8 px-2">
-            <div class="glass p-3 rounded-2xl border-b-2 border-b-yellow-500 text-center">
-                <div class="text-[8px] font-black text-yellow-500 uppercase mb-1">12+ Proof</div>
-                <div id="master-count" class="text-2xl font-black text-white">0</div>
+            <div class="glass p-3 rounded-2xl border-b-2 border-b-yellow-500">
+                <div class="text-[8px] font-black text-yellow-500 uppercase mb-1 leading-tight">12+ Proof</div>
+                <div id="master-count" class="text-2xl font-black text-white">00</div>
             </div>
             <div class="glass p-3 rounded-2xl border-b-2 border-b-green-500 text-center">
-                <div class="text-[8px] font-black text-green-500 uppercase mb-1">Active</div>
+                <div class="text-[8px] font-black text-green-500 uppercase mb-1 leading-tight">Active Reps</div>
                 <div id="active-reps" class="text-2xl font-black text-white">0</div>
             </div>
-            <div class="glass p-3 rounded-2xl border-b-2 border-b-blue-500 text-center">
-                <div class="text-[8px] font-black text-blue-500 uppercase mb-1">Total</div>
+            <div class="glass p-3 rounded-2xl border-b-2 border-b-blue-500 text-right">
+                <div class="text-[8px] font-black text-blue-500 uppercase mb-1 leading-tight">Floor Total</div>
                 <div id="floor-total" class="text-2xl font-black text-white">0</div>
             </div>
         </div>
+
+        <div class="flex justify-between items-end mb-4 px-2">
+            <h2 id="ranking-title" class="header-font text-[10px] font-black tracking-widest text-slate-500 uppercase italic">Current Rankings</h2>
+            <div id="day-indicator" class="text-[8px] text-blue-500 font-bold uppercase italic">Detecting Day...</div>
+        </div>
+
         <div id="leaderboard" class="space-y-3 px-2"></div>
     </div>
 
-    <div id="playbook-view" class="hidden space-y-4 px-2 pb-10">
+    <div id="playbook-view" class="hidden space-y-4 px-2">
         <div class="glass p-5 rounded-2xl border-l-4 border-l-green-500 bg-green-500/5">
             <h3 class="header-font text-[10px] font-black text-green-500 uppercase mb-3 italic">Quality Guidelines</h3>
-            <ul class="text-[13px] leading-relaxed text-slate-200 space-y-2">
-                <li>• Must be in business for over 1 Year [cite: 2, 11]</li>
-                <li>• Primary Owner 100% or at least 50% [cite: 3, 12]</li>
-                <li>• NO Trucking or Van Companies [cite: 4, 13]</li>
-                <li>• NO Attorneys or Lawyers [cite: 5, 14]</li>
-                <li>• Over $1 Million: Line for transfer [cite: 6, 15]</li>
-                <li>• Under $1 Million (min. $200k): Line for transfer [cite: 7, 16]</li>
-                <li class="text-red-400 font-bold italic mt-2 underline">If qualifiers are not met, DO NOT transfer! [cite: 8, 17]</li>
-            </ul>
+            <div class="text-[13px] leading-relaxed text-slate-200 space-y-2">
+                <p>1. Need to be in business for over 1 Year</p>
+                <p>2. Primary Owner of the business 100% or at least 50%</p>
+                <p>3. No Trucking Companies, No Van</p>
+                <p>4. No attorneys, No Lawyers</p>
+                <p>• Over 1 million - Line for transfer</p>
+                <p>• Under 1 million (200k minimum) - Line for transfer</p>
+                <p class="text-red-400 font-bold italic mt-2 underline">If these qualifiers are not met you cannot transfer the call!!!</p>
+            </div>
         </div>
         <div class="glass p-5 rounded-2xl border-l-4 border-l-red-500 bg-red-500/5">
             <h3 class="header-font text-[10px] font-black text-red-500 uppercase mb-3 italic">Rebuttals</h3>
             <div class="text-[13px] leading-relaxed text-slate-300 space-y-4">
                 <div>
                     <p class="text-white font-bold italic">"Which company do you represent?"</p>
-                    <p class="text-slate-400">"We're the Business Loan Division. We help connect business owners to the right lending programs through our partner network." [cite: 19, 20, 21, 22]</p>
+                    <p class="text-slate-400 italic">"We're the Business Loan Division. We help connect business owners to the right lending programs through our partner network."</p>
                 </div>
                 <div>
                     <p class="text-white font-bold italic">"Is this a scam?"</p>
-                    <p class="text-slate-400">"This is a legitimate outreach from the Business Loan Division in California. We work only with licensed financial institutions. My part is to confirm basic details." [cite: 25, 26]</p>
+                    <p class="text-slate-400 italic">"I completely understand the concern. This is a legitimate outreach from the Business Loan Division in California. We work only with licensed financial institutions. My part is just to confirm some basic details."</p>
                 </div>
                 <div>
                     <p class="text-white font-bold italic">"How does it work?"</p>
-                    <p class="text-slate-400">"It's a quick pre-qualification with no application or credit pull." [cite: 30]</p>
+                    <p class="text-slate-400 italic">"It's a quick pre-qualification, no application or credit pull."</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbx0IQYeMgjI7XFhCqpMZe50Er31LjQ9-9pbD784OYtfgt5xuUCf7I619ImaJbJckTvh5g/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbym2pxlhLnNDnELD5xAm8d-xiGP8_qy6UQVrBPkHbkF-G1b2EEbbBkc5SvMIMY1NSqXnw/exec';
         let agents = [];
         let currentTab = 'weekly';
 
@@ -123,11 +133,10 @@
             btn.classList.add('spin-anim');
             try {
                 const res = await fetch(API_URL);
-                const data = await res.json();
-                agents = data.agents || [];
+                agents = await res.json();
                 render();
-                document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            } catch (e) { document.getElementById('timestamp').innerText = "Sync Error"; }
+                document.getElementById('timestamp').innerText = `Updated: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            } catch (e) { document.getElementById('timestamp').innerText = "Offline"; }
             finally { setTimeout(() => btn.classList.remove('spin-anim'), 1000); }
         }
 
@@ -139,7 +148,7 @@
             render();
         }
 
-        function getTier(l) {
+        function getLevel(l) {
             if (l >= 17) return { title: "CONQUEROR", class: "conqueror-tier", color: "text-red-500" };
             if (l >= 12) return { title: "MASTER", class: "gold-tier", color: "text-yellow-500" };
             if (l >= 7) return { title: "ELITE", class: "orange-tier", color: "text-orange-500" };
@@ -148,55 +157,64 @@
         }
 
         function render() {
-            const board = document.getElementById('leaderboard');
             const lView = document.getElementById('leaderboard-view');
             const pView = document.getElementById('playbook-view');
-            
+            const board = document.getElementById('leaderboard');
+
             if (currentTab === 'playbook') {
                 lView.classList.add('hidden');
                 pView.classList.remove('hidden');
                 return;
-            } 
-            
+            }
+
             lView.classList.remove('hidden');
             pView.classList.add('hidden');
 
             const isWeekly = currentTab === 'weekly';
-            const today = agents.length > 0 ? agents[0].todayName : "Daily";
-            document.getElementById('day-indicator').innerText = isWeekly ? "Weekly Sprint Status" : `${today} Performance Report`;
-            document.getElementById('target-display').innerText = isWeekly ? "Target: 800" : "Target: 150";
+            const target = isWeekly ? 800 : 150;
+            const today = agents.length > 0 ? agents[0].todayName : "Today";
+
+            document.getElementById('goal-label').innerText = isWeekly ? "Weekly Team Goal" : `${today} Daily Goal`;
+            document.getElementById('target-display').innerText = `Target: ${target}`;
+            document.getElementById('day-indicator').innerText = isWeekly ? "Weekly Sprint" : `${today} Report`;
 
             const displayData = agents.map(a => ({
                 name: a.name,
                 leads: isWeekly ? a.weeklyLeads : a.dailyLeads
             })).sort((a, b) => b.leads - a.leads);
 
-            let total = 0; let masters = 0; let active = 0;
+            let totalLeads = 0; let masters = 0; let activeReps = 0;
+
             board.innerHTML = displayData.map((agent, index) => {
-                total += agent.leads;
-                const tier = getTier(agent.leads);
+                const lvl = getLevel(agent.leads);
+                totalLeads += agent.leads;
                 if(agent.leads >= 12) masters++;
-                if(agent.leads > 0) active++;
+                if(agent.leads > 0) activeReps++;
+
                 return `
-                    <div class="glass p-4 rounded-xl flex justify-between items-center ${tier.class}">
+                    <div class="glass p-4 rounded-xl flex justify-between items-center ${lvl.class}">
                         <div class="flex items-center gap-4">
-                            <span class="text-lg font-black italic text-slate-700">${(index+1).toString().padStart(2, '0')}</span>
+                            <span class="text-lg font-black italic ${index < 5 ? 'text-white' : 'text-slate-700'}">${(index+1).toString().padStart(2, '0')}</span>
                             <div>
-                                <div class="font-bold text-sm uppercase text-white">${agent.name}</div>
-                                <div class="text-[7px] font-black uppercase tracking-widest ${tier.color} mt-1">${tier.title}</div>
+                                <div class="font-bold text-sm text-white uppercase">${agent.name}</div>
+                                <div class="text-[8px] font-black uppercase tracking-widest ${lvl.color}">${lvl.title} LEVEL</div>
                             </div>
                         </div>
-                        <div class="text-2xl font-black text-white">${agent.leads}</div>
+                        <div class="text-right">
+                            <div class="text-2xl font-black text-white leading-none">${agent.leads}</div>
+                            <div class="text-[7px] text-slate-500 uppercase font-bold mt-1">Transfers</div>
+                        </div>
                     </div>`;
             }).join('');
 
-            document.getElementById('floor-total').innerText = total;
-            document.getElementById('master-count').innerText = masters;
-            document.getElementById('active-reps').innerText = active;
-            const target = isWeekly ? 800 : 150;
-            const pct = Math.min((total / target) * 100, 100);
-            document.getElementById('progress-bar').style.width = pct + '%';
-            document.getElementById('goal-percent').innerText = Math.floor(pct) + '%';
+            document.getElementById('floor-total').innerText = totalLeads;
+            document.getElementById('master-count').innerText = masters.toString().padStart(2, '0');
+            document.getElementById('active-reps').innerText = activeReps;
+            document.getElementById('current-leads-sum').innerText = `${totalLeads} Leads`;
+
+            const percentage = Math.min((totalLeads / target) * 100, 100);
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            document.getElementById('goal-percent').innerText = Math.floor(percentage) + '%';
         }
 
         updateDashboard();
