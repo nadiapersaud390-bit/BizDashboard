@@ -8,20 +8,55 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700;900&display=swap');
-        body { background-color: #020617; font-family: 'Inter', sans-serif; color: white; overflow-x: hidden; }
+        
+        body { 
+            background-color: #020617; 
+            font-family: 'Inter', sans-serif; 
+            color: white; 
+            overflow-x: hidden; 
+        }
+        
         .header-font { font-family: 'Orbitron', sans-serif; }
         
-        .conqueror-tier { background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0) 100%); border-left: 4px solid #ef4444; }
-        .gold-tier { background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0) 100%); border-left: 4px solid #eab308; }
-        .orange-tier { background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 100%); border-left: 4px solid #f97316; }
-        .blue-tier { border-left: 4px solid #3b82f6; }
-        .slate-tier { border-left: 4px solid #475569; opacity: 0.8; }
+        .glass { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px); 
+        }
+        
+        .conqueror-tier { 
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0) 100%); 
+            border-left: 4px solid #ef4444; 
+        }
+        
+        .tab-active { 
+            background: rgba(59, 130, 246, 0.2); 
+            border-color: #3b82f6 !important; 
+            color: white !important; 
+            border-bottom: 2px solid #3b82f6; 
+        }
+        
+        .gold-progress { 
+            background: linear-gradient(90deg, #ca8a04, #facc15, #eab308); 
+            box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); 
+        }
+        
+        .live-pulse { 
+            width: 8px; 
+            height: 8px; 
+            background: #ef4444; 
+            border-radius: 50%; 
+            display: inline-block; 
+            margin-right: 8px; 
+            animation: pulse 1.5s infinite; 
+        }
+        
+        @keyframes pulse { 
+            0% { transform: scale(1); opacity: 1; } 
+            50% { transform: scale(1.5); opacity: 0.5; } 
+            100% { transform: scale(1); opacity: 1; } 
+        }
 
-        .live-pulse { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; display: inline-block; margin-right: 8px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
-        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        .gold-progress { background: linear-gradient(90deg, #ca8a04, #facc15, #eab308); box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
-        .tab-active { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6 !important; color: white !important; border-bottom: 2px solid #3b82f6; }
         .spin-anim { animation: spin 1s linear; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
@@ -33,7 +68,7 @@
             <span class="live-pulse"></span>
             <div class="flex flex-col">
                 <span class="text-[10px] font-black tracking-widest text-red-500 uppercase italic leading-none">Live Performance</span>
-                <span id="timestamp" class="text-[8px] text-slate-500 font-bold uppercase mt-1">Establishing Sync...</span>
+                <span id="timestamp" class="text-[8px] text-slate-500 font-bold uppercase mt-1">Connecting...</span>
             </div>
         </div>
         <button onclick="updateDashboard()" id="refresh-btn" class="glass p-2 px-3 rounded-lg hover:bg-white/10 transition-all active:scale-95">
@@ -43,17 +78,17 @@
 
     <div class="text-center mb-6">
         <h1 class="header-font text-4xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic leading-tight">
-            LEVEL UP DASHBOARD
+            LEVEL UP
         </h1>
     </div>
 
     <div class="flex gap-2 mb-6 px-2">
-        <button onclick="switchTab('weekly')" id="tab-weekly" class="flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all tab-active">Weekly Sprint</button>
+        <button onclick="switchTab('weekly')" id="tab-weekly" class="flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all tab-active">Weekly</button>
         <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-slate-500">Daily</button>
         <button onclick="switchTab('playbook')" id="tab-playbook" class="flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
     </div>
 
-    <div id="main-content">
+    <div id="stats-view">
         <div class="mb-8 px-2">
             <div class="flex justify-between items-end mb-2">
                 <span id="goal-label" class="text-[10px] font-black text-yellow-500 uppercase italic tracking-widest">Weekly Team Goal</span>
@@ -62,50 +97,42 @@
             <div class="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/10 p-[2px]">
                 <div id="progress-bar" class="gold-progress h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
             </div>
-            <div class="flex justify-between mt-1 px-1">
-                <span id="current-leads-sum" class="text-[9px] font-bold text-slate-400">0 Leads</span>
-                <span id="target-display" class="text-[9px] font-bold text-slate-400">Target: 800</span>
-            </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2 mb-8">
+        <div class="grid grid-cols-3 gap-2 mb-8 px-2">
             <div class="glass p-3 rounded-2xl border-b-2 border-b-yellow-500">
                 <div class="text-[8px] font-black text-yellow-500 uppercase mb-1 leading-tight">12+ Proof</div>
-                <div id="master-count" class="text-2xl font-black text-white">00</div>
+                <div id="master-count" class="text-2xl font-black text-white text-center">0</div>
             </div>
             <div class="glass p-3 rounded-2xl border-b-2 border-b-green-500 text-center">
-                <div class="text-[8px] font-black text-green-500 uppercase mb-1 leading-tight">Active Reps</div>
-                <div id="active-reps" class="text-2xl font-black text-white">0</div>
+                <div class="text-[8px] font-black text-green-500 uppercase mb-1 leading-tight">Active</div>
+                <div id="active-reps" class="text-2xl font-black text-white text-center">0</div>
             </div>
             <div class="glass p-3 rounded-2xl border-b-2 border-b-blue-500 text-right">
                 <div class="text-[8px] font-black text-blue-500 uppercase mb-1 leading-tight">Floor Total</div>
-                <div id="floor-total" class="text-2xl font-black text-white">0</div>
+                <div id="floor-total" class="text-2xl font-black text-white text-center">0</div>
             </div>
         </div>
 
-        <div class="flex justify-between items-end mb-4 px-2">
-            <h2 id="ranking-title" class="header-font text-[10px] font-black tracking-widest text-slate-500 uppercase italic">Current Rankings</h2>
-            <div id="day-indicator" class="text-[8px] text-blue-500 font-bold uppercase italic">Detecting Day...</div>
-        </div>
-
-        <div id="leaderboard" class="space-y-3"></div>
+        <div id="leaderboard" class="space-y-3 px-2"></div>
     </div>
 
     <div id="playbook-view" class="hidden space-y-4 px-2">
         <div class="glass p-5 rounded-2xl border-l-4 border-l-green-500 bg-green-500/5">
-            <h3 class="header-font text-[10px] font-black text-green-500 uppercase tracking-widest mb-3 italic">How to Qualify</h3>
-            <div id="qualify-text" class="text-sm leading-relaxed text-slate-200 whitespace-pre-wrap font-medium">Loading...</div>
+            <h3 class="header-font text-[10px] font-black text-green-500 uppercase mb-3 italic">How to Qualify</h3>
+            <div id="qualify-text" class="text-sm leading-relaxed text-slate-200 whitespace-pre-wrap font-medium">Loading Playbook...</div>
         </div>
         <div class="glass p-5 rounded-2xl border-l-4 border-l-red-500 bg-red-500/5">
-            <h3 class="header-font text-[10px] font-black text-red-500 uppercase tracking-widest mb-3 italic">Rebuttals</h3>
-            <div id="rebuttals-text" class="text-sm leading-relaxed text-slate-200 whitespace-pre-wrap font-medium">Loading...</div>
+            <h3 class="header-font text-[10px] font-black text-red-500 uppercase mb-3 italic">Rebuttals</h3>
+            <div id="rebuttals-text" class="text-sm leading-relaxed text-slate-200 whitespace-pre-wrap font-medium">Loading Rebuttals...</div>
         </div>
     </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyPpCMyPMYla8z4pxOfg4SGQBsa3rSxJGikw7DNJXfURUqKn2H_xUf7l_FjhfwMgdb0FA/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwqRwnWMCvIu4pqmLHj2m--OMYRu80MMfcJMh62EUed9ogOhMvb9AQZ-AUvpiTXoQYu2A/exec';
+        
         let agents = [];
-        let playbook = { qualify: "", rebuttals: "" };
+        let playbookData = { qualify: "", rebuttals: "" };
         let currentTab = 'weekly';
 
         async function updateDashboard() {
@@ -114,97 +141,93 @@
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
+                
+                // Your script returns { agents: [...], playbook: {...} }
                 agents = data.agents || [];
-                playbook = data.playbook || { qualify: "Check Doc", rebuttals: "Check Doc" };
+                playbookData = data.playbook || { qualify: "Check Doc", rebuttals: "Check Doc" };
+                
                 render();
-                document.getElementById('timestamp').innerText = `Updated: ${new Date().toLocaleTimeString()}`;
-            } catch (e) { document.getElementById('timestamp').innerText = "Offline"; }
-            finally { setTimeout(() => btn.classList.remove('spin-anim'), 1000); }
+                document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            } catch (e) { 
+                document.getElementById('timestamp').innerText = "Sync Error"; 
+                console.error(e);
+            } finally { 
+                setTimeout(() => btn.classList.remove('spin-anim'), 1000); 
+            }
         }
 
         function switchTab(tab) {
             currentTab = tab;
-            document.getElementById('tab-weekly').className = `flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest ${tab === 'weekly' ? 'tab-active' : 'text-slate-500'}`;
-            document.getElementById('tab-daily').className = `flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest ${tab === 'daily' ? 'tab-active' : 'text-slate-500'}`;
-            document.getElementById('tab-playbook').className = `flex-1 glass py-3 rounded-xl text-[10px] font-black uppercase tracking-widest ${tab === 'playbook' ? 'tab-active' : 'text-slate-500'}`;
+            ['weekly', 'daily', 'playbook'].forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                if (tab === t) {
+                    el.classList.add('tab-active');
+                    el.classList.remove('text-slate-500');
+                } else {
+                    el.classList.remove('tab-active');
+                    el.classList.add('text-slate-500');
+                }
+            });
             render();
         }
 
-        function getLevel(l) {
-            if (l >= 17) return { title: "CONQUEROR", class: "conqueror-tier", icon: "fa-crown", color: "text-red-500" };
-            if (l >= 12) return { title: "MASTER", class: "gold-tier", icon: "fa-star", color: "text-yellow-500" };
-            if (l >= 7) return { title: "ELITE", class: "orange-tier", icon: "fa-fire", color: "text-orange-500" };
-            if (l >= 4) return { title: "PRO", class: "blue-tier", icon: "fa-bolt", color: "text-blue-500" };
-            return { title: "ROOKIE", class: "slate-tier", icon: "fa-shield", color: "text-slate-500" };
-        }
-
         function render() {
-            const board = document.getElementById('leaderboard');
-            const mainContent = document.getElementById('main-content');
+            const statsView = document.getElementById('stats-view');
             const playbookView = document.getElementById('playbook-view');
-
-            // Fill Playbook text
-            document.getElementById('qualify-text').innerText = playbook.qualify;
-            document.getElementById('rebuttals-text').innerText = playbook.rebuttals;
+            const board = document.getElementById('leaderboard');
+            
+            // Fill Playbook Data
+            document.getElementById('qualify-text').innerText = playbookData.qualify;
+            document.getElementById('rebuttals-text').innerText = playbookData.rebuttals;
 
             if (currentTab === 'playbook') {
-                mainContent.classList.add('hidden');
+                statsView.classList.add('hidden');
                 playbookView.classList.remove('hidden');
                 return;
-            } else {
-                mainContent.classList.remove('hidden');
-                playbookView.classList.add('hidden');
             }
 
+            statsView.classList.remove('hidden');
+            playbookView.classList.add('hidden');
+
             const isWeekly = currentTab === 'weekly';
-            const target = isWeekly ? 800 : 150;
-            const today = agents.length > 0 ? (agents[0].todayName || "Today") : "Today";
-
-            document.getElementById('goal-label').innerText = isWeekly ? "Weekly Team Goal" : `${today} Daily Goal`;
-            document.getElementById('target-display').innerText = `Target: ${target}`;
-            document.getElementById('day-indicator').innerText = isWeekly ? "Weekly Sprint" : `${today} Report`;
-
-            const displayData = agents.map(a => ({
+            const sortedData = agents.map(a => ({
                 name: a.name,
                 leads: isWeekly ? a.weeklyLeads : a.dailyLeads
             })).sort((a, b) => b.leads - a.leads);
 
             let totalLeads = 0;
             let masters = 0;
-            let activeReps = 0;
+            let activeCount = 0;
 
-            board.innerHTML = displayData.map((agent, index) => {
-                const lvl = getLevel(agent.leads);
+            board.innerHTML = sortedData.map((agent, index) => {
                 totalLeads += agent.leads;
                 if(agent.leads >= 12) masters++;
-                if(agent.leads > 0) activeReps++;
+                if(agent.leads > 0) activeCount++;
 
                 return `
-                    <div class="glass p-4 rounded-xl flex justify-between items-center ${lvl.class}">
+                    <div class="glass p-4 rounded-xl flex justify-between items-center conqueror-tier">
                         <div class="flex items-center gap-4">
-                            <span class="text-lg font-black italic ${index < 5 ? 'text-white' : 'text-slate-700'}">${(index+1).toString().padStart(2, '0')}</span>
-                            <div>
-                                <div class="font-bold text-sm text-white uppercase">${agent.name}</div>
-                                <div class="text-[8px] font-black uppercase tracking-widest ${lvl.color}">${lvl.title} LEVEL</div>
-                            </div>
+                            <span class="text-lg font-black italic text-slate-700">${(index+1).toString().padStart(2, '0')}</span>
+                            <div class="font-bold text-sm text-white uppercase">${agent.name}</div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-2xl font-black text-white leading-none">${agent.leads}</div>
-                            <div class="text-[7px] text-slate-500 uppercase font-bold mt-1">Transfers</div>
-                        </div>
+                        <div class="text-2xl font-black text-white">${agent.leads}</div>
                     </div>`;
             }).join('');
 
+            // Update KPI counters
             document.getElementById('floor-total').innerText = totalLeads;
-            document.getElementById('master-count').innerText = masters.toString().padStart(2, '0');
-            document.getElementById('active-reps').innerText = activeReps;
+            document.getElementById('master-count').innerText = masters;
+            document.getElementById('active-reps').innerText = activeCount;
 
+            // Progress Bar Logic
+            const target = isWeekly ? 800 : 150;
             const percentage = Math.min((totalLeads / target) * 100, 100);
             document.getElementById('progress-bar').style.width = percentage + '%';
             document.getElementById('goal-percent').innerText = Math.floor(percentage) + '%';
-            document.getElementById('current-leads-sum').innerText = `${totalLeads} Leads`;
+            document.getElementById('goal-label').innerText = isWeekly ? "Weekly Team Goal" : "Daily Team Goal";
         }
 
+        // Auto-refresh every 30 seconds
         setInterval(updateDashboard, 30000);
         updateDashboard();
     </script>
