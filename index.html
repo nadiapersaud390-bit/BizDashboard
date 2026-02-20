@@ -33,7 +33,7 @@
             <span class="live-pulse"></span>
             <div class="flex flex-col">
                 <span class="text-[10px] font-black tracking-widest text-red-500 uppercase italic leading-none">Live Performance</span>
-                <span id="timestamp" class="text-[8px] text-slate-500 font-bold uppercase mt-1">Establishing Sync...</span>
+                <span id="timestamp" class="text-[8px] text-slate-500 font-bold uppercase mt-1">Syncing...</span>
             </div>
         </div>
         <button onclick="updateDashboard()" id="refresh-btn" class="glass p-2 px-3 rounded-lg hover:bg-white/10 transition-all active:scale-95">
@@ -91,7 +91,7 @@
         <div id="leaderboard" class="space-y-3 px-2"></div>
     </div>
 
-    <div id="playbook-view" class="hidden space-y-4 px-2">
+    <div id="playbook-view" class="hidden space-y-4 px-2 pb-10">
         <div class="glass p-5 rounded-2xl border-l-4 border-l-green-500 bg-green-500/5">
             <h3 class="header-font text-[10px] font-black text-green-500 uppercase mb-3 italic">Quality Guidelines</h3>
             <div class="text-[13px] leading-relaxed text-slate-200 space-y-2">
@@ -101,9 +101,10 @@
                 <p>4. No attorneys, No Lawyers</p>
                 <p>• Over 1 million - Line for transfer</p>
                 <p>• Under 1 million (200k minimum) - Line for transfer</p>
-                <p class="text-red-400 font-bold italic mt-2 underline">If these qualifiers are not met you cannot transfer the call!!!</p>
+                <p class="text-red-400 font-bold italic mt-2 underline italic">If qualifiers are not met you cannot transfer!!!</p>
             </div>
         </div>
+
         <div class="glass p-5 rounded-2xl border-l-4 border-l-red-500 bg-red-500/5">
             <h3 class="header-font text-[10px] font-black text-red-500 uppercase mb-3 italic">Rebuttals</h3>
             <div class="text-[13px] leading-relaxed text-slate-300 space-y-4">
@@ -113,12 +114,33 @@
                 </div>
                 <div>
                     <p class="text-white font-bold italic">"Is this a scam?"</p>
-                    <p class="text-slate-400 italic">"I completely understand the concern. This is a legitimate outreach from the Business Loan Division in California. We work only with licensed financial institutions. My part is just to confirm some basic details."</p>
+                    <p class="text-slate-400 italic">"I understand the concern. This is a legitimate outreach from the Business Loan Division in California. We work only with licensed financial institutions. My part is to confirm basic details."</p>
                 </div>
                 <div>
-                    <p class="text-white font-bold italic">"How does it work?"</p>
-                    <p class="text-slate-400 italic">"It's a quick pre-qualification, no application or credit pull."</p>
+                    <p class="text-white font-bold italic">"Can you email me something first?"</p>
+                    <p class="text-slate-400 italic">"Once I connect you with the senior advisor, they can send you all the information directly. I just need to confirm your business details first."</p>
                 </div>
+                <div>
+                    <p class="text-white font-bold italic">"Why are you calling me and not emailing first?"</p>
+                    <p class="text-slate-400 italic">"Phone is the quickest way to confirm eligibility and make sure the right person gets connected. It only takes a minute."</p>
+                </div>
+                <div>
+                    <p class="text-white font-bold italic">"Are You a Bank?"</p>
+                    <p class="text-slate-400 italic">"No, we’re a direct private lender. We work with business-funding programs that provide working capital and lines of credit directly."</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-5 rounded-2xl border-l-4 border-l-blue-500 bg-blue-500/5">
+            <h3 class="header-font text-[10px] font-black text-blue-500 uppercase mb-3 italic">Micro-Trust Tips</h3>
+            <div class="text-[13px] leading-relaxed text-slate-200">
+                <p class="mb-2 italic">After every 2 questions, give a short acknowledgment phrase like:</p>
+                <div class="space-y-1 text-blue-300 font-bold italic">
+                    <p>“Perfect, thank you.”</p>
+                    <p>“Got it, that helps.”</p>
+                    <p>“That’s great to know.”</p>
+                </div>
+                <p class="mt-3 text-[11px] text-slate-500 uppercase font-black tracking-widest leading-tight">Keep the rhythm human and build micro-trust.</p>
             </div>
         </div>
     </div>
