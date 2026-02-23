@@ -34,6 +34,72 @@
         .spin-anim { animation: spin 1s linear; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
+        /* Password Modal */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-box {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
+            padding: 40px 32px;
+            width: 90%; max-width: 380px;
+            text-align: center;
+        }
+        .pw-input {
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            padding: 14px 18px;
+            outline: none;
+            text-align: center;
+            letter-spacing: 0.2em;
+            font-family: 'Orbitron', sans-serif;
+            margin: 20px 0 8px;
+            transition: border-color 0.2s;
+        }
+        .pw-input:focus { border-color: #eab308; }
+        .pw-input.error { border-color: #ef4444; animation: shake 0.4s; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+        .pw-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #ca8a04, #facc15, #eab308);
+            color: #020617;
+            border: none;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .pw-btn:hover { opacity: 0.9; }
+        .pw-btn:active { transform: scale(0.97); }
+        .pw-cancel {
+            margin-top: 12px;
+            background: none;
+            border: none;
+            color: #475569;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+        }
+        .pw-cancel:hover { color: #94a3b8; }
+        .error-msg { color: #ef4444; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; min-height: 18px; }
+
         /* Responsive scaling for PC */
         @media (min-width: 1024px) {
             .main-container { max-width: 1200px !important; }
@@ -44,6 +110,20 @@
     </style>
 </head>
 <body class="p-4 pb-20">
+
+    <!-- Password Modal -->
+    <div id="pw-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="header-font text-xs text-yellow-500 tracking-widest uppercase mb-2 italic">Access Required</div>
+            <div class="header-font text-2xl font-black text-white uppercase italic tracking-tight">Weekly Rankings</div>
+            <p class="text-slate-400 text-sm mt-3">Enter your access code to view the weekly leaderboard.</p>
+            <input id="pw-input" type="password" class="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkPassword()" autocomplete="off" />
+            <div id="pw-error" class="error-msg"></div>
+            <button class="pw-btn" onclick="checkPassword()"><i class="fas fa-unlock mr-2"></i>Unlock</button>
+            <br>
+            <button class="pw-cancel" onclick="cancelPassword()">Cancel</button>
+        </div>
+    </div>
 
     <div class="main-container max-w-lg mx-auto transition-all duration-500">
         
@@ -66,16 +146,19 @@
             </h1>
         </div>
 
+        <!-- Tab order: Daily | Playbook | Weekly -->
         <div class="flex gap-3 mb-8 px-2 max-w-2xl mx-auto">
-            <button onclick="switchTab('weekly')" id="tab-weekly" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all tab-active">Weekly</button>
-            <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Daily</button>
+            <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all tab-active">Daily</button>
             <button onclick="switchTab('playbook')" id="tab-playbook" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
+            <button onclick="requestWeekly()" id="tab-weekly" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">
+                <i class="fas fa-lock text-[10px] mr-1 opacity-60"></i>Weekly
+            </button>
         </div>
 
         <div id="leaderboard-view">
             <div class="mb-10 px-2 max-w-3xl mx-auto">
                 <div class="flex justify-between items-end mb-3">
-                    <span id="goal-label" class="text-xs md:text-sm font-black text-yellow-500 uppercase italic tracking-widest">Weekly Team Goal</span>
+                    <span id="goal-label" class="text-xs md:text-sm font-black text-yellow-500 uppercase italic tracking-widest">Daily Team Goal</span>
                     <span id="goal-percent" class="text-xs md:text-sm font-black text-white uppercase italic">0%</span>
                 </div>
                 <div class="w-full h-6 bg-white/5 rounded-full overflow-hidden border border-white/10 p-[3px]">
@@ -83,7 +166,7 @@
                 </div>
                 <div class="flex justify-between mt-2 px-1">
                     <span id="current-leads-sum" class="text-xs font-bold text-slate-400">0 Leads</span>
-                    <span id="target-display" class="text-xs font-bold text-slate-400">Target: 800</span>
+                    <span id="target-display" class="text-xs font-bold text-slate-400">Target: 150</span>
                 </div>
             </div>
 
@@ -147,7 +230,7 @@
                     </div>
                     <div>
                         <p class="text-white font-black italic text-lg">"Are You a Bank?"</p>
-                        <p class="text-slate-400 italic">"No, we’re a direct private lender. We work with business-funding programs that provide working capital and lines of credit directly."</p>
+                        <p class="text-slate-400 italic">"No, we're a direct private lender. We work with business-funding programs that provide working capital and lines of credit directly."</p>
                     </div>
                 </div>
             </div>
@@ -157,9 +240,9 @@
                 <div class="text-sm md:text-lg leading-relaxed text-slate-200">
                     <p class="mb-4 italic">After every 2 questions, give a short acknowledgment phrase like:</p>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-blue-300 font-black italic text-center">
-                        <p class="glass p-3 rounded-xl">“Perfect, thank you.”</p>
-                        <p class="glass p-3 rounded-xl">“Got it, that helps.”</p>
-                        <p class="glass p-3 rounded-xl">“That’s great to know.”</p>
+                        <p class="glass p-3 rounded-xl">"Perfect, thank you."</p>
+                        <p class="glass p-3 rounded-xl">"Got it, that helps."</p>
+                        <p class="glass p-3 rounded-xl">"That's great to know."</p>
                     </div>
                     <p class="mt-6 text-xs md:text-sm text-slate-500 uppercase font-black tracking-widest text-center">Keep the rhythm human and build micro-trust.</p>
                 </div>
@@ -169,8 +252,14 @@
 
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbym2pxlhLnNDnELD5xAm8d-xiGP8_qy6UQVrBPkHbkF-G1b2EEbbBkc5SvMIMY1NSqXnw/exec';
+        
+        // ===== SET YOUR PASSWORD HERE =====
+        const WEEKLY_PASSWORD = 'bizlevelup2025';
+        // ==================================
+
         let agents = [];
-        let currentTab = 'weekly';
+        let currentTab = 'daily';
+        let weeklyUnlocked = false;
 
         async function updateDashboard() {
             const btn = document.getElementById('refresh-btn');
@@ -184,12 +273,60 @@
             finally { setTimeout(() => btn.classList.remove('spin-anim'), 1000); }
         }
 
+        function requestWeekly() {
+            if (weeklyUnlocked) {
+                currentTab = 'weekly';
+                updateTabUI();
+                render();
+            } else {
+                document.getElementById('pw-modal').classList.remove('hidden');
+                document.getElementById('pw-input').value = '';
+                document.getElementById('pw-error').innerText = '';
+                document.getElementById('pw-input').classList.remove('error');
+                setTimeout(() => document.getElementById('pw-input').focus(), 100);
+            }
+        }
+
+        function checkPassword() {
+            const val = document.getElementById('pw-input').value;
+            if (val === WEEKLY_PASSWORD) {
+                weeklyUnlocked = true;
+                document.getElementById('pw-modal').classList.add('hidden');
+                // Update weekly tab icon (remove lock)
+                document.getElementById('tab-weekly').innerHTML = 'Weekly';
+                currentTab = 'weekly';
+                updateTabUI();
+                render();
+            } else {
+                const input = document.getElementById('pw-input');
+                input.classList.add('error');
+                document.getElementById('pw-error').innerText = 'Incorrect access code. Try again.';
+                input.value = '';
+                setTimeout(() => input.classList.remove('error'), 500);
+                setTimeout(() => input.focus(), 100);
+            }
+        }
+
+        function cancelPassword() {
+            document.getElementById('pw-modal').classList.add('hidden');
+        }
+
         function switchTab(tab) {
+            if (tab === 'weekly') { requestWeekly(); return; }
             currentTab = tab;
-            ['weekly', 'daily', 'playbook'].forEach(t => {
-                document.getElementById(`tab-${t}`).className = `flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all ${tab === t ? 'tab-active' : 'text-slate-500'}`;
-            });
+            updateTabUI();
             render();
+        }
+
+        function updateTabUI() {
+            ['daily', 'playbook', 'weekly'].forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                if (t === currentTab) {
+                    el.className = `flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all tab-active`;
+                } else {
+                    el.className = `flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500`;
+                }
+            });
         }
 
         function getLevel(l) {
