@@ -14,18 +14,16 @@
         .conqueror-tier { background:linear-gradient(90deg,rgba(239,68,68,0.15) 0%,rgba(239,68,68,0) 100%); border-left:4px solid #ef4444; }
         .gold-tier      { background:linear-gradient(90deg,rgba(234,179,8,0.1)  0%,rgba(234,179,8,0)  100%); border-left:4px solid #eab308; }
         .orange-tier    { background:linear-gradient(90deg,rgba(249,115,22,0.1) 0%,rgba(249,115,22,0) 100%); border-left:4px solid #f97316; }
-        .blue-tier      { border-left:4px solid #3b82f6; }
-        .slate-tier     { border-left:4px solid #475569; opacity:0.8; }
+        .blue-tier  { border-left:4px solid #3b82f6; }
+        .slate-tier { border-left:4px solid #475569; opacity:0.8; }
         .live-pulse { width:10px;height:10px;background:#ef4444;border-radius:50%;display:inline-block;margin-right:10px;animation:pulse 1.5s infinite; }
         @keyframes pulse { 0%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:0.5} 100%{transform:scale(1);opacity:1} }
         .gold-progress { background:linear-gradient(90deg,#ca8a04,#facc15,#eab308);box-shadow:0 0 15px rgba(234,179,8,0.4); }
         .tab-active { background:rgba(59,130,246,0.2);border-color:#3b82f6!important;color:white!important;border-bottom:2px solid #3b82f6; }
         .spin-anim { animation:spin 1s linear; }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        /* PR/BB */
         .prbb-card { background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(10px);border-bottom:4px solid #8b5cf6; }
         .prbb-divider { width:1px;background:rgba(255,255,255,0.12);align-self:stretch;margin:4px 0; }
-        /* Day sub-tabs */
         #day-sub-tabs-container { display:flex;gap:6px;flex-wrap:wrap; }
         .day-sub-tab { background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:6px 14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#475569;cursor:pointer;transition:all 0.2s; }
         .day-sub-tab:hover { color:#94a3b8;background:rgba(255,255,255,0.06); }
@@ -34,36 +32,27 @@
         .day-sub-tab.is-history { color:#64748b;border-color:rgba(71,85,105,0.4); }
         .day-sub-tab.is-history.active { background:rgba(234,179,8,0.15);border-color:#eab308;color:#facc15; }
         .history-dot { display:inline-block;width:5px;height:5px;background:#22c55e;border-radius:50%;margin-left:4px;vertical-align:middle; }
-        .history-banner { background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.25);border-radius:12px;padding:8px 14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#eab308;text-align:center;margin-bottom:12px; }
-        /* Password Modal */
+        .history-banner { background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.25);border-radius:12px;padding:8px 14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#eab308;text-align:center; }
         .modal-overlay { position:fixed;inset:0;background:rgba(2,6,23,0.92);backdrop-filter:blur(12px);z-index:9999;display:flex;align-items:center;justify-content:center; }
         .modal-box { background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:40px 32px;width:90%;max-width:380px;text-align:center; }
         .pw-input { width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:12px;color:white;font-size:1.1rem;padding:14px 18px;outline:none;text-align:center;letter-spacing:0.2em;font-family:'Orbitron',sans-serif;margin:20px 0 8px;transition:border-color 0.2s; }
-        .pw-input:focus { border-color:#eab308; }
-        .pw-input.error { border-color:#ef4444;animation:shake 0.4s; }
-        @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
-        .pw-btn { width:100%;padding:14px;border-radius:12px;font-family:'Orbitron',sans-serif;font-weight:900;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;background:linear-gradient(90deg,#ca8a04,#facc15,#eab308);color:#020617;border:none;cursor:pointer;margin-top:8px;transition:opacity 0.2s,transform 0.1s; }
-        .pw-btn:hover { opacity:0.9; } .pw-btn:active { transform:scale(0.97); }
-        .pw-cancel { margin-top:12px;background:none;border:none;color:#475569;font-size:0.8rem;cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;font-weight:700; }
-        .pw-cancel:hover { color:#94a3b8; }
-        .error-msg { color:#ef4444;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;min-height:18px; }
-        @media (min-width:1024px) {
-            .main-container { max-width:1200px!important; }
-            .leaderboard-grid { display:grid;grid-template-columns:1fr 1fr;gap:20px; }
-            .stat-card { padding:30px!important; }
-            .stat-value { font-size:3rem!important; }
-        }
+        .pw-input:focus{border-color:#eab308;} .pw-input.error{border-color:#ef4444;animation:shake 0.4s;}
+        @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+        .pw-btn{width:100%;padding:14px;border-radius:12px;font-family:'Orbitron',sans-serif;font-weight:900;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;background:linear-gradient(90deg,#ca8a04,#facc15,#eab308);color:#020617;border:none;cursor:pointer;margin-top:8px;transition:opacity 0.2s,transform 0.1s;}
+        .pw-btn:hover{opacity:0.9;} .pw-btn:active{transform:scale(0.97);}
+        .pw-cancel{margin-top:12px;background:none;border:none;color:#475569;font-size:0.8rem;cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;}
+        .pw-cancel:hover{color:#94a3b8;} .error-msg{color:#ef4444;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;min-height:18px;}
+        @media(min-width:1024px){.main-container{max-width:1200px!important;}.leaderboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}.stat-card{padding:30px!important;}.stat-value{font-size:3rem!important;}}
     </style>
 </head>
 <body class="p-4 pb-20">
 
-<!-- Password Modal -->
 <div id="pw-modal" class="modal-overlay hidden">
     <div class="modal-box">
         <div class="header-font text-xs text-yellow-500 tracking-widest uppercase mb-2 italic">Access Required</div>
         <div class="header-font text-2xl font-black text-white uppercase italic tracking-tight">Weekly Rankings</div>
         <p class="text-slate-400 text-sm mt-3">Enter your access code to view the weekly leaderboard.</p>
-        <input id="pw-input" type="password" class="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkPassword()" autocomplete="off"/>
+        <input id="pw-input" type="password" class="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()" autocomplete="off"/>
         <div id="pw-error" class="error-msg"></div>
         <button class="pw-btn" onclick="checkPassword()"><i class="fas fa-unlock mr-2"></i>Unlock</button><br>
         <button class="pw-cancel" onclick="cancelPassword()">Cancel</button>
@@ -89,25 +78,24 @@
         <h1 class="header-font text-4xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic leading-tight uppercase">BIZ Level Up Dashboard</h1>
     </div>
 
-    <!-- Main Tabs -->
     <div class="flex gap-3 mb-4 px-2 max-w-2xl mx-auto">
-        <button onclick="switchTab('daily')"   id="tab-daily"   class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all tab-active">Daily</button>
+        <button onclick="switchTab('daily')"    id="tab-daily"    class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all tab-active">Daily</button>
         <button onclick="switchTab('playbook')" id="tab-playbook" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
-        <button onclick="requestWeekly()"      id="tab-weekly"  class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">
+        <button onclick="requestWeekly()"       id="tab-weekly"   class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">
             <i class="fas fa-lock text-[10px] mr-1 opacity-60"></i>Weekly
         </button>
     </div>
 
-    <!-- Day Sub-Tabs -->
+    <!-- Day history sub-tabs -->
     <div id="day-sub-tabs-wrapper" class="hidden px-2 mb-5 max-w-2xl mx-auto">
         <div id="day-sub-tabs-container"></div>
     </div>
 
-    <!-- Leaderboard View -->
     <div id="leaderboard-view">
         <div id="history-banner" class="hidden mx-2 mb-4">
             <div class="history-banner"><i class="fas fa-history mr-2"></i><span id="history-banner-text"></span></div>
         </div>
+
         <div class="mb-10 px-2 max-w-3xl mx-auto">
             <div class="flex justify-between items-end mb-3">
                 <span id="goal-label" class="text-xs md:text-sm font-black text-yellow-500 uppercase italic tracking-widest">Daily Team Goal</span>
@@ -122,7 +110,6 @@
             </div>
         </div>
 
-        <!-- 4 Stat Cards -->
         <div class="grid grid-cols-4 gap-2 mb-10 px-2">
             <div class="glass p-3 md:p-8 rounded-3xl border-b-4 border-b-yellow-500 text-center stat-card">
                 <div class="text-[9px] md:text-sm font-black text-yellow-500 uppercase mb-2 leading-tight">12+ Proof</div>
@@ -136,7 +123,6 @@
                 <div class="text-[9px] md:text-sm font-black text-blue-500 uppercase mb-2 leading-tight">Floor Total</div>
                 <div id="floor-total" class="text-2xl md:text-6xl font-black text-white stat-value">0</div>
             </div>
-            <!-- PR / BB -->
             <div class="prbb-card p-3 md:p-8 rounded-3xl text-center stat-card">
                 <div class="text-[9px] md:text-sm font-black text-purple-400 uppercase mb-2 leading-tight">PR / BB</div>
                 <div class="flex items-stretch justify-center gap-2">
@@ -160,7 +146,6 @@
         <div id="leaderboard" class="leaderboard-grid space-y-3 md:space-y-0 px-2"></div>
     </div>
 
-    <!-- Playbook View -->
     <div id="playbook-view" class="hidden space-y-6 px-2 pb-20">
         <div class="glass p-6 rounded-3xl border-l-8 border-l-green-500 bg-green-500/5">
             <h3 class="header-font text-sm md:text-xl font-black text-green-500 uppercase mb-4 italic">Quality Guidelines</h3>
@@ -192,8 +177,8 @@
             <div class="text-sm md:text-base leading-relaxed text-slate-200 space-y-4">
                 <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Yes to Everything</p><p class="text-slate-300">Answers <span class="text-white font-black">"yes"</span> to every question without hesitation.</p></div>
                 <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Generic / Fake Name</p><p class="text-slate-300">Gives an overly common name — <span class="text-white font-black">"John Smith," "Mike Johnson."</span></p></div>
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Asking for Money</p><p class="text-slate-300">Demands <span class="text-white font-black">"give me money"</span> before any qualification is done.</p></div>
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Laughing or Background Noise</p><p class="text-slate-300">You hear <span class="text-white font-black">laughing or whispering</span> coaching them.</p></div>
+                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Asking for Money</p><p class="text-slate-300">Demands <span class="text-white font-black">"give me money"</span> before any qualification.</p></div>
+                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Laughing or Background Noise</p><p class="text-slate-300">Hear <span class="text-white font-black">laughing or whispering</span> coaching them.</p></div>
                 <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Absurd or Inconsistent Answers</p><p class="text-slate-300">Business name is <span class="text-white font-black">"Money Inc"</span> or details change when asked again.</p></div>
                 <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Refuses to Stay on Script</p><p class="text-slate-300">Goes <span class="text-white font-black">off-topic</span> to waste your time.</p></div>
                 <p class="text-red-400 font-black italic mt-4 border-t border-red-900/50 pt-4 uppercase text-center text-xs">Trust your gut. If something feels off — end the call.</p>
@@ -215,16 +200,21 @@
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbym2pxlhLnNDnELD5xAm8d-xiGP8_qy6UQVrBPkHbkF-G1b2EEbbBkc5SvMIMY1NSqXnw/exec';
+// ── UPDATE THIS URL after you redeploy the Apps Script ──────
+const API_URL = 'https://script.google.com/macros/s/AKfycbxEz0oA-FRcZ9c0lp18bKbBLZZbGW3sGba0PBaoIynMz_qaF6mCfs4KzYuY6HdOmlzwZw/exec';
 const WEEKLY_PASSWORD = 'bizlevelup2025';
+
 const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-let agents    = [];
-let dayHistory = [];
-let currentTab     = 'daily';
-let currentDayView = 'today';
-let weeklyUnlocked = false;
+let agents = [], dayHistory = [];
+let currentTab = 'daily', currentDayView = 'today', weeklyUnlocked = false;
+
+// ── Team detection: GYB = Berbice, everything else = Providence
+function getTeam(name) {
+    if (!name) return 'PR';
+    return name.trim().startsWith('GYB') ? 'BB' : 'PR';
+}
 
 async function updateDashboard() {
     const btn = document.getElementById('refresh-btn');
@@ -232,28 +222,52 @@ async function updateDashboard() {
     try {
         const res  = await fetch(API_URL);
         agents = await res.json();
-        if (agents.length > 0 && agents[0].dayHistory) dayHistory = agents[0].dayHistory;
+
+        // Ensure every agent has a team field (fallback from name prefix)
+        agents.forEach(a => {
+            if (!a.team) a.team = getTeam(a.name);
+        });
+
+        // Pull out metadata attached to first agent
+        if (agents.length > 0) {
+            if (agents[0].dayHistory) dayHistory = agents[0].dayHistory;
+            // Also ensure history agents have team
+            dayHistory.forEach(d => {
+                d.agents.forEach(a => { if (!a.team) a.team = getTeam(a.name); });
+            });
+        }
+
+        // If prTotal/bbTotal not returned by script, calculate from agents
+        if (agents.length > 0 && !agents[0].prTotal && !agents[0].bbTotal) {
+            let pr = 0, bb = 0;
+            agents.forEach(a => {
+                if (a.team === 'PR') pr += (a.dailyLeads || 0);
+                else bb += (a.dailyLeads || 0);
+            });
+            agents[0].prTotal = pr;
+            agents[0].bbTotal = bb;
+        }
+
         render();
         renderDaySubTabs();
         document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
     } catch(e) {
         document.getElementById('timestamp').innerText = 'System Offline';
+        console.error(e);
     } finally {
         setTimeout(() => btn.classList.remove('spin-anim'), 1000);
     }
 }
 
 function renderDaySubTabs() {
-    const wrapper    = document.getElementById('day-sub-tabs-wrapper');
-    const container  = document.getElementById('day-sub-tabs-container');
+    const wrapper   = document.getElementById('day-sub-tabs-wrapper');
+    const container = document.getElementById('day-sub-tabs-container');
     if (currentTab !== 'daily') { wrapper.classList.add('hidden'); return; }
     if (dayHistory.length === 0) { wrapper.classList.add('hidden'); return; }
-
     let html = `<button onclick="switchDayView('today')" class="day-sub-tab is-today ${currentDayView==='today'?'active':''}">Today</button>`;
     dayHistory.forEach(d => {
         html += `<button onclick="switchDayView(${d.day})" class="day-sub-tab is-history ${currentDayView===d.day?'active':''}">
-            ${DAY_SHORT[d.day]}<span class="history-dot"></span>
-        </button>`;
+            ${DAY_SHORT[d.day]}<span class="history-dot"></span></button>`;
     });
     container.innerHTML = html;
     wrapper.classList.remove('hidden');
@@ -303,11 +317,11 @@ function updateTabUI() {
 }
 
 function getLevel(l) {
-    if (l >= 17) return {title:'CONQUEROR',cls:'conqueror-tier',color:'text-red-500'};
-    if (l >= 12) return {title:'MASTER',   cls:'gold-tier',     color:'text-yellow-500'};
-    if (l >= 7)  return {title:'ELITE',    cls:'orange-tier',   color:'text-orange-500'};
-    if (l >= 4)  return {title:'PRO',      cls:'blue-tier',     color:'text-blue-500'};
-    return              {title:'ROOKIE',   cls:'slate-tier',    color:'text-slate-500'};
+    if (l>=17) return {title:'CONQUEROR',cls:'conqueror-tier',color:'text-red-500'};
+    if (l>=12) return {title:'MASTER',   cls:'gold-tier',     color:'text-yellow-500'};
+    if (l>=7)  return {title:'ELITE',    cls:'orange-tier',   color:'text-orange-500'};
+    if (l>=4)  return {title:'PRO',      cls:'blue-tier',     color:'text-blue-500'};
+    return            {title:'ROOKIE',   cls:'slate-tier',    color:'text-slate-500'};
 }
 
 function render() {
@@ -324,18 +338,15 @@ function render() {
     const target    = isWeekly ? 800 : 150;
     const todayName = agents.length > 0 ? (agents[0].todayName || 'Today') : 'Today';
 
-    // History banner
     if (isHistory) {
         const snap = dayHistory.find(d => d.day === currentDayView);
         document.getElementById('history-banner-text').innerText = `Viewing ${snap ? snap.dayName : DAY_FULL[currentDayView]} — Final Results`;
         banner.classList.remove('hidden');
-    } else {
-        banner.classList.add('hidden');
-    }
+    } else { banner.classList.add('hidden'); }
 
-    document.getElementById('goal-label').innerText    = isWeekly ? 'Weekly Team Goal' : isHistory ? `${DAY_FULL[currentDayView]} Final` : `${todayName} Daily Goal`;
-    document.getElementById('target-display').innerText = `Target: ${target}`;
-    document.getElementById('day-indicator').innerText  = isWeekly ? 'Weekly Sprint' : isHistory ? `${DAY_SHORT[currentDayView]} — Completed ✓` : `${todayName} Performance`;
+    document.getElementById('goal-label').innerText     = isWeekly ? 'Weekly Team Goal' : isHistory ? `${DAY_FULL[currentDayView]} Final` : `${todayName} Daily Goal`;
+    document.getElementById('target-display').innerText  = `Target: ${target}`;
+    document.getElementById('day-indicator').innerText   = isWeekly ? 'Weekly Sprint' : isHistory ? `${DAY_SHORT[currentDayView]} — Completed ✓` : `${todayName} Performance`;
 
     let displayData = [], prTotal = 0, bbTotal = 0;
 
@@ -345,19 +356,27 @@ function render() {
             displayData = [...snap.agents].sort((a,b) => b.leads - a.leads);
             prTotal = snap.prTotal || 0;
             bbTotal = snap.bbTotal || 0;
+            // Recalculate if not provided
+            if (!prTotal && !bbTotal) {
+                displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; });
+            }
         }
     } else {
         displayData = agents.map(a => ({
             name:  a.name,
-            leads: isWeekly ? a.weeklyLeads : a.dailyLeads,
-            team:  a.team
+            leads: isWeekly ? (a.weeklyLeads||0) : (a.dailyLeads||0),
+            team:  a.team || getTeam(a.name)
         })).sort((a,b) => b.leads - a.leads);
 
-        if (!isWeekly && agents.length > 0) {
+        if (isWeekly) {
+            displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; });
+        } else if (agents.length > 0) {
             prTotal = agents[0].prTotal || 0;
             bbTotal = agents[0].bbTotal || 0;
-        } else if (isWeekly) {
-            displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else if(a.team==='BB') bbTotal+=a.leads; });
+            // Fallback: calculate from display data if still 0
+            if (prTotal === 0 && bbTotal === 0) {
+                displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; });
+            }
         }
     }
 
@@ -370,16 +389,14 @@ function render() {
         if (agent.leads > 0) activeReps++;
 
         const badge = agent.team === 'PR'
-            ? `<span style="font-size:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:1px 5px;color:#a78bfa;font-weight:900;margin-left:6px;">PROV</span>`
-            : agent.team === 'BB'
-            ? `<span style="font-size:8px;background:rgba(192,132,252,0.15);border:1px solid rgba(192,132,252,0.3);border-radius:4px;padding:1px 5px;color:#c084fc;font-weight:900;margin-left:6px;">BERB</span>`
-            : '';
+            ? `<span style="font-size:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:1px 5px;color:#a78bfa;font-weight:900;margin-left:6px;letter-spacing:0.05em;">PROV</span>`
+            : `<span style="font-size:8px;background:rgba(192,132,252,0.15);border:1px solid rgba(192,132,252,0.3);border-radius:4px;padding:1px 5px;color:#c084fc;font-weight:900;margin-left:6px;letter-spacing:0.05em;">BERB</span>`;
 
         return `<div class="glass p-5 rounded-2xl flex justify-between items-center transition-all hover:bg-white/5 ${lvl.cls} mb-3 md:mb-0 md:m-2">
             <div class="flex items-center gap-4">
                 <span class="text-xl font-black italic ${i<3?'text-white':'text-slate-700'}">${String(i+1).padStart(2,'0')}</span>
                 <div>
-                    <div class="font-black text-sm md:text-lg text-white uppercase flex items-center">${agent.name}${badge}</div>
+                    <div class="font-black text-sm md:text-lg text-white uppercase flex items-center flex-wrap gap-1">${agent.name}${badge}</div>
                     <div class="text-[9px] font-black uppercase tracking-widest ${lvl.color}">${lvl.title} STATUS</div>
                 </div>
             </div>
@@ -397,7 +414,7 @@ function render() {
     document.getElementById('pr-count').innerText          = prTotal;
     document.getElementById('bb-count').innerText          = bbTotal;
 
-    const pct = Math.min((totalLeads/target)*100, 100);
+    const pct = Math.min((totalLeads/target)*100,100);
     document.getElementById('progress-bar').style.width = pct+'%';
     document.getElementById('goal-percent').innerText    = Math.floor(pct)+'%';
 }
