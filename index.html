@@ -42,6 +42,65 @@
         .pw-btn:hover{opacity:0.9;} .pw-btn:active{transform:scale(0.97);}
         .pw-cancel{margin-top:12px;background:none;border:none;color:#475569;font-size:0.8rem;cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;}
         .pw-cancel:hover{color:#94a3b8;} .error-msg{color:#ef4444;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;min-height:18px;}
+
+        /* ── Lookup Tab Styles ── */
+        .lookup-input {
+            width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);
+            border-radius:14px;color:white;font-size:1rem;padding:16px 20px;outline:none;
+            font-family:'Inter',sans-serif;transition:border-color 0.2s,box-shadow 0.2s;
+        }
+        .lookup-input:focus { border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.15); }
+        .lookup-input::placeholder { color:#475569; }
+        .lookup-btn {
+            width:100%;padding:16px;border-radius:14px;font-family:'Orbitron',sans-serif;font-weight:900;
+            font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;
+            background:linear-gradient(90deg,#1d4ed8,#3b82f6,#60a5fa);
+            color:white;border:none;cursor:pointer;transition:opacity 0.2s,transform 0.1s;
+            box-shadow:0 0 20px rgba(59,130,246,0.3);
+        }
+        .lookup-btn:hover{opacity:0.9;} .lookup-btn:active{transform:scale(0.97);}
+        .lookup-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+        .result-card {
+            background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);
+            border-radius:20px;padding:24px;backdrop-filter:blur(10px);
+            border-left:4px solid #3b82f6;
+            animation:fadeSlideIn 0.4s ease-out;
+        }
+        @keyframes fadeSlideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        .result-field { border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 0; }
+        .result-field:last-child { border-bottom:none;padding-bottom:0; }
+        .result-label { font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#475569;margin-bottom:4px; }
+        .result-value { font-size:0.95rem;font-weight:700;color:white;word-break:break-word; }
+        .result-value.na { color:#475569;font-style:italic;font-weight:400; }
+        .scanning-dots span {
+            display:inline-block;width:8px;height:8px;background:#3b82f6;border-radius:50%;
+            margin:0 3px;animation:dotBounce 1.2s infinite ease-in-out;
+        }
+        .scanning-dots span:nth-child(2){animation-delay:0.2s;}
+        .scanning-dots span:nth-child(3){animation-delay:0.4s;}
+        @keyframes dotBounce{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
+        .copy-btn {
+            font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;
+            color:#3b82f6;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);
+            border-radius:6px;padding:3px 8px;cursor:pointer;transition:all 0.2s;margin-left:8px;
+            vertical-align:middle;
+        }
+        .copy-btn:hover{background:rgba(59,130,246,0.2);}
+        .copy-btn.copied{color:#22c55e;background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);}
+        .search-history-item {
+            background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);
+            border-radius:10px;padding:10px 14px;cursor:pointer;transition:all 0.2s;
+            display:flex;justify-content:space-between;align-items:center;
+        }
+        .search-history-item:hover{background:rgba(255,255,255,0.05);}
+        .confidence-badge {
+            display:inline-block;font-size:9px;font-weight:900;text-transform:uppercase;
+            letter-spacing:0.08em;padding:2px 8px;border-radius:20px;margin-left:8px;
+        }
+        .conf-high{background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.3);}
+        .conf-med {background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3);}
+        .conf-low {background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);}
+
         @media(min-width:1024px){.main-container{max-width:1200px!important;}.leaderboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}.stat-card{padding:30px!important;}.stat-value{font-size:3rem!important;}}
     </style>
 </head>
@@ -78,11 +137,15 @@
         <h1 class="header-font text-4xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic leading-tight uppercase">BIZ Level Up Dashboard</h1>
     </div>
 
-    <div class="flex gap-3 mb-4 px-2 max-w-2xl mx-auto">
-        <button onclick="switchTab('daily')"    id="tab-daily"    class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all tab-active">Daily</button>
-        <button onclick="switchTab('playbook')" id="tab-playbook" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
-        <button onclick="requestWeekly()"       id="tab-weekly"   class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">
-            <i class="fas fa-lock text-[10px] mr-1 opacity-60"></i>Weekly
+    <!-- Tabs: Daily | Lookup | Playbook | Weekly -->
+    <div class="flex gap-2 mb-4 px-2 max-w-2xl mx-auto">
+        <button onclick="switchTab('daily')"    id="tab-daily"    class="flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all tab-active">Daily</button>
+        <button onclick="switchTab('lookup')"   id="tab-lookup"   class="flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">
+            <i class="fas fa-search text-[9px] mr-1 opacity-60"></i>Lookup
+        </button>
+        <button onclick="switchTab('playbook')" id="tab-playbook" class="flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
+        <button onclick="requestWeekly()"       id="tab-weekly"   class="flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">
+            <i class="fas fa-lock text-[9px] mr-1 opacity-60"></i>Weekly
         </button>
     </div>
 
@@ -91,6 +154,7 @@
         <div id="day-sub-tabs-container"></div>
     </div>
 
+    <!-- ── LEADERBOARD VIEW ── -->
     <div id="leaderboard-view">
         <div id="history-banner" class="hidden mx-2 mb-4">
             <div class="history-banner"><i class="fas fa-history mr-2"></i><span id="history-banner-text"></span></div>
@@ -146,6 +210,63 @@
         <div id="leaderboard" class="leaderboard-grid space-y-3 md:space-y-0 px-2"></div>
     </div>
 
+    <!-- ── LOOKUP VIEW ── -->
+    <div id="lookup-view" class="hidden px-2 pb-20 space-y-5">
+        <div class="glass p-6 rounded-3xl border-t-4 border-t-blue-500">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);">
+                    <i class="fas fa-building text-blue-400 text-sm"></i>
+                </div>
+                <div>
+                    <div class="header-font text-xs text-blue-500 uppercase tracking-widest italic">Business Intelligence</div>
+                    <div class="header-font text-lg font-black text-white uppercase italic">Lead Lookup</div>
+                </div>
+            </div>
+            <p class="text-slate-500 text-xs mt-3 mb-5 leading-relaxed">Enter a phone number or business name to instantly pull owner info, address, and contact details.</p>
+
+            <div class="space-y-3">
+                <input
+                    id="lookup-input"
+                    type="text"
+                    class="lookup-input"
+                    placeholder="Enter phone number or business name..."
+                    onkeydown="if(event.key==='Enter')runLookup()"
+                    autocomplete="off"
+                />
+                <div class="flex gap-2">
+                    <button onclick="runLookup()" id="lookup-btn" class="lookup-btn flex-1">
+                        <i class="fas fa-search mr-2"></i>Search Business
+                    </button>
+                    <button onclick="clearLookup()" title="Clear" class="glass p-4 rounded-xl hover:bg-white/10 transition-all active:scale-95 text-slate-500 hover:text-white">
+                        <i class="fas fa-times text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="lookup-loading" class="hidden glass p-8 rounded-3xl text-center">
+            <div class="scanning-dots mb-4">
+                <span></span><span></span><span></span>
+            </div>
+            <div class="header-font text-xs text-blue-400 uppercase tracking-widest font-black italic">Scanning Sources</div>
+            <div id="lookup-loading-msg" class="text-slate-600 text-xs mt-2 uppercase font-bold tracking-widest">Searching business registry...</div>
+        </div>
+
+        <!-- Result -->
+        <div id="lookup-result" class="hidden"></div>
+
+        <!-- Search History -->
+        <div id="lookup-history-section" class="hidden">
+            <div class="flex justify-between items-center mb-3 px-1">
+                <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Recent Lookups</span>
+                <button onclick="clearHistory()" class="text-[10px] font-black text-slate-700 hover:text-red-500 uppercase tracking-widest transition-colors">Clear All</button>
+            </div>
+            <div id="lookup-history" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <!-- ── PLAYBOOK VIEW ── -->
     <div id="playbook-view" class="hidden space-y-6 px-2 pb-20">
         <div class="glass p-6 rounded-3xl border-l-8 border-l-green-500 bg-green-500/5">
             <h3 class="header-font text-sm md:text-xl font-black text-green-500 uppercase mb-4 italic">Quality Guidelines</h3>
@@ -200,56 +321,42 @@
 </div>
 
 <script>
-// ── UPDATE THIS URL after you redeploy the Apps Script ──────
+// ── CONFIG ───────────────────────────────────────────────────
 const API_URL = 'https://script.google.com/macros/s/AKfycbxEz0oA-FRcZ9c0lp18bKbBLZZbGW3sGba0PBaoIynMz_qaF6mCfs4KzYuY6HdOmlzwZw/exec';
 const WEEKLY_PASSWORD = 'bizlevelup2025';
+const ANTHROPIC_API  = 'https://api.anthropic.com/v1/messages';
 
 const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 let agents = [], dayHistory = [];
 let currentTab = 'daily', currentDayView = 'today', weeklyUnlocked = false;
+let lookupHistory = JSON.parse(localStorage.getItem('bizlookup_history') || '[]');
 
-// ── Team detection: GYB = Berbice, everything else = Providence
+// ── TEAM DETECTION ───────────────────────────────────────────
 function getTeam(name) {
     if (!name) return 'PR';
     return name.trim().startsWith('GYB') ? 'BB' : 'PR';
 }
 
+// ── DASHBOARD DATA ───────────────────────────────────────────
 async function updateDashboard() {
     const btn = document.getElementById('refresh-btn');
     btn.classList.add('spin-anim');
     try {
-        const res  = await fetch(API_URL);
+        const res = await fetch(API_URL);
         agents = await res.json();
-
-        // Ensure every agent has a team field (fallback from name prefix)
-        agents.forEach(a => {
-            if (!a.team) a.team = getTeam(a.name);
-        });
-
-        // Pull out metadata attached to first agent
+        agents.forEach(a => { if (!a.team) a.team = getTeam(a.name); });
         if (agents.length > 0) {
             if (agents[0].dayHistory) dayHistory = agents[0].dayHistory;
-            // Also ensure history agents have team
-            dayHistory.forEach(d => {
-                d.agents.forEach(a => { if (!a.team) a.team = getTeam(a.name); });
-            });
+            dayHistory.forEach(d => { d.agents.forEach(a => { if (!a.team) a.team = getTeam(a.name); }); });
         }
-
-        // If prTotal/bbTotal not returned by script, calculate from agents
         if (agents.length > 0 && !agents[0].prTotal && !agents[0].bbTotal) {
             let pr = 0, bb = 0;
-            agents.forEach(a => {
-                if (a.team === 'PR') pr += (a.dailyLeads || 0);
-                else bb += (a.dailyLeads || 0);
-            });
-            agents[0].prTotal = pr;
-            agents[0].bbTotal = bb;
+            agents.forEach(a => { if (a.team === 'PR') pr += (a.dailyLeads || 0); else bb += (a.dailyLeads || 0); });
+            agents[0].prTotal = pr; agents[0].bbTotal = bb;
         }
-
-        render();
-        renderDaySubTabs();
+        render(); renderDaySubTabs();
         document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
     } catch(e) {
         document.getElementById('timestamp').innerText = 'System Offline';
@@ -259,8 +366,9 @@ async function updateDashboard() {
     }
 }
 
+// ── DAY SUB TABS ─────────────────────────────────────────────
 function renderDaySubTabs() {
-    const wrapper   = document.getElementById('day-sub-tabs-wrapper');
+    const wrapper = document.getElementById('day-sub-tabs-wrapper');
     const container = document.getElementById('day-sub-tabs-container');
     if (currentTab !== 'daily') { wrapper.classList.add('hidden'); return; }
     if (dayHistory.length === 0) { wrapper.classList.add('hidden'); return; }
@@ -272,9 +380,9 @@ function renderDaySubTabs() {
     container.innerHTML = html;
     wrapper.classList.remove('hidden');
 }
-
 function switchDayView(key) { currentDayView = key; renderDaySubTabs(); render(); }
 
+// ── TAB MANAGEMENT ───────────────────────────────────────────
 function requestWeekly() {
     if (weeklyUnlocked) { currentTab='weekly'; updateTabUI(); render(); renderDaySubTabs(); return; }
     document.getElementById('pw-modal').classList.remove('hidden');
@@ -283,7 +391,6 @@ function requestWeekly() {
     document.getElementById('pw-input').classList.remove('error');
     setTimeout(() => document.getElementById('pw-input').focus(), 100);
 }
-
 function checkPassword() {
     if (document.getElementById('pw-input').value === WEEKLY_PASSWORD) {
         weeklyUnlocked = true;
@@ -300,7 +407,6 @@ function checkPassword() {
         setTimeout(() => inp.focus(), 100);
     }
 }
-
 function cancelPassword() { document.getElementById('pw-modal').classList.add('hidden'); }
 
 function switchTab(tab) {
@@ -310,12 +416,14 @@ function switchTab(tab) {
 }
 
 function updateTabUI() {
-    ['daily','playbook','weekly'].forEach(t => {
-        document.getElementById(`tab-${t}`).className =
-            `flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all ${t===currentTab?'tab-active':'text-slate-500'}`;
+    ['daily','lookup','playbook','weekly'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (!btn) return;
+        btn.className = `flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all ${t===currentTab?'tab-active':'text-slate-500'}`;
     });
 }
 
+// ── RENDER ───────────────────────────────────────────────────
 function getLevel(l) {
     if (l>=17) return {title:'CONQUEROR',cls:'conqueror-tier',color:'text-red-500'};
     if (l>=12) return {title:'MASTER',   cls:'gold-tier',     color:'text-yellow-500'};
@@ -325,13 +433,18 @@ function getLevel(l) {
 }
 
 function render() {
-    const lView  = document.getElementById('leaderboard-view');
-    const pView  = document.getElementById('playbook-view');
-    const board  = document.getElementById('leaderboard');
+    const lView = document.getElementById('leaderboard-view');
+    const pView = document.getElementById('playbook-view');
+    const luView = document.getElementById('lookup-view');
+    const board = document.getElementById('leaderboard');
     const banner = document.getElementById('history-banner');
 
-    if (currentTab === 'playbook') { lView.classList.add('hidden'); pView.classList.remove('hidden'); return; }
-    lView.classList.remove('hidden'); pView.classList.add('hidden');
+    lView.classList.add('hidden'); pView.classList.add('hidden'); luView.classList.add('hidden');
+
+    if (currentTab === 'playbook') { pView.classList.remove('hidden'); return; }
+    if (currentTab === 'lookup')   { luView.classList.remove('hidden'); renderLookupHistory(); return; }
+
+    lView.classList.remove('hidden');
 
     const isWeekly  = currentTab === 'weekly';
     const isHistory = currentTab === 'daily' && currentDayView !== 'today';
@@ -354,29 +467,18 @@ function render() {
         const snap = dayHistory.find(d => d.day === currentDayView);
         if (snap) {
             displayData = [...snap.agents].sort((a,b) => b.leads - a.leads);
-            prTotal = snap.prTotal || 0;
-            bbTotal = snap.bbTotal || 0;
-            // Recalculate if not provided
-            if (!prTotal && !bbTotal) {
-                displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; });
-            }
+            prTotal = snap.prTotal || 0; bbTotal = snap.bbTotal || 0;
+            if (!prTotal && !bbTotal) { displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; }); }
         }
     } else {
         displayData = agents.map(a => ({
-            name:  a.name,
-            leads: isWeekly ? (a.weeklyLeads||0) : (a.dailyLeads||0),
-            team:  a.team || getTeam(a.name)
+            name: a.name, leads: isWeekly ? (a.weeklyLeads||0) : (a.dailyLeads||0), team: a.team || getTeam(a.name)
         })).sort((a,b) => b.leads - a.leads);
-
         if (isWeekly) {
             displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; });
         } else if (agents.length > 0) {
-            prTotal = agents[0].prTotal || 0;
-            bbTotal = agents[0].bbTotal || 0;
-            // Fallback: calculate from display data if still 0
-            if (prTotal === 0 && bbTotal === 0) {
-                displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; });
-            }
+            prTotal = agents[0].prTotal || 0; bbTotal = agents[0].bbTotal || 0;
+            if (prTotal === 0 && bbTotal === 0) { displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; }); }
         }
     }
 
@@ -387,11 +489,9 @@ function render() {
         totalLeads += agent.leads;
         if (agent.leads >= 12) masters++;
         if (agent.leads > 0) activeReps++;
-
         const badge = agent.team === 'PR'
             ? `<span style="font-size:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:1px 5px;color:#a78bfa;font-weight:900;margin-left:6px;letter-spacing:0.05em;">PROV</span>`
             : `<span style="font-size:8px;background:rgba(192,132,252,0.15);border:1px solid rgba(192,132,252,0.3);border-radius:4px;padding:1px 5px;color:#c084fc;font-weight:900;margin-left:6px;letter-spacing:0.05em;">BERB</span>`;
-
         return `<div class="glass p-5 rounded-2xl flex justify-between items-center transition-all hover:bg-white/5 ${lvl.cls} mb-3 md:mb-0 md:m-2">
             <div class="flex items-center gap-4">
                 <span class="text-xl font-black italic ${i<3?'text-white':'text-slate-700'}">${String(i+1).padStart(2,'0')}</span>
@@ -413,12 +513,267 @@ function render() {
     document.getElementById('current-leads-sum').innerText = `${totalLeads} Leads`;
     document.getElementById('pr-count').innerText          = prTotal;
     document.getElementById('bb-count').innerText          = bbTotal;
-
     const pct = Math.min((totalLeads/target)*100,100);
     document.getElementById('progress-bar').style.width = pct+'%';
     document.getElementById('goal-percent').innerText    = Math.floor(pct)+'%';
 }
 
+// ── LOOKUP LOGIC ─────────────────────────────────────────────
+const loadingMessages = [
+    'Searching business registry...',
+    'Scanning public records...',
+    'Cross-referencing data sources...',
+    'Extracting owner information...',
+    'Verifying contact details...',
+    'Compiling results...'
+];
+let loadingInterval = null;
+
+function startLoadingAnimation() {
+    let i = 0;
+    const el = document.getElementById('lookup-loading-msg');
+    el.innerText = loadingMessages[0];
+    loadingInterval = setInterval(() => {
+        i = (i + 1) % loadingMessages.length;
+        el.innerText = loadingMessages[i];
+    }, 1200);
+}
+function stopLoadingAnimation() {
+    clearInterval(loadingInterval);
+    loadingInterval = null;
+}
+
+async function runLookup() {
+    const query = document.getElementById('lookup-input').value.trim();
+    if (!query) {
+        document.getElementById('lookup-input').focus();
+        return;
+    }
+
+    const btn = document.getElementById('lookup-btn');
+    btn.disabled = true;
+
+    document.getElementById('lookup-loading').classList.remove('hidden');
+    document.getElementById('lookup-result').classList.add('hidden');
+    document.getElementById('lookup-result').innerHTML = '';
+    startLoadingAnimation();
+
+    try {
+        const systemPrompt = `You are a business research assistant. When given a phone number or business name, search for and extract:
+1. Business Name (official/registered name)
+2. Owner Name (primary owner or registered agent)
+3. Business Address (full street address, city, state, zip)
+4. Email Address (contact email if available)
+5. Phone Number (if not provided, find it; if provided, confirm it)
+6. Business Type/Industry
+7. Years in Business (approximate if needed)
+8. Confidence Level: high, medium, or low based on how certain you are about the accuracy
+
+Return ONLY a JSON object with these exact keys:
+{
+  "businessName": "...",
+  "ownerName": "...",
+  "address": "...",
+  "email": "...",
+  "phone": "...",
+  "industry": "...",
+  "yearsInBusiness": "...",
+  "confidence": "high|medium|low",
+  "notes": "any important caveats"
+}
+
+If a field cannot be found, use "Not Found" as the value.
+Do NOT include any text outside the JSON object.`;
+
+        const response = await fetch(ANTHROPIC_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'claude-sonnet-4-20250514',
+                max_tokens: 1000,
+                tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+                system: systemPrompt,
+                messages: [{ role: 'user', content: `Look up this business: ${query}` }]
+            })
+        });
+
+        const data = await response.json();
+        const fullText = data.content.map(i => i.type === 'text' ? i.text : '').filter(Boolean).join('\n');
+        const cleaned = fullText.replace(/```json|```/g, '').trim();
+
+        let result;
+        try {
+            const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+            result = JSON.parse(jsonMatch ? jsonMatch[0] : cleaned);
+        } catch(pe) {
+            result = {
+                businessName: 'Parse Error', ownerName: 'N/A', address: 'N/A',
+                email: 'N/A', phone: query, industry: 'N/A',
+                yearsInBusiness: 'N/A', confidence: 'low',
+                notes: 'Could not parse results. Try a more specific search.'
+            };
+        }
+
+        // Save to history
+        const historyEntry = { query, result, timestamp: new Date().toISOString() };
+        lookupHistory.unshift(historyEntry);
+        if (lookupHistory.length > 10) lookupHistory = lookupHistory.slice(0, 10);
+        localStorage.setItem('bizlookup_history', JSON.stringify(lookupHistory));
+
+        displayResult(result, query);
+
+    } catch(err) {
+        document.getElementById('lookup-result').innerHTML = `
+            <div class="glass p-6 rounded-3xl border-l-4 border-l-red-500 text-center">
+                <i class="fas fa-exclamation-triangle text-red-500 text-2xl mb-3"></i>
+                <div class="header-font text-sm font-black text-red-400 uppercase italic mb-2">Search Failed</div>
+                <p class="text-slate-500 text-xs">Unable to complete lookup. Check your connection and try again.</p>
+            </div>`;
+        document.getElementById('lookup-result').classList.remove('hidden');
+        console.error(err);
+    } finally {
+        stopLoadingAnimation();
+        document.getElementById('lookup-loading').classList.add('hidden');
+        btn.disabled = false;
+    }
+}
+
+function displayResult(result, query) {
+    const confClass = result.confidence === 'high' ? 'conf-high' : result.confidence === 'medium' ? 'conf-med' : 'conf-low';
+    const confIcon  = result.confidence === 'high' ? 'fa-shield-alt' : result.confidence === 'medium' ? 'fa-exclamation-circle' : 'fa-question-circle';
+
+    const fields = [
+        { label: 'Business Name',    value: result.businessName,    icon: 'fa-building',      key: 'businessName' },
+        { label: 'Owner Name',       value: result.ownerName,       icon: 'fa-user-tie',      key: 'ownerName' },
+        { label: 'Address',          value: result.address,         icon: 'fa-map-marker-alt',key: 'address' },
+        { label: 'Email',            value: result.email,           icon: 'fa-envelope',      key: 'email' },
+        { label: 'Phone',            value: result.phone,           icon: 'fa-phone',         key: 'phone' },
+        { label: 'Industry',         value: result.industry,        icon: 'fa-briefcase',     key: 'industry' },
+        { label: 'Years in Business',value: result.yearsInBusiness, icon: 'fa-calendar-alt',  key: 'years' },
+    ];
+
+    const fieldsHTML = fields.map(f => {
+        const isNA  = !f.value || f.value === 'Not Found' || f.value === 'N/A';
+        const valClass = isNA ? 'na' : '';
+        const valDisplay = isNA ? '— Not Found' : escapeHtml(f.value);
+        const copyBtn = !isNA ? `<button class="copy-btn" onclick="copyField(this, '${escapeHtml(f.value).replace(/'/g,"\\'")}')"><i class="fas fa-copy mr-1"></i>Copy</button>` : '';
+        return `<div class="result-field">
+            <div class="result-label"><i class="fas ${f.icon} mr-1 opacity-60"></i>${f.label}</div>
+            <div class="result-value ${valClass}">${valDisplay}${copyBtn}</div>
+        </div>`;
+    }).join('');
+
+    const notesHTML = result.notes && result.notes !== 'N/A'
+        ? `<div class="mt-4 p-3 rounded-xl" style="background:rgba(234,179,8,0.05);border:1px solid rgba(234,179,8,0.15);">
+            <div class="text-[9px] font-black text-yellow-600 uppercase tracking-widest mb-1"><i class="fas fa-info-circle mr-1"></i>Notes</div>
+            <div class="text-xs text-slate-400">${escapeHtml(result.notes)}</div>
+           </div>` : '';
+
+    document.getElementById('lookup-result').innerHTML = `
+        <div class="result-card">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <div class="header-font text-xs text-blue-500 uppercase tracking-widest italic mb-1">Results for</div>
+                    <div class="font-black text-white text-base">"${escapeHtml(query)}"</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="confidence-badge ${confClass}"><i class="fas ${confIcon} mr-1"></i>${result.confidence || 'N/A'}</span>
+                    <button onclick="copyAllFields()" class="glass px-3 py-2 rounded-lg text-[10px] font-black text-slate-400 hover:text-white uppercase tracking-wide transition-all hover:bg-white/10">
+                        <i class="fas fa-clipboard mr-1"></i>Copy All
+                    </button>
+                </div>
+            </div>
+            ${fieldsHTML}
+            ${notesHTML}
+        </div>`;
+    document.getElementById('lookup-result').classList.remove('hidden');
+
+    // Store for copy all
+    window._lastLookupResult = result;
+}
+
+function copyField(btn, value) {
+    navigator.clipboard.writeText(value).then(() => {
+        btn.classList.add('copied');
+        btn.innerHTML = '<i class="fas fa-check mr-1"></i>Copied';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = '<i class="fas fa-copy mr-1"></i>Copy';
+        }, 2000);
+    });
+}
+
+function copyAllFields() {
+    const r = window._lastLookupResult;
+    if (!r) return;
+    const text = [
+        `Business: ${r.businessName || 'N/A'}`,
+        `Owner: ${r.ownerName || 'N/A'}`,
+        `Address: ${r.address || 'N/A'}`,
+        `Email: ${r.email || 'N/A'}`,
+        `Phone: ${r.phone || 'N/A'}`,
+        `Industry: ${r.industry || 'N/A'}`,
+        `Years in Business: ${r.yearsInBusiness || 'N/A'}`,
+    ].join('\n');
+    navigator.clipboard.writeText(text);
+}
+
+function clearLookup() {
+    document.getElementById('lookup-input').value = '';
+    document.getElementById('lookup-result').classList.add('hidden');
+    document.getElementById('lookup-result').innerHTML = '';
+    document.getElementById('lookup-loading').classList.add('hidden');
+    document.getElementById('lookup-input').focus();
+}
+
+function renderLookupHistory() {
+    const section = document.getElementById('lookup-history-section');
+    const container = document.getElementById('lookup-history');
+    if (lookupHistory.length === 0) { section.classList.add('hidden'); return; }
+    section.classList.remove('hidden');
+    container.innerHTML = lookupHistory.map((h, i) => {
+        const ago = timeAgo(new Date(h.timestamp));
+        const name = h.result?.businessName || h.query;
+        return `<div class="search-history-item" onclick="loadHistoryItem(${i})">
+            <div>
+                <div class="font-black text-sm text-white">${escapeHtml(name !== 'Not Found' ? name : h.query)}</div>
+                <div class="text-[10px] text-slate-600 font-bold mt-0.5 uppercase tracking-wide">${ago}</div>
+            </div>
+            <i class="fas fa-chevron-right text-slate-700 text-xs"></i>
+        </div>`;
+    }).join('');
+}
+
+function loadHistoryItem(index) {
+    const entry = lookupHistory[index];
+    if (!entry) return;
+    document.getElementById('lookup-input').value = entry.query;
+    displayResult(entry.result, entry.query);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function clearHistory() {
+    lookupHistory = [];
+    localStorage.setItem('bizlookup_history', JSON.stringify(lookupHistory));
+    renderLookupHistory();
+}
+
+function timeAgo(date) {
+    const diff = Date.now() - date.getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return 'Just now';
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    return `${Math.floor(h/24)}d ago`;
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INIT ─────────────────────────────────────────────────────
 updateDashboard();
 setInterval(updateDashboard, 30000);
 </script>
