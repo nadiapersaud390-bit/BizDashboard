@@ -31,8 +31,56 @@
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
         .gold-progress { background: linear-gradient(90deg, #ca8a04, #facc15, #eab308); box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
         .tab-active { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6 !important; color: white !important; border-bottom: 2px solid #3b82f6; }
+        .day-tab-active { background: rgba(234, 179, 8, 0.15) !important; border-color: #eab308 !important; color: #facc15 !important; }
         .spin-anim { animation: spin 1s linear; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* PR/BB split card */
+        .prbb-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 4px solid #8b5cf6;
+        }
+        .prbb-divider {
+            width: 1px;
+            background: rgba(255,255,255,0.1);
+            align-self: stretch;
+            margin: 4px 0;
+        }
+
+        /* Day history sub-tabs */
+        .day-sub-tabs {
+            display: flex;
+            gap: 6px;
+            padding: 0 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .day-sub-tab {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 6px 14px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .day-sub-tab:hover { color: #94a3b8; background: rgba(255,255,255,0.06); }
+        .day-sub-tab.completed { color: #64748b; border-color: rgba(71,85,105,0.4); }
+        .day-sub-tab.day-tab-active { background: rgba(234,179,8,0.15); border-color: #eab308; color: #facc15; }
+        .history-badge {
+            display: inline-block;
+            width: 6px; height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
 
         /* Password Modal */
         .modal-overlay {
@@ -147,12 +195,17 @@
         </div>
 
         <!-- Tab order: Daily | Playbook | Weekly -->
-        <div class="flex gap-3 mb-8 px-2 max-w-2xl mx-auto">
+        <div class="flex gap-3 mb-4 px-2 max-w-2xl mx-auto">
             <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all tab-active">Daily</button>
             <button onclick="switchTab('playbook')" id="tab-playbook" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
             <button onclick="requestWeekly()" id="tab-weekly" class="flex-1 glass py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">
                 <i class="fas fa-lock text-[10px] mr-1 opacity-60"></i>Weekly
             </button>
+        </div>
+
+        <!-- Day History Sub-tabs (shown only when Daily tab is active) -->
+        <div id="day-sub-tabs-container" class="day-sub-tabs mb-6 px-2 max-w-2xl mx-auto">
+            <!-- Dynamically populated -->
         </div>
 
         <div id="leaderboard-view">
@@ -170,18 +223,34 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-3 mb-10 px-2">
-                <div class="glass p-4 md:p-8 rounded-3xl border-b-4 border-b-yellow-500 text-center stat-card">
-                    <div class="text-[10px] md:text-sm font-black text-yellow-500 uppercase mb-2 leading-tight">12+ Proof</div>
-                    <div id="master-count" class="text-3xl md:text-6xl font-black text-white stat-value">00</div>
+            <!-- Stats Row: 12+ Proof | Active Reps | Floor Total | PR/BB -->
+            <div class="grid grid-cols-4 gap-2 mb-10 px-2">
+                <div class="glass p-3 md:p-8 rounded-3xl border-b-4 border-b-yellow-500 text-center stat-card">
+                    <div class="text-[9px] md:text-sm font-black text-yellow-500 uppercase mb-2 leading-tight">12+ Proof</div>
+                    <div id="master-count" class="text-2xl md:text-6xl font-black text-white stat-value">00</div>
                 </div>
-                <div class="glass p-4 md:p-8 rounded-3xl border-b-4 border-b-green-500 text-center stat-card">
-                    <div class="text-[10px] md:text-sm font-black text-green-500 uppercase mb-2 leading-tight">Active Reps</div>
-                    <div id="active-reps" class="text-3xl md:text-6xl font-black text-white stat-value">0</div>
+                <div class="glass p-3 md:p-8 rounded-3xl border-b-4 border-b-green-500 text-center stat-card">
+                    <div class="text-[9px] md:text-sm font-black text-green-500 uppercase mb-2 leading-tight">Active Reps</div>
+                    <div id="active-reps" class="text-2xl md:text-6xl font-black text-white stat-value">0</div>
                 </div>
-                <div class="glass p-4 md:p-8 rounded-3xl border-b-4 border-b-blue-500 text-center stat-card">
-                    <div class="text-[10px] md:text-sm font-black text-blue-500 uppercase mb-2 leading-tight">Floor Total</div>
-                    <div id="floor-total" class="text-3xl md:text-6xl font-black text-white stat-value">0</div>
+                <div class="glass p-3 md:p-8 rounded-3xl border-b-4 border-b-blue-500 text-center stat-card">
+                    <div class="text-[9px] md:text-sm font-black text-blue-500 uppercase mb-2 leading-tight">Floor Total</div>
+                    <div id="floor-total" class="text-2xl md:text-6xl font-black text-white stat-value">0</div>
+                </div>
+                <!-- PR/BB Split Card -->
+                <div class="prbb-card p-3 md:p-8 rounded-3xl text-center stat-card">
+                    <div class="text-[9px] md:text-sm font-black text-purple-400 uppercase mb-2 leading-tight">PR / BB</div>
+                    <div class="flex items-center justify-center gap-1">
+                        <div class="flex-1">
+                            <div class="text-[8px] font-black text-slate-500 uppercase tracking-wider mb-1">PR</div>
+                            <div id="pr-count" class="text-xl md:text-4xl font-black text-purple-300 leading-none">0</div>
+                        </div>
+                        <div class="prbb-divider"></div>
+                        <div class="flex-1">
+                            <div class="text-[8px] font-black text-slate-500 uppercase tracking-wider mb-1">BB</div>
+                            <div id="bb-count" class="text-xl md:text-4xl font-black text-purple-300 leading-none">0</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -239,38 +308,31 @@
                 <h3 class="header-font text-sm md:text-xl font-black text-purple-400 uppercase mb-4 italic">🚨 Prank Caller Red Flags</h3>
                 <p class="text-xs text-slate-500 uppercase font-black tracking-widest mb-5">Spot these signs early — hang up and move on</p>
                 <div class="text-sm md:text-base leading-relaxed text-slate-200 space-y-4">
-
                     <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                         <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Yes to Everything</p>
-                        <p class="text-slate-300">Answers <span class="text-white font-black">"yes"</span> to every single question without hesitation — <em>"Are you the owner?" "Yes." "Been in business over a year?" "Yes." "Do you have revenue over 200k?" "Yes."</em> Real owners pause, think, or ask follow-up questions.</p>
+                        <p class="text-slate-300">Answers <span class="text-white font-black">"yes"</span> to every single question without hesitation — Real owners pause, think, or ask follow-up questions.</p>
                     </div>
-
                     <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                         <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Generic / Fake Name</p>
-                        <p class="text-slate-300">Gives an overly common name with zero hesitation — <span class="text-white font-black">"John Smith," "Mike Johnson," "David Brown."</span> Ask for the business name too. If both sound generic and rehearsed, that's a flag.</p>
+                        <p class="text-slate-300">Gives an overly common name with zero hesitation — <span class="text-white font-black">"John Smith," "Mike Johnson."</span> Ask for the business name too.</p>
                     </div>
-
                     <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                         <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Asking for Money</p>
-                        <p class="text-slate-300">Says things like <span class="text-white font-black">"give me money," "send me cash," "how much can I get right now?"</span> before any qualification is even done. Legitimate business owners ask about the process — not demands.</p>
+                        <p class="text-slate-300">Says things like <span class="text-white font-black">"give me money," "send me cash"</span> before any qualification is done.</p>
                     </div>
-
                     <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                         <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Laughing or Background Noise</p>
-                        <p class="text-slate-300">You can hear <span class="text-white font-black">laughing, whispering, or other voices</span> in the background coaching them. They may stifle laughter or give answers too quickly like they're reading off a script someone is holding up.</p>
+                        <p class="text-slate-300">You can hear <span class="text-white font-black">laughing, whispering, or other voices</span> coaching them in the background.</p>
                     </div>
-
                     <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                         <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Absurd or Inconsistent Answers</p>
-                        <p class="text-slate-300">Business name is something like <span class="text-white font-black">"Money Inc," "My Company LLC," or just "I don't know."</span> Revenue jumps from "200k" to "10 million" in the same call. Details change when you ask a second time.</p>
+                        <p class="text-slate-300">Business name is <span class="text-white font-black">"Money Inc" or "I don't know."</span> Details change when you ask a second time.</p>
                     </div>
-
                     <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                         <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Refuses to Stay on Script</p>
-                        <p class="text-slate-300">Keeps going <span class="text-white font-black">off-topic, asking weird questions</span>, or tries to flip the conversation to waste your time. A real prospect stays engaged with the purpose of the call.</p>
+                        <p class="text-slate-300">Keeps going <span class="text-white font-black">off-topic or asking weird questions</span> to waste your time.</p>
                     </div>
-
-                    <p class="text-red-400 font-black italic mt-4 border-t border-red-900/50 pt-4 uppercase text-center text-xs md:text-sm">Trust your gut. If something feels off — end the call. Don't waste a transfer slot.</p>
+                    <p class="text-red-400 font-black italic mt-4 border-t border-red-900/50 pt-4 uppercase text-center text-xs md:text-sm">Trust your gut. If something feels off — end the call.</p>
                 </div>
             </div>
 
@@ -296,9 +358,20 @@
         const WEEKLY_PASSWORD = 'bizlevelup2025';
         // ==================================
 
+        // Day names for Mon–Sat
+        const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const DAY_FULL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
         let agents = [];
         let currentTab = 'daily';
+        let currentDayView = 'today'; // 'today' or 0-5 (Mon=0..Sat=5)
         let weeklyUnlocked = false;
+
+        // Day history snapshots: { dayName, agents[] } keyed by day index 0=Mon..5=Sat
+        // In a real setup these would come from your API. Here we detect completed days
+        // from the API response (agents[0].completedDays or similar).
+        // For now we store snapshots in memory when a day rolls over.
+        let daySnapshots = {}; // { 0: [{name, leads}], 1: [...], ... }
 
         async function updateDashboard() {
             const btn = document.getElementById('refresh-btn');
@@ -306,17 +379,77 @@
             try {
                 const res = await fetch(API_URL);
                 agents = await res.json();
+
+                // If API provides historical day data, load it
+                // Expected optional fields: agents[0].dayHistory = [{day:0,name:'Mon',agents:[...]},...]
+                if (agents.length > 0 && agents[0].dayHistory) {
+                    agents[0].dayHistory.forEach(d => {
+                        daySnapshots[d.day] = d.agents;
+                    });
+                }
+
                 render();
+                renderDaySubTabs();
                 document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}`;
-            } catch (e) { document.getElementById('timestamp').innerText = "System Offline"; }
+            } catch (e) { 
+                document.getElementById('timestamp').innerText = "System Offline"; 
+            }
             finally { setTimeout(() => btn.classList.remove('spin-anim'), 1000); }
         }
 
+        // ---- Day sub-tabs ----
+        function renderDaySubTabs() {
+            const container = document.getElementById('day-sub-tabs-container');
+            if (currentTab !== 'daily') {
+                container.innerHTML = '';
+                return;
+            }
+
+            // Determine which days have been completed (have snapshots or are past current day)
+            const completedDays = Object.keys(daySnapshots).map(Number);
+
+            if (completedDays.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            completedDays.sort((a,b)=>a-b).forEach(d => {
+                const isActive = currentDayView === d;
+                html += `<button 
+                    onclick="switchDayView(${d})" 
+                    class="day-sub-tab completed ${isActive ? 'day-tab-active' : ''}">
+                    ${DAY_NAMES[d]}<span class="history-badge"></span>
+                </button>`;
+            });
+
+            // Always show "Today" option
+            const isTodayActive = currentDayView === 'today';
+            html = `<button onclick="switchDayView('today')" class="day-sub-tab ${isTodayActive ? 'day-tab-active' : ''}">Today</button>` + html;
+
+            container.innerHTML = html;
+        }
+
+        function switchDayView(dayKey) {
+            currentDayView = dayKey;
+            renderDaySubTabs();
+            render();
+        }
+
+        // Expose for testing: manually add a day snapshot
+        // Call addDaySnapshot(0, agents) to mark Monday as complete
+        function addDaySnapshot(dayIndex, agentData) {
+            daySnapshots[dayIndex] = agentData.map(a => ({ name: a.name, leads: a.dailyLeads }));
+            renderDaySubTabs();
+        }
+
+        // ---- Password / Weekly ----
         function requestWeekly() {
             if (weeklyUnlocked) {
                 currentTab = 'weekly';
                 updateTabUI();
                 render();
+                renderDaySubTabs();
             } else {
                 document.getElementById('pw-modal').classList.remove('hidden');
                 document.getElementById('pw-input').value = '';
@@ -331,11 +464,12 @@
             if (val === WEEKLY_PASSWORD) {
                 weeklyUnlocked = true;
                 document.getElementById('pw-modal').classList.add('hidden');
-                // Update weekly tab icon (remove lock)
                 document.getElementById('tab-weekly').innerHTML = 'Weekly';
                 currentTab = 'weekly';
+                currentDayView = 'today';
                 updateTabUI();
                 render();
+                renderDaySubTabs();
             } else {
                 const input = document.getElementById('pw-input');
                 input.classList.add('error');
@@ -353,8 +487,10 @@
         function switchTab(tab) {
             if (tab === 'weekly') { requestWeekly(); return; }
             currentTab = tab;
+            currentDayView = 'today';
             updateTabUI();
             render();
+            renderDaySubTabs();
         }
 
         function updateTabUI() {
@@ -391,25 +527,49 @@
             pView.classList.add('hidden');
 
             const isWeekly = currentTab === 'weekly';
+            const isHistory = currentTab === 'daily' && currentDayView !== 'today';
             const target = isWeekly ? 800 : 150;
-            const today = agents.length > 0 ? agents[0].todayName : "Today";
+            const todayName = agents.length > 0 ? agents[0].todayName : "Today";
 
-            document.getElementById('goal-label').innerText = isWeekly ? "Weekly Team Goal" : `${today} Daily Goal`;
+            // Determine label
+            let goalLabel, dayIndicatorText;
+            if (isWeekly) {
+                goalLabel = "Weekly Team Goal";
+                dayIndicatorText = "Weekly Sprint";
+            } else if (isHistory) {
+                goalLabel = `${DAY_FULL[currentDayView]} Final Results`;
+                dayIndicatorText = `${DAY_NAMES[currentDayView]} — Completed`;
+            } else {
+                goalLabel = `${todayName} Daily Goal`;
+                dayIndicatorText = `${todayName} Performance`;
+            }
+
+            document.getElementById('goal-label').innerText = goalLabel;
             document.getElementById('target-display').innerText = `Target: ${target}`;
-            document.getElementById('day-indicator').innerText = isWeekly ? "Weekly Sprint" : `${today} Performance`;
+            document.getElementById('day-indicator').innerText = dayIndicatorText;
 
-            const displayData = agents.map(a => ({
-                name: a.name,
-                leads: isWeekly ? a.weeklyLeads : a.dailyLeads
-            })).sort((a, b) => b.leads - a.leads);
+            // Build display data
+            let displayData = [];
+            if (isHistory && daySnapshots[currentDayView]) {
+                displayData = [...daySnapshots[currentDayView]].sort((a,b) => b.leads - a.leads);
+            } else {
+                displayData = agents.map(a => ({
+                    name: a.name,
+                    leads: isWeekly ? a.weeklyLeads : a.dailyLeads,
+                    isPR: a.isPR || false,   // true if this agent is on the PR team
+                    isBB: a.isBB || false    // true if this agent is on the BB team
+                })).sort((a, b) => b.leads - a.leads);
+            }
 
-            let totalLeads = 0; let masters = 0; let activeReps = 0;
+            let totalLeads = 0, masters = 0, activeReps = 0, prTotal = 0, bbTotal = 0;
 
             board.innerHTML = displayData.map((agent, index) => {
                 const lvl = getLevel(agent.leads);
                 totalLeads += agent.leads;
-                if(agent.leads >= 12) masters++;
-                if(agent.leads > 0) activeReps++;
+                if (agent.leads >= 12) masters++;
+                if (agent.leads > 0) activeReps++;
+                if (agent.isPR) prTotal += agent.leads;
+                if (agent.isBB) bbTotal += agent.leads;
 
                 return `
                     <div class="glass p-5 rounded-2xl flex justify-between items-center transition-all hover:bg-white/5 ${lvl.class} mb-3 md:mb-0 md:m-2">
@@ -431,6 +591,8 @@
             document.getElementById('master-count').innerText = masters.toString().padStart(2, '0');
             document.getElementById('active-reps').innerText = activeReps;
             document.getElementById('current-leads-sum').innerText = `${totalLeads} Leads`;
+            document.getElementById('pr-count').innerText = prTotal;
+            document.getElementById('bb-count').innerText = bbTotal;
 
             const percentage = Math.min((totalLeads / target) * 100, 100);
             document.getElementById('progress-bar').style.width = percentage + '%';
