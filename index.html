@@ -8,141 +8,51 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700;900&display=swap');
-        body { background-color:#020617; font-family:'Inter',sans-serif; color:white; overflow-x:hidden; }
-        .header-font { font-family:'Orbitron',sans-serif; }
-        .glass { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(10px); }
-        .conqueror-tier { background:linear-gradient(90deg,rgba(239,68,68,0.15) 0%,rgba(239,68,68,0) 100%); border-left:4px solid #ef4444; }
-        .gold-tier      { background:linear-gradient(90deg,rgba(234,179,8,0.1)  0%,rgba(234,179,8,0)  100%); border-left:4px solid #eab308; }
-        .orange-tier    { background:linear-gradient(90deg,rgba(249,115,22,0.1) 0%,rgba(249,115,22,0) 100%); border-left:4px solid #f97316; }
-        .blue-tier  { border-left:4px solid #3b82f6; }
-        .slate-tier { border-left:4px solid #475569; opacity:0.8; }
-        .live-pulse { width:10px;height:10px;background:#ef4444;border-radius:50%;display:inline-block;margin-right:10px;animation:pulse 1.5s infinite; }
-        @keyframes pulse { 0%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:0.5} 100%{transform:scale(1);opacity:1} }
-        .gold-progress { background:linear-gradient(90deg,#ca8a04,#facc15,#eab308);box-shadow:0 0 15px rgba(234,179,8,0.4); }
-        .tab-active { background:rgba(59,130,246,0.2);border-color:#3b82f6!important;color:white!important;border-bottom:2px solid #3b82f6; }
-        .spin-anim { animation:spin 1s linear; }
-        @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        .prbb-card { background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(10px);border-bottom:4px solid #8b5cf6; }
-        .prbb-divider { width:1px;background:rgba(255,255,255,0.12);align-self:stretch;margin:4px 0; }
-        #day-sub-tabs-container { display:flex;gap:6px;flex-wrap:wrap; }
-        .day-sub-tab { background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:6px 14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#475569;cursor:pointer;transition:all 0.2s; }
-        .day-sub-tab:hover { color:#94a3b8;background:rgba(255,255,255,0.06); }
-        .day-sub-tab.is-today { color:#3b82f6;border-color:rgba(59,130,246,0.4); }
-        .day-sub-tab.is-today.active { background:rgba(59,130,246,0.15);border-color:#3b82f6;color:#93c5fd; }
-        .day-sub-tab.is-history { color:#64748b;border-color:rgba(71,85,105,0.4); }
-        .day-sub-tab.is-history.active { background:rgba(234,179,8,0.15);border-color:#eab308;color:#facc15; }
-        .history-dot { display:inline-block;width:5px;height:5px;background:#22c55e;border-radius:50%;margin-left:4px;vertical-align:middle; }
-        .history-banner { background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.25);border-radius:12px;padding:8px 14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#eab308;text-align:center; }
-        .modal-overlay { position:fixed;inset:0;background:rgba(2,6,23,0.92);backdrop-filter:blur(12px);z-index:9999;display:flex;align-items:center;justify-content:center; }
-        .modal-box { background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:40px 32px;width:90%;max-width:380px;text-align:center; }
-        .pw-input { width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:12px;color:white;font-size:1.1rem;padding:14px 18px;outline:none;text-align:center;letter-spacing:0.2em;font-family:'Orbitron',sans-serif;margin:20px 0 8px;transition:border-color 0.2s; }
-        .pw-input:focus{border-color:#eab308;} .pw-input.error{border-color:#ef4444;animation:shake 0.4s;}
+        body{background-color:#020617;font-family:'Inter',sans-serif;color:white;overflow-x:hidden;}
+        .header-font{font-family:'Orbitron',sans-serif;}
+        .glass{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(10px);}
+        .conqueror-tier{background:linear-gradient(90deg,rgba(239,68,68,0.15) 0%,rgba(239,68,68,0) 100%);border-left:4px solid #ef4444;}
+        .gold-tier{background:linear-gradient(90deg,rgba(234,179,8,0.1) 0%,rgba(234,179,8,0) 100%);border-left:4px solid #eab308;}
+        .orange-tier{background:linear-gradient(90deg,rgba(249,115,22,0.1) 0%,rgba(249,115,22,0) 100%);border-left:4px solid #f97316;}
+        .blue-tier{border-left:4px solid #3b82f6;}
+        .slate-tier{border-left:4px solid #475569;opacity:0.8;}
+        .live-pulse{width:10px;height:10px;background:#ef4444;border-radius:50%;display:inline-block;margin-right:10px;animation:pulse 1.5s infinite;}
+        @keyframes pulse{0%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:0.5}100%{transform:scale(1);opacity:1}}
+        .gold-progress{background:linear-gradient(90deg,#ca8a04,#facc15,#eab308);box-shadow:0 0 15px rgba(234,179,8,0.4);}
+        .tab-active{background:rgba(59,130,246,0.2);border-color:#3b82f6!important;color:white!important;border-bottom:2px solid #3b82f6;}
+        .spin-anim{animation:spin 1s linear;}
+        @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        .prbb-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(10px);border-bottom:4px solid #8b5cf6;}
+        .prbb-divider{width:1px;background:rgba(255,255,255,0.12);align-self:stretch;margin:4px 0;}
+        #day-sub-tabs-container{display:flex;gap:6px;flex-wrap:wrap;}
+        .day-sub-tab{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:6px 14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#475569;cursor:pointer;transition:all 0.2s;}
+        .day-sub-tab:hover{color:#94a3b8;background:rgba(255,255,255,0.06);}
+        .day-sub-tab.is-today{color:#3b82f6;border-color:rgba(59,130,246,0.4);}
+        .day-sub-tab.is-today.active{background:rgba(59,130,246,0.15);border-color:#3b82f6;color:#93c5fd;}
+        .day-sub-tab.is-history{color:#64748b;border-color:rgba(71,85,105,0.4);}
+        .day-sub-tab.is-history.active{background:rgba(234,179,8,0.15);border-color:#eab308;color:#facc15;}
+        .history-dot{display:inline-block;width:5px;height:5px;background:#22c55e;border-radius:50%;margin-left:4px;vertical-align:middle;}
+        .history-banner{background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.25);border-radius:12px;padding:8px 14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#eab308;text-align:center;}
+        .modal-overlay{position:fixed;inset:0;background:rgba(2,6,23,0.92);backdrop-filter:blur(12px);z-index:9999;display:flex;align-items:center;justify-content:center;}
+        .modal-box{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:40px 32px;width:90%;max-width:380px;text-align:center;}
+        .pw-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:12px;color:white;font-size:1.1rem;padding:14px 18px;outline:none;text-align:center;letter-spacing:0.2em;font-family:'Orbitron',sans-serif;margin:20px 0 8px;transition:border-color 0.2s;}
+        .pw-input:focus{border-color:#eab308;}.pw-input.error{border-color:#ef4444;animation:shake 0.4s;}
         @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
         .pw-btn{width:100%;padding:14px;border-radius:12px;font-family:'Orbitron',sans-serif;font-weight:900;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;background:linear-gradient(90deg,#ca8a04,#facc15,#eab308);color:#020617;border:none;cursor:pointer;margin-top:8px;transition:opacity 0.2s,transform 0.1s;}
-        .pw-btn:hover{opacity:0.9;} .pw-btn:active{transform:scale(0.97);}
+        .pw-btn:hover{opacity:0.9;}.pw-btn:active{transform:scale(0.97);}
         .pw-cancel{margin-top:12px;background:none;border:none;color:#475569;font-size:0.8rem;cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;}
-        .pw-cancel:hover{color:#94a3b8;} .error-msg{color:#ef4444;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;min-height:18px;}
-
-        /* ── Lookup Tab Styles ── */
-        .lookup-input {
-            width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);
-            border-radius:14px;color:white;font-size:1rem;padding:16px 20px;outline:none;
-            font-family:'Inter',sans-serif;transition:border-color 0.2s,box-shadow 0.2s;
-        }
-        .lookup-input:focus { border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.15); }
-        .lookup-input::placeholder { color:#475569; }
-        .lookup-btn {
-            width:100%;padding:16px;border-radius:14px;font-family:'Orbitron',sans-serif;font-weight:900;
-            font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;
-            background:linear-gradient(90deg,#1d4ed8,#3b82f6,#60a5fa);
-            color:white;border:none;cursor:pointer;transition:opacity 0.2s,transform 0.1s;
-            box-shadow:0 0 20px rgba(59,130,246,0.3);
-        }
-        .lookup-btn:hover{opacity:0.9;} .lookup-btn:active{transform:scale(0.97);}
-        .lookup-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
-        .result-card {
-            background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);
-            border-radius:20px;padding:24px;backdrop-filter:blur(10px);
-            border-left:4px solid #3b82f6;
-            animation:fadeSlideIn 0.4s ease-out;
-        }
-        @keyframes fadeSlideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-        .result-field { border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 0; }
-        .result-field:last-child { border-bottom:none;padding-bottom:0; }
-        .result-label { font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#475569;margin-bottom:4px; }
-        .result-value { font-size:0.95rem;font-weight:700;color:white;word-break:break-word; }
-        .result-value.na { color:#475569;font-style:italic;font-weight:400; }
-        .scanning-dots span {
-            display:inline-block;width:8px;height:8px;background:#3b82f6;border-radius:50%;
-            margin:0 3px;animation:dotBounce 1.2s infinite ease-in-out;
-        }
-        .scanning-dots span:nth-child(2){animation-delay:0.2s;}
-        .scanning-dots span:nth-child(3){animation-delay:0.4s;}
-        @keyframes dotBounce{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
-        .copy-btn {
-            font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;
-            color:#3b82f6;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);
-            border-radius:6px;padding:3px 8px;cursor:pointer;transition:all 0.2s;margin-left:8px;
-            vertical-align:middle;
-        }
-        .copy-btn:hover{background:rgba(59,130,246,0.2);}
-        .copy-btn.copied{color:#22c55e;background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);}
-        .search-history-item {
-            background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);
-            border-radius:10px;padding:10px 14px;cursor:pointer;transition:all 0.2s;
-            display:flex;justify-content:space-between;align-items:center;
-        }
+        .pw-cancel:hover{color:#94a3b8;}.error-msg{color:#ef4444;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;min-height:18px;}
+        .lookup-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);border-radius:14px;color:white;font-size:1rem;padding:16px 20px;outline:none;font-family:'Inter',sans-serif;transition:border-color 0.2s,box-shadow 0.2s;}
+        .lookup-input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.15);}
+        .lookup-input::placeholder{color:#475569;}
+        .lookup-btn{width:100%;padding:18px;border-radius:14px;font-family:'Orbitron',sans-serif;font-weight:900;font-size:0.82rem;letter-spacing:0.14em;text-transform:uppercase;background:linear-gradient(90deg,#1a56db,#2563eb,#3b82f6);color:white;border:none;cursor:pointer;transition:opacity 0.2s,transform 0.1s;box-shadow:0 0 25px rgba(59,130,246,0.35);}
+        .lookup-btn:hover{opacity:0.9;}.lookup-btn:active{transform:scale(0.97);}
+        .site-btn{display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 4px;cursor:pointer;transition:background 0.2s;width:100%;border-width:1px;}
+        .site-btn:hover{background:rgba(255,255,255,0.09);}
+        .site-btn span{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#64748b;}
+        .search-history-item{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 14px;cursor:pointer;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;}
         .search-history-item:hover{background:rgba(255,255,255,0.05);}
-        .confidence-badge {
-            display:inline-block;font-size:9px;font-weight:900;text-transform:uppercase;
-            letter-spacing:0.08em;padding:2px 8px;border-radius:20px;margin-left:8px;
-        }
-        .conf-high{background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.3);}
-        .conf-med {background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3);}
-        .conf-low {background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);}
-
-        /* ── Prank Alert ── */
-        .prank-alert {
-            border-radius:20px;padding:0;overflow:hidden;
-            animation:fadeSlideIn 0.35s ease-out, prankPulse 2s ease-in-out infinite;
-            border:2px solid #ef4444;
-            box-shadow:0 0 40px rgba(239,68,68,0.35), 0 0 80px rgba(239,68,68,0.1);
-        }
-        @keyframes prankPulse {
-            0%,100%{box-shadow:0 0 40px rgba(239,68,68,0.35),0 0 80px rgba(239,68,68,0.1);}
-            50%{box-shadow:0 0 60px rgba(239,68,68,0.6),0 0 120px rgba(239,68,68,0.2);}
-        }
-        .prank-header {
-            background:linear-gradient(135deg,rgba(239,68,68,0.3) 0%,rgba(185,28,28,0.4) 100%);
-            padding:24px;border-bottom:1px solid rgba(239,68,68,0.3);
-            position:relative;overflow:hidden;
-        }
-        .prank-header::before {
-            content:'';position:absolute;inset:0;
-            background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(239,68,68,0.04) 10px,rgba(239,68,68,0.04) 20px);
-        }
-        .prank-body { background:rgba(10,0,0,0.6);backdrop-filter:blur(10px);padding:20px; }
-        .prank-flag {
-            display:flex;align-items:center;gap:10px;
-            background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);
-            border-radius:10px;padding:10px 14px;
-        }
-        .prank-score-ring {
-            width:64px;height:64px;border-radius:50%;
-            background:conic-gradient(#ef4444 0%, transparent 0%);
-            display:flex;align-items:center;justify-content:center;
-            position:relative;flex-shrink:0;
-            border:3px solid rgba(239,68,68,0.3);
-        }
-        .prank-score-ring::before {
-            content:'';position:absolute;inset:6px;border-radius:50%;
-            background:#0a0000;
-        }
-        .prank-score-num {
-            position:relative;z-index:1;font-family:'Orbitron',sans-serif;
-            font-weight:900;font-size:1rem;color:#ef4444;
-        }
-
+        @keyframes fadeSlideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         @media(min-width:1024px){.main-container{max-width:1200px!important;}.leaderboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}.stat-card{padding:30px!important;}.stat-value{font-size:3rem!important;}}
     </style>
 </head>
@@ -179,29 +89,23 @@
         <h1 class="header-font text-4xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic leading-tight uppercase">BIZ Level Up Dashboard</h1>
     </div>
 
-    <!-- Tabs: Daily | Lookup | Playbook | Weekly -->
     <div class="flex gap-2 mb-4 px-2 max-w-2xl mx-auto">
         <button onclick="switchTab('daily')"    id="tab-daily"    class="flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all tab-active">Daily</button>
-        <button onclick="switchTab('lookup')"   id="tab-lookup"   class="flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">
-            <i class="fas fa-search text-[9px] mr-1 opacity-60"></i>Lookup
-        </button>
+        <button onclick="switchTab('lookup')"   id="tab-lookup"   class="flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500"><i class="fas fa-search text-[9px] mr-1 opacity-60"></i>Lookup</button>
         <button onclick="switchTab('playbook')" id="tab-playbook" class="flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
-        <button onclick="requestWeekly()"       id="tab-weekly"   class="flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">
-            <i class="fas fa-lock text-[9px] mr-1 opacity-60"></i>Weekly
-        </button>
+        <button onclick="switchTab('prank')"    id="tab-prank"    class="flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#a855f7;">🚨 Prank</button>
+        <button onclick="requestWeekly()"       id="tab-weekly"   class="flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500"><i class="fas fa-lock text-[9px] mr-1 opacity-60"></i>Weekly</button>
     </div>
 
-    <!-- Day history sub-tabs -->
     <div id="day-sub-tabs-wrapper" class="hidden px-2 mb-5 max-w-2xl mx-auto">
         <div id="day-sub-tabs-container"></div>
     </div>
 
-    <!-- ── LEADERBOARD VIEW ── -->
+    <!-- LEADERBOARD -->
     <div id="leaderboard-view">
         <div id="history-banner" class="hidden mx-2 mb-4">
             <div class="history-banner"><i class="fas fa-history mr-2"></i><span id="history-banner-text"></span></div>
         </div>
-
         <div class="mb-10 px-2 max-w-3xl mx-auto">
             <div class="flex justify-between items-end mb-3">
                 <span id="goal-label" class="text-xs md:text-sm font-black text-yellow-500 uppercase italic tracking-widest">Daily Team Goal</span>
@@ -215,7 +119,6 @@
                 <span id="target-display" class="text-xs font-bold text-slate-400">Target: 150</span>
             </div>
         </div>
-
         <div class="grid grid-cols-4 gap-2 mb-10 px-2">
             <div class="glass p-3 md:p-8 rounded-3xl border-b-4 border-b-yellow-500 text-center stat-card">
                 <div class="text-[9px] md:text-sm font-black text-yellow-500 uppercase mb-2 leading-tight">12+ Proof</div>
@@ -244,7 +147,6 @@
                 </div>
             </div>
         </div>
-
         <div class="flex justify-between items-end mb-6 px-4">
             <h2 id="ranking-title" class="header-font text-xs md:text-lg font-black tracking-widest text-slate-500 uppercase italic">Live Rankings</h2>
             <div id="day-indicator" class="text-xs md:text-sm text-blue-500 font-bold uppercase italic">Updating...</div>
@@ -252,53 +154,39 @@
         <div id="leaderboard" class="leaderboard-grid space-y-3 md:space-y-0 px-2"></div>
     </div>
 
-    <!-- ── LOOKUP VIEW ── -->
+    <!-- LOOKUP -->
     <div id="lookup-view" class="hidden px-2 pb-20 space-y-5">
         <div class="glass p-6 rounded-3xl border-t-4 border-t-blue-500">
-            <div class="flex items-center gap-3 mb-2">
+            <div class="flex items-center gap-3 mb-3">
                 <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);">
-                    <i class="fas fa-building text-blue-400 text-sm"></i>
+                    <i class="fab fa-google text-blue-400 text-sm"></i>
                 </div>
                 <div>
                     <div class="header-font text-xs text-blue-500 uppercase tracking-widest italic">Business Intelligence</div>
                     <div class="header-font text-lg font-black text-white uppercase italic">Lead Lookup</div>
                 </div>
             </div>
-            <p class="text-slate-500 text-xs mt-3 mb-5 leading-relaxed">Enter a phone number or business name to instantly pull owner info, address, and contact details.</p>
-
+            <p class="text-slate-500 text-xs mb-5 leading-relaxed">
+                Type a phone number or business name — opens <strong class="text-white">Google AI</strong> in a new tab asking for the business name, owner, address, and email.
+            </p>
             <div class="space-y-3">
-                <input
-                    id="lookup-input"
-                    type="text"
-                    class="lookup-input"
-                    placeholder="Enter phone number or business name..."
+                <input id="lookup-input" type="text" class="lookup-input"
+                    placeholder="e.g. (716) 771-6522 or Business Name..."
                     onkeydown="if(event.key==='Enter')runLookup()"
-                    autocomplete="off"
-                />
-                <div class="flex gap-2">
-                    <button onclick="runLookup()" id="lookup-btn" class="lookup-btn flex-1">
-                        <i class="fas fa-search mr-2"></i>Search Business
-                    </button>
-                    <button onclick="clearLookup()" title="Clear" class="glass p-4 rounded-xl hover:bg-white/10 transition-all active:scale-95 text-slate-500 hover:text-white">
-                        <i class="fas fa-times text-sm"></i>
-                    </button>
-                </div>
+                    autocomplete="off"/>
+
+                <button onclick="runLookup()" class="lookup-btn">
+                    <i class="fab fa-google mr-2"></i>Open Google AI — Search Now
+                </button>
+
+                <button onclick="clearLookup()" style="width:100%;background:none;border:none;color:#334155;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;padding:4px;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#334155'">
+                    <i class="fas fa-times" style="margin-right:4px;"></i>Clear
+                </button>
             </div>
         </div>
 
-        <!-- Loading State -->
-        <div id="lookup-loading" class="hidden glass p-8 rounded-3xl text-center">
-            <div class="scanning-dots mb-4">
-                <span></span><span></span><span></span>
-            </div>
-            <div class="header-font text-xs text-blue-400 uppercase tracking-widest font-black italic">Scanning Sources</div>
-            <div id="lookup-loading-msg" class="text-slate-600 text-xs mt-2 uppercase font-bold tracking-widest">Searching business registry...</div>
-        </div>
+        <div id="lookup-prank-result" class="hidden"></div>
 
-        <!-- Result -->
-        <div id="lookup-result" class="hidden"></div>
-
-        <!-- Search History -->
         <div id="lookup-history-section" class="hidden">
             <div class="flex justify-between items-center mb-3 px-1">
                 <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Recent Lookups</span>
@@ -308,8 +196,10 @@
         </div>
     </div>
 
-    <!-- ── PLAYBOOK VIEW ── -->
+    <!-- PLAYBOOK -->
     <div id="playbook-view" class="hidden space-y-6 px-2 pb-20">
+
+        <!-- QUALITY GUIDELINES -->
         <div class="glass p-6 rounded-3xl border-l-8 border-l-green-500 bg-green-500/5">
             <h3 class="header-font text-sm md:text-xl font-black text-green-500 uppercase mb-4 italic">Quality Guidelines</h3>
             <div class="text-sm md:text-lg leading-relaxed text-slate-200 space-y-3">
@@ -324,6 +214,8 @@
                 <p class="text-red-400 font-black italic mt-6 border-t border-red-900/50 pt-4 uppercase text-center">If qualifiers are not met you cannot transfer!!!</p>
             </div>
         </div>
+
+        <!-- REBUTTALS -->
         <div class="glass p-6 rounded-3xl border-l-8 border-l-red-500 bg-red-500/5">
             <h3 class="header-font text-sm md:text-xl font-black text-red-500 uppercase mb-4 italic">Rebuttals</h3>
             <div class="text-sm md:text-lg leading-relaxed text-slate-300 space-y-6">
@@ -334,19 +226,8 @@
                 <div><p class="text-white font-black italic text-lg">"Are You a Bank?"</p><p class="text-slate-400 italic">"No, we're a direct private lender. We work with business-funding programs that provide working capital and lines of credit directly."</p></div>
             </div>
         </div>
-        <div class="glass p-6 rounded-3xl border-l-8 border-l-purple-500 bg-purple-500/5">
-            <h3 class="header-font text-sm md:text-xl font-black text-purple-400 uppercase mb-4 italic">🚨 Prank Caller Red Flags</h3>
-            <p class="text-xs text-slate-500 uppercase font-black tracking-widest mb-5">Spot these signs early — hang up and move on</p>
-            <div class="text-sm md:text-base leading-relaxed text-slate-200 space-y-4">
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Yes to Everything</p><p class="text-slate-300">Answers <span class="text-white font-black">"yes"</span> to every question without hesitation.</p></div>
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Generic / Fake Name</p><p class="text-slate-300">Gives an overly common name — <span class="text-white font-black">"John Smith," "Mike Johnson."</span></p></div>
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Asking for Money</p><p class="text-slate-300">Demands <span class="text-white font-black">"give me money"</span> before any qualification.</p></div>
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Laughing or Background Noise</p><p class="text-slate-300">Hear <span class="text-white font-black">laughing or whispering</span> coaching them.</p></div>
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Absurd or Inconsistent Answers</p><p class="text-slate-300">Business name is <span class="text-white font-black">"Money Inc"</span> or details change when asked again.</p></div>
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-1">Refuses to Stay on Script</p><p class="text-slate-300">Goes <span class="text-white font-black">off-topic</span> to waste your time.</p></div>
-                <p class="text-red-400 font-black italic mt-4 border-t border-red-900/50 pt-4 uppercase text-center text-xs">Trust your gut. If something feels off — end the call.</p>
-            </div>
-        </div>
+
+        <!-- MICRO-TRUST TIPS -->
         <div class="glass p-6 rounded-3xl border-l-8 border-l-blue-500 bg-blue-500/5">
             <h3 class="header-font text-sm md:text-xl font-black text-blue-500 uppercase mb-4 italic">Micro-Trust Tips</h3>
             <div class="text-sm md:text-lg leading-relaxed text-slate-200">
@@ -360,27 +241,205 @@
             </div>
         </div>
     </div>
+
+
+    <!-- PRANK TAB -->
+    <div id="prank-view" class="hidden space-y-5 px-2 pb-20">
+
+        <!-- MEXICO WARNING -->
+        <div style="border-radius:20px;overflow:hidden;border:3px solid #ef4444;box-shadow:0 0 40px rgba(239,68,68,0.4);">
+            <div style="background:linear-gradient(135deg,rgba(239,68,68,0.35),rgba(185,28,28,0.5));padding:20px 22px;position:relative;overflow:hidden;">
+                <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(239,68,68,0.07) 10px,rgba(239,68,68,0.07) 20px);"></div>
+                <div style="position:relative;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                        <span style="font-size:1.6rem;">🇲🇽</span>
+                        <div>
+                            <div style="font-family:Orbitron,sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#ef4444;">⚠️ ACTIVE ONGOING SCAM — END CALL PROFESSIONALLY &amp; MOVE ON</div>
+                            <div style="font-family:Orbitron,sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;color:white;margin-top:2px;">Mexico / Fund Transfer Alert</div>
+                        </div>
+                    </div>
+                    <p style="color:#fca5a5;font-size:14px;font-weight:700;line-height:1.6;">
+                        If anyone on a call <span style="color:white;font-weight:900;">mentions Mexico</span>, asks to <span style="color:white;font-weight:900;">send funds to Mexico</span>, or requests any <span style="color:white;font-weight:900;">international money transfer</span> — this is a <span style="color:#ef4444;font-weight:900;">confirmed prank / scam</span>. Do not engage further.
+                    </p>
+                </div>
+            </div>
+            <div style="background:rgba(2,6,23,0.85);padding:14px 22px;display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;align-items:center;gap:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:10px 14px;">
+                    <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;"></i>
+                    <span style="color:#fca5a5;font-size:13px;font-weight:700;">"Can you send the funds to Mexico?" — End call professionally &amp; move on</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:10px 14px;">
+                    <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;"></i>
+                    <span style="color:#fca5a5;font-size:13px;font-weight:700;">Any mention of Mexico as a business location or fund destination — End call &amp; move on</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:10px 14px;">
+                    <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;"></i>
+                    <span style="color:#fca5a5;font-size:13px;font-weight:700;">Requesting wire transfer or cash to international account — End call &amp; move on</span>
+                </div>
+                <p style="color:#64748b;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;text-align:center;margin-top:4px;">This is an ongoing scam targeting our reps. Do not transfer under any circumstances.</p>
+            </div>
+        </div>
+
+        <!-- ONLYFANS PRANK -->
+        <div style="border-radius:16px;overflow:hidden;border:2px solid #f97316;background:rgba(249,115,22,0.06);">
+            <div style="background:linear-gradient(135deg,rgba(249,115,22,0.25),rgba(194,65,12,0.35));padding:16px 20px;display:flex;align-items:center;gap:12px;">
+                <span style="font-size:1.5rem;">🔞</span>
+                <div>
+                    <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#f97316;">Instant Disqualifier — End Call Professionally</div>
+                    <div style="font-family:Orbitron,sans-serif;font-size:15px;font-weight:900;text-transform:uppercase;color:white;margin-top:2px;">OnlyFans = Prank. Full Stop.</div>
+                </div>
+            </div>
+            <div style="padding:14px 20px;display:flex;flex-direction:column;gap:8px;">
+                <p style="color:#cbd5e1;font-size:13px;font-weight:600;line-height:1.6;">If anyone gives <span style="color:white;font-weight:900;">"OnlyFans"</span> as their business name or says they run an OnlyFans account — end the call professionally and move on immediately. This is a prank. We do not work with adult content platforms, and no legitimate business loan applicant would list this as their company. Don't engage, don't try to qualify them further.</p>
+                <div style="display:flex;align-items:center;gap:10px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:10px;padding:10px 14px;margin-top:4px;">
+                    <i class="fas fa-flag" style="color:#f97316;flex-shrink:0;"></i>
+                    <span style="color:#fed7aa;font-size:13px;font-weight:700;">"My business is OnlyFans" — End call professionally &amp; move on</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:10px;padding:10px 14px;">
+                    <i class="fas fa-flag" style="color:#f97316;flex-shrink:0;"></i>
+                    <span style="color:#fed7aa;font-size:13px;font-weight:700;">"I'm a content creator on OnlyFans" — End call professionally &amp; move on</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRANK RED FLAGS -->
+        <div class="glass p-6 rounded-3xl border-l-8 border-l-purple-500 bg-purple-500/5">
+            <h3 class="header-font text-sm md:text-xl font-black text-purple-400 uppercase mb-2 italic">🚨 Prank Caller Red Flags</h3>
+            <p class="text-xs text-slate-500 uppercase font-black tracking-widest mb-5">Spot these signs early — end the call professionally and move on</p>
+            <div class="text-sm md:text-base leading-relaxed text-slate-200 space-y-4">
+
+                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">1. Yes to Everything</p>
+                    <p class="text-slate-300 text-sm">A real business owner will ask questions, push back, or need a moment to think. If someone says <span class="text-white font-black">"yes"</span> instantly to every single question — business type, revenue, ownership, years open — without any hesitation, they are not a real lead. Real owners don't always have the answer ready. Prankers agree to everything to see how far they can get.</p>
+                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: zero hesitation, perfect answers, robotic "yes yes yes"</p>
+                </div>
+
+                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">2. Generic or Unverifiable Business Name</p>
+                    <p class="text-slate-300 text-sm">When you ask the business name and they give something vague like <span class="text-white font-black">"John's Business," "My Company," "Business LLC,"</span> or something that sounds made up on the spot — that's a red flag. Real owners say their business name with confidence. Ask them to spell it out. If they hesitate or change it, it's fake.</p>
+                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "um… it's called… like… my business," names that change when repeated back</p>
+                </div>
+
+                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">3. Asking for Money or Reversing the Script</p>
+                    <p class="text-slate-300 text-sm">If they flip the call and start asking <span class="text-white font-black">"So how much will YOU give me?"</span> or <span class="text-white font-black">"When can I get the money?"</span> before you've even qualified them — they're trying to waste your time or play a game. Legitimate leads understand there's a qualification process first.</p>
+                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "just send it," "how fast can I get it," "give me the max"</p>
+                </div>
+
+                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">4. Laughing, Whispering, or Coached Answers</p>
+                    <p class="text-slate-300 text-sm">If you hear <span class="text-white font-black">giggling, muffled laughter, or someone whispering answers</span> to them in the background, end the call. This is a group prank where multiple people are listening. Sometimes you'll hear a pause then they repeat what someone else just said to them word for word. Real owners are alone or in a quiet office environment.</p>
+                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: echoing, whispering, covering the phone, sudden "hold on" with background noise</p>
+                </div>
+
+                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">5. Inconsistent or Absurd Details</p>
+                    <p class="text-slate-300 text-sm">Ask the business name — then ask again a minute later. If it changed, that's a prank. Or they give a revenue of <span class="text-white font-black">$50 million</span> but say they've been open <span class="text-white font-black">2 months</span>. Numbers that don't add up, industries that don't make sense, addresses in random states with local area codes — real owners are consistent because they live their business every day.</p>
+                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: contradictory info, impossible numbers, changing their story</p>
+                </div>
+
+                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">6. Refuses to Stay On Topic</p>
+                    <p class="text-slate-300 text-sm">Prankers love to <span class="text-white font-black">derail the call</span> — making jokes, asking unrelated questions, or being purposely difficult to string you along. They want to waste 10 minutes of your time for laughs. If you've redirected them twice and they still won't engage seriously, that's your sign. Don't try to save the call — end it professionally and protect your time.</p>
+                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: random tangents, jokes about the call, refusing to answer direct questions</p>
+                </div>
+
+                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">7. Suspicious Tone &amp; Energy</p>
+                    <p class="text-slate-300 text-sm">Real business owners are usually <span class="text-white font-black">busy, slightly guarded, and professional</span> — even if skeptical. A prank caller often sounds <span class="text-white font-black">too casual, overly excited, or flat and robotic</span>. If the energy feels off — too eager, too silly, or suspiciously perfect — trust your instinct. Your gut is trained from every real call you've taken. Use it.</p>
+                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: overly enthusiastic, bored monotone, giggling energy, acting performance</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- KEYWORDS TO LISTEN FOR -->
+        <div class="glass p-6 rounded-3xl border-l-8 border-l-yellow-500 bg-yellow-500/5">
+            <h3 class="header-font text-sm md:text-xl font-black text-yellow-400 uppercase mb-2 italic">🔑 Prank Keywords &amp; Phrases</h3>
+            <p class="text-xs text-slate-500 uppercase font-black tracking-widest mb-5">The moment you hear these — stay alert or end the call</p>
+            <div class="space-y-3">
+                <div style="background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.25);border-radius:12px;padding:14px 16px;">
+                    <p class="text-yellow-400 font-black text-xs uppercase tracking-widest mb-2">🚩 Immediate Red Flags — End Call</p>
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"Send it to Mexico"</span>
+                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"Wire the money"</span>
+                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"Give me the cash"</span>
+                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"I need it today"</span>
+                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"How much can you give me?"</span>
+                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"Send it internationally"</span>
+                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"My business is called… uh…"</span>
+                    </div>
+                </div>
+                <div style="background:rgba(234,179,8,0.06);border:1px solid rgba(234,179,8,0.2);border-radius:12px;padding:14px 16px;">
+                    <p class="text-yellow-400 font-black text-xs uppercase tracking-widest mb-2">⚠️ Proceed With Caution</p>
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"Yeah, yeah, whatever you need"</span>
+                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"I own everything 100%"</span>
+                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"We make millions"</span>
+                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"Just approve me"</span>
+                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"I've been in business forever"</span>
+                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"Can you just skip that part?"</span>
+                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"What's the minimum I qualify for?"</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TONE GUIDE -->
+        <div class="glass p-6 rounded-3xl border-l-8 border-l-blue-400 bg-blue-500/5">
+            <h3 class="header-font text-sm md:text-xl font-black text-blue-400 uppercase mb-2 italic">🎙️ Tone &amp; Voice Tells</h3>
+            <p class="text-xs text-slate-500 uppercase font-black tracking-widest mb-5">What a real owner sounds like vs. a prank caller</p>
+            <div class="grid grid-cols-1 gap-3">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:14px;">
+                        <p class="text-green-400 font-black text-xs uppercase tracking-widest mb-3">✅ Real Owner Sounds Like</p>
+                        <ul class="space-y-2 text-slate-300 text-xs font-semibold">
+                            <li>• Slightly busy or distracted</li>
+                            <li>• Asks "what is this for exactly?"</li>
+                            <li>• Pauses to recall their revenue</li>
+                            <li>• Says their business name confidently</li>
+                            <li>• Skeptical but willing to listen</li>
+                            <li>• Professional, measured tone</li>
+                            <li>• Asks about the process / next steps</li>
+                            <li>• Background sounds like a real workplace</li>
+                        </ul>
+                    </div>
+                    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:14px;">
+                        <p class="text-red-400 font-black text-xs uppercase tracking-widest mb-3">🚨 Prank Caller Sounds Like</p>
+                        <ul class="space-y-2 text-slate-300 text-xs font-semibold">
+                            <li>• Too casual or too excited</li>
+                            <li>• Agrees to everything instantly</li>
+                            <li>• Never hesitates on any answer</li>
+                            <li>• Gives absurd or vague business name</li>
+                            <li>• Giggles or sounds entertained</li>
+                            <li>• Flat robotic tone like reading a script</li>
+                            <li>• Keeps pushing for the money amount</li>
+                            <li>• Background sounds like a group or party</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <p class="text-slate-500 font-black italic mt-5 border-t border-white/5 pt-4 uppercase text-center text-xs">End the call professionally: <span class="text-white">"Thank you for your time, we're not able to proceed at this time. Have a great day."</span></p>
+        </div>
+
+
+    </div>
+
 </div>
 
 <script>
-// ── CONFIG ───────────────────────────────────────────────────
 const API_URL = 'https://script.google.com/macros/s/AKfycbxEz0oA-FRcZ9c0lp18bKbBLZZbGW3sGba0PBaoIynMz_qaF6mCfs4KzYuY6HdOmlzwZw/exec';
 const WEEKLY_PASSWORD = 'bizlevelup2025';
-
 const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 let agents = [], dayHistory = [];
 let currentTab = 'daily', currentDayView = 'today', weeklyUnlocked = false;
-let lookupHistory = JSON.parse(localStorage.getItem('bizlookup_history') || '[]');
+let lookupHistory = [];
+try { lookupHistory = JSON.parse(localStorage.getItem('bizlookup_history') || '[]'); } catch(e) {}
 
-// ── TEAM DETECTION ───────────────────────────────────────────
-function getTeam(name) {
-    if (!name) return 'PR';
-    return name.trim().startsWith('GYB') ? 'BB' : 'PR';
-}
+function getTeam(name) { return (!name) ? 'PR' : name.trim().startsWith('GYB') ? 'BB' : 'PR'; }
 
-// ── DASHBOARD DATA ───────────────────────────────────────────
 async function updateDashboard() {
     const btn = document.getElementById('refresh-btn');
     btn.classList.add('spin-anim');
@@ -394,36 +453,29 @@ async function updateDashboard() {
         }
         if (agents.length > 0 && !agents[0].prTotal && !agents[0].bbTotal) {
             let pr = 0, bb = 0;
-            agents.forEach(a => { if (a.team === 'PR') pr += (a.dailyLeads || 0); else bb += (a.dailyLeads || 0); });
+            agents.forEach(a => { if (a.team==='PR') pr+=(a.dailyLeads||0); else bb+=(a.dailyLeads||0); });
             agents[0].prTotal = pr; agents[0].bbTotal = bb;
         }
         render(); renderDaySubTabs();
-        document.getElementById('timestamp').innerText = `Live: ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
-    } catch(e) {
-        document.getElementById('timestamp').innerText = 'System Offline';
-        console.error(e);
-    } finally {
-        setTimeout(() => btn.classList.remove('spin-anim'), 1000);
-    }
+        document.getElementById('timestamp').innerText = 'Live: ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    } catch(e) { document.getElementById('timestamp').innerText = 'System Offline'; }
+    finally { setTimeout(() => btn.classList.remove('spin-anim'), 1000); }
 }
 
-// ── DAY SUB TABS ─────────────────────────────────────────────
 function renderDaySubTabs() {
     const wrapper = document.getElementById('day-sub-tabs-wrapper');
     const container = document.getElementById('day-sub-tabs-container');
-    if (currentTab !== 'daily') { wrapper.classList.add('hidden'); return; }
-    if (dayHistory.length === 0) { wrapper.classList.add('hidden'); return; }
-    let html = `<button onclick="switchDayView('today')" class="day-sub-tab is-today ${currentDayView==='today'?'active':''}">Today</button>`;
+    if (currentTab !== 'daily') { wrapper.classList.add('hidden'); return; } // prank/lookup/playbook/weekly all hide sub-tabs
+    if (!dayHistory.length) { wrapper.classList.add('hidden'); return; }
+    let html = '<button onclick="switchDayView(\'today\')" class="day-sub-tab is-today ' + (currentDayView==='today'?'active':'') + '">Today</button>';
     dayHistory.forEach(d => {
-        html += `<button onclick="switchDayView(${d.day})" class="day-sub-tab is-history ${currentDayView===d.day?'active':''}">
-            ${DAY_SHORT[d.day]}<span class="history-dot"></span></button>`;
+        html += '<button onclick="switchDayView(' + d.day + ')" class="day-sub-tab is-history ' + (currentDayView===d.day?'active':'') + '">' + DAY_SHORT[d.day] + '<span class="history-dot"></span></button>';
     });
     container.innerHTML = html;
     wrapper.classList.remove('hidden');
 }
 function switchDayView(key) { currentDayView = key; renderDaySubTabs(); render(); }
 
-// ── TAB MANAGEMENT ───────────────────────────────────────────
 function requestWeekly() {
     if (weeklyUnlocked) { currentTab='weekly'; updateTabUI(); render(); renderDaySubTabs(); return; }
     document.getElementById('pw-modal').classList.remove('hidden');
@@ -454,17 +506,15 @@ function switchTab(tab) {
     if (tab === 'weekly') { requestWeekly(); return; }
     currentTab = tab; currentDayView = 'today';
     updateTabUI(); render(); renderDaySubTabs();
+    if (tab === 'lookup') renderLookupHistory();
 }
-
 function updateTabUI() {
-    ['daily','lookup','playbook','weekly'].forEach(t => {
-        const btn = document.getElementById(`tab-${t}`);
-        if (!btn) return;
-        btn.className = `flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all ${t===currentTab?'tab-active':'text-slate-500'}`;
+    ['daily','lookup','playbook','prank','weekly'].forEach(t => {
+        const b = document.getElementById('tab-' + t);
+        if (b) b.className = 'flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all ' + (t===currentTab ? 'tab-active' : 'text-slate-500');
     });
 }
 
-// ── RENDER ───────────────────────────────────────────────────
 function getLevel(l) {
     if (l>=17) return {title:'CONQUEROR',cls:'conqueror-tier',color:'text-red-500'};
     if (l>=12) return {title:'MASTER',   cls:'gold-tier',     color:'text-yellow-500'};
@@ -474,84 +524,72 @@ function getLevel(l) {
 }
 
 function render() {
-    const lView = document.getElementById('leaderboard-view');
-    const pView = document.getElementById('playbook-view');
+    const lView  = document.getElementById('leaderboard-view');
+    const pView  = document.getElementById('playbook-view');
     const luView = document.getElementById('lookup-view');
-    const board = document.getElementById('leaderboard');
-    const banner = document.getElementById('history-banner');
-
-    lView.classList.add('hidden'); pView.classList.add('hidden'); luView.classList.add('hidden');
-
-    if (currentTab === 'playbook') { pView.classList.remove('hidden'); return; }
-    if (currentTab === 'lookup')   { luView.classList.remove('hidden'); renderLookupHistory(); return; }
-
+    const prView = document.getElementById('prank-view');
+    lView.classList.add('hidden');
+    pView.classList.add('hidden');
+    luView.classList.add('hidden');
+    if (prView) prView.classList.add('hidden');
+    if (currentTab==='playbook') { pView.classList.remove('hidden'); return; }
+    if (currentTab==='lookup')   { luView.classList.remove('hidden'); return; }
+    if (currentTab==='prank')    { if (prView) prView.classList.remove('hidden'); return; }
     lView.classList.remove('hidden');
 
     const isWeekly  = currentTab === 'weekly';
     const isHistory = currentTab === 'daily' && currentDayView !== 'today';
     const target    = isWeekly ? 800 : 150;
     const todayName = agents.length > 0 ? (agents[0].todayName || 'Today') : 'Today';
+    const banner    = document.getElementById('history-banner');
 
     if (isHistory) {
         const snap = dayHistory.find(d => d.day === currentDayView);
-        document.getElementById('history-banner-text').innerText = `Viewing ${snap ? snap.dayName : DAY_FULL[currentDayView]} — Final Results`;
+        document.getElementById('history-banner-text').innerText = 'Viewing ' + (snap ? snap.dayName : DAY_FULL[currentDayView]) + ' — Final Results';
         banner.classList.remove('hidden');
     } else { banner.classList.add('hidden'); }
 
-    document.getElementById('goal-label').innerText     = isWeekly ? 'Weekly Team Goal' : isHistory ? `${DAY_FULL[currentDayView]} Final` : `${todayName} Daily Goal`;
-    document.getElementById('target-display').innerText  = `Target: ${target}`;
-    document.getElementById('day-indicator').innerText   = isWeekly ? 'Weekly Sprint' : isHistory ? `${DAY_SHORT[currentDayView]} — Completed ✓` : `${todayName} Performance`;
+    document.getElementById('goal-label').innerText    = isWeekly ? 'Weekly Team Goal' : isHistory ? DAY_FULL[currentDayView] + ' Final' : todayName + ' Daily Goal';
+    document.getElementById('target-display').innerText = 'Target: ' + target;
+    document.getElementById('day-indicator').innerText  = isWeekly ? 'Weekly Sprint' : isHistory ? DAY_SHORT[currentDayView] + ' — Completed' : todayName + ' Performance';
 
     let displayData = [], prTotal = 0, bbTotal = 0;
-
     if (isHistory) {
         const snap = dayHistory.find(d => d.day === currentDayView);
         if (snap) {
-            displayData = [...snap.agents].sort((a,b) => b.leads - a.leads);
-            prTotal = snap.prTotal || 0; bbTotal = snap.bbTotal || 0;
-            if (!prTotal && !bbTotal) { displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; }); }
+            displayData = [...snap.agents].sort((a,b) => b.leads-a.leads);
+            prTotal = snap.prTotal||0; bbTotal = snap.bbTotal||0;
+            if (!prTotal && !bbTotal) displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; });
         }
     } else {
-        displayData = agents.map(a => ({
-            name: a.name, leads: isWeekly ? (a.weeklyLeads||0) : (a.dailyLeads||0), team: a.team || getTeam(a.name)
-        })).sort((a,b) => b.leads - a.leads);
-        if (isWeekly) {
-            displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; });
-        } else if (agents.length > 0) {
-            prTotal = agents[0].prTotal || 0; bbTotal = agents[0].bbTotal || 0;
-            if (prTotal === 0 && bbTotal === 0) { displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; }); }
+        displayData = agents.map(a => ({name:a.name,leads:isWeekly?(a.weeklyLeads||0):(a.dailyLeads||0),team:a.team||getTeam(a.name)})).sort((a,b)=>b.leads-a.leads);
+        if (isWeekly) { displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; }); }
+        else if (agents.length > 0) {
+            prTotal = agents[0].prTotal||0; bbTotal = agents[0].bbTotal||0;
+            if (!prTotal && !bbTotal) displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; });
         }
     }
 
-    let totalLeads = 0, masters = 0, activeReps = 0;
-
-    board.innerHTML = displayData.map((agent, i) => {
+    let totalLeads=0, masters=0, activeReps=0;
+    document.getElementById('leaderboard').innerHTML = displayData.map((agent,i) => {
         const lvl = getLevel(agent.leads);
-        totalLeads += agent.leads;
-        if (agent.leads >= 12) masters++;
-        if (agent.leads > 0) activeReps++;
-        const badge = agent.team === 'PR'
-            ? `<span style="font-size:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:1px 5px;color:#a78bfa;font-weight:900;margin-left:6px;letter-spacing:0.05em;">PROV</span>`
-            : `<span style="font-size:8px;background:rgba(192,132,252,0.15);border:1px solid rgba(192,132,252,0.3);border-radius:4px;padding:1px 5px;color:#c084fc;font-weight:900;margin-left:6px;letter-spacing:0.05em;">BERB</span>`;
-        return `<div class="glass p-5 rounded-2xl flex justify-between items-center transition-all hover:bg-white/5 ${lvl.cls} mb-3 md:mb-0 md:m-2">
-            <div class="flex items-center gap-4">
-                <span class="text-xl font-black italic ${i<3?'text-white':'text-slate-700'}">${String(i+1).padStart(2,'0')}</span>
-                <div>
-                    <div class="font-black text-sm md:text-lg text-white uppercase flex items-center flex-wrap gap-1">${agent.name}${badge}</div>
-                    <div class="text-[9px] font-black uppercase tracking-widest ${lvl.color}">${lvl.title} STATUS</div>
-                </div>
-            </div>
-            <div class="text-right">
-                <div class="text-2xl md:text-3xl font-black text-white leading-none">${agent.leads}</div>
-                <div class="text-[8px] text-slate-500 uppercase font-black mt-1">Transfers</div>
-            </div>
-        </div>`;
+        totalLeads+=agent.leads; if(agent.leads>=12) masters++; if(agent.leads>0) activeReps++;
+        const badge = agent.team==='PR'
+            ? '<span style="font-size:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:1px 5px;color:#a78bfa;font-weight:900;margin-left:6px;">PROV</span>'
+            : '<span style="font-size:8px;background:rgba(192,132,252,0.15);border:1px solid rgba(192,132,252,0.3);border-radius:4px;padding:1px 5px;color:#c084fc;font-weight:900;margin-left:6px;">BERB</span>';
+        return '<div class="glass p-5 rounded-2xl flex justify-between items-center transition-all hover:bg-white/5 '+lvl.cls+' mb-3 md:mb-0 md:m-2">'
+            +'<div class="flex items-center gap-4">'
+            +'<span class="text-xl font-black italic '+(i<3?'text-white':'text-slate-700')+'">'+String(i+1).padStart(2,'0')+'</span>'
+            +'<div><div class="font-black text-sm md:text-lg text-white uppercase flex items-center flex-wrap gap-1">'+agent.name+badge+'</div>'
+            +'<div class="text-[9px] font-black uppercase tracking-widest '+lvl.color+'">'+lvl.title+' STATUS</div></div></div>'
+            +'<div class="text-right"><div class="text-2xl md:text-3xl font-black text-white leading-none">'+agent.leads+'</div>'
+            +'<div class="text-[8px] text-slate-500 uppercase font-black mt-1">Transfers</div></div></div>';
     }).join('');
 
     document.getElementById('floor-total').innerText       = totalLeads;
     document.getElementById('master-count').innerText      = String(masters).padStart(2,'0');
     document.getElementById('active-reps').innerText       = activeReps;
-    document.getElementById('current-leads-sum').innerText = `${totalLeads} Leads`;
+    document.getElementById('current-leads-sum').innerText = totalLeads+' Leads';
     document.getElementById('pr-count').innerText          = prTotal;
     document.getElementById('bb-count').innerText          = bbTotal;
     const pct = Math.min((totalLeads/target)*100,100);
@@ -559,569 +597,151 @@ function render() {
     document.getElementById('goal-percent').innerText    = Math.floor(pct)+'%';
 }
 
-// ── LOOKUP LOGIC ─────────────────────────────────────────────
-const loadingMessages = [
-    'Searching business registry...',
-    'Scanning public records...',
-    'Cross-referencing data sources...',
-    'Extracting owner information...',
-    'Verifying contact details...',
-    'Compiling results...'
-];
-let loadingInterval = null;
-
-function startLoadingAnimation() {
-    let i = 0;
-    const el = document.getElementById('lookup-loading-msg');
-    el.innerText = loadingMessages[0];
-    loadingInterval = setInterval(() => {
-        i = (i + 1) % loadingMessages.length;
-        el.innerText = loadingMessages[i];
-    }, 1200);
-}
-function stopLoadingAnimation() {
-    clearInterval(loadingInterval);
-    loadingInterval = null;
-}
-
-// ── PRANK DETECTION (runs instantly, no API needed) ──────────
+// ── PRANK DETECTION ───────────────────────────────────────────
 function detectPrank(query) {
     const q = query.trim().toLowerCase();
     const reasons = [];
     let score = 0;
-
-    // Obviously fake phone patterns
-    const isPhone = /^[\d\s\-\(\)\+]+$/.test(query) && query.replace(/\D/g,'').length >= 7;
+    const isPhone = /^[\d\s\-\(\)\+\.]+$/.test(query) && query.replace(/\D/g,'').length >= 7;
     if (isPhone) {
-        const digits = query.replace(/\D/g,'');
-        const allSame    = /^(\d)\1+$/.test(digits);
-        const sequential = ['1234567890','0987654321','1234567','7654321','123456789','987654321'].some(s => digits.includes(s.slice(0,7)));
-        const knownFake  = ['0000000000','1111111111','1234567890','9999999999','5555555555','1231231234'].includes(digits);
-        if (allSame)    { score += 85; reasons.push('All same digits — clearly fake number'); }
-        if (sequential) { score += 70; reasons.push('Sequential digits pattern — common fake number'); }
-        if (knownFake)  { score += 90; reasons.push('Known placeholder/test phone number'); }
-        if (digits.startsWith('0000')) { score += 80; reasons.push('Starts with 0000 — invalid number'); }
+        const d = query.replace(/\D/g,'');
+        if (/^(\d)\1+$/.test(d))                               { score+=85; reasons.push('All same digits — clearly fake number'); }
+        if (['1234567890','0987654321','1234567'].some(s=>d.includes(s.slice(0,7)))) { score+=70; reasons.push('Sequential digits — common fake number'); }
+        if (['0000000000','1111111111','1234567890','9999999999'].includes(d))        { score+=90; reasons.push('Known placeholder/test phone number'); }
     }
-
-    // Fictional / meme companies
-    const fictional = ['dunder mifflin','umbrella corp','initech','globex','vandelay','acme corp','nakatomi','aperture','weyland','wayne enterprises','stark industries','oscorp','bluth','virtucon'];
-    if (fictional.some(f => q.includes(f))) { score += 95; reasons.push('Fictional company name detected'); }
-
-    // Nonsense / keyboard mashing
-    if (/^[a-z]{1,3}$/.test(q))           { score += 85; reasons.push('Too short to be a real business name'); }
-    if (/(.)\1{3,}/.test(q))              { score += 75; reasons.push('Repeated characters — keyboard mashing'); }
-    if (/^(asdf|qwer|zxcv|hjkl|test|fake|blah|lol|haha|yolo)/.test(q)) { score += 90; reasons.push('Nonsense or test input detected'); }
-
-    // Generic placeholder names
-    const placeholders = ['business name','company name','my business','test business','business here','enter business','sample','placeholder','n/a','none','null','undefined','lorem ipsum'];
-    if (placeholders.some(p => q.includes(p))) { score += 88; reasons.push('Generic placeholder name'); }
-
-    // Joke/absurd patterns
-    const jokeWords = ['money inc','cash cash','big bucks','easy money','get rich','scam','fraud','bank of nigeria','prince','inheritance','bitcoin profits','free money'];
-    if (jokeWords.some(j => q.includes(j))) { score += 80; reasons.push('Name matches known scam/joke phrase'); }
-
-    // Excessive punctuation or emojis
-    if (/[!@#$%^&*]{2,}/.test(query))     { score += 60; reasons.push('Excessive special characters'); }
-    if (/\p{Emoji}/u.test(query))          { score += 50; reasons.push('Contains emojis — not a real business name'); }
-
-    // Repeating words
+    const fictional = ['dunder mifflin','umbrella corp','initech','globex','vandelay','acme corp','nakatomi','aperture','wayne enterprises','stark industries'];
+    if (fictional.some(f=>q.includes(f)))                     { score+=95; reasons.push('Fictional company name detected'); }
+    if (/^[a-z]{1,3}$/.test(q))                               { score+=85; reasons.push('Too short to be a real business name'); }
+    if (/(.)\1{3,}/.test(q))                                  { score+=75; reasons.push('Repeated characters — keyboard mashing'); }
+    if (/^(asdf|qwer|zxcv|test|fake|blah|lol|haha)/.test(q)) { score+=90; reasons.push('Nonsense or test input'); }
+    ['business name','company name','my business','test business','sample','placeholder'].forEach(p => { if(q.includes(p)){score+=88;reasons.push('Generic placeholder name');} });
+    ['money inc','cash cash','big bucks','easy money','get rich','bank of nigeria','free money'].forEach(j => { if(q.includes(j)){score+=80;reasons.push('Matches known scam/joke phrase');} });
+    if (/[!@#$%^&*]{2,}/.test(query))                         { score+=60; reasons.push('Excessive special characters'); }
     const words = q.split(/\s+/).filter(Boolean);
-    const uniqueWords = new Set(words);
-    if (words.length > 1 && uniqueWords.size === 1) { score += 75; reasons.push('All words are identical — suspicious input'); }
-
-    // Numbers only (not a phone)
-    if (!isPhone && /^\d+$/.test(query.trim())) { score += 70; reasons.push('Pure numbers entered — not a valid business name'); }
-
-    score = Math.min(score, 100);
-    const verdict = score >= 80 ? 'definite_prank' : score >= 56 ? 'likely_prank' : score >= 26 ? 'suspicious' : 'clean';
-    return { prankScore: score, prankReasons: reasons, prankVerdict: verdict };
+    if (words.length>1 && new Set(words).size===1)             { score+=75; reasons.push('All words identical — suspicious'); }
+    score = Math.min(score,100);
+    return { prankScore:score, prankReasons:reasons, prankVerdict: score>=80?'definite_prank':score>=56?'likely_prank':score>=26?'suspicious':'clean' };
 }
 
-// ── MULTI-SOURCE FREE SEARCH ─────────────────────────────────
-const CORS = 'https://corsproxy.io/?';
+// ── LOOKUP ─────────────────────────────────────────────────────
+function isPhoneNum(q) { return /^[\d\s\-\(\)\+\.]+$/.test(q) && q.replace(/\D/g,'').length >= 7; }
 
-async function fetchOpenCorporates(query) {
-    // OpenCorporates free API — no key needed
-    const isPhone = /^[\d\s\-\(\)\+]+$/.test(query) && query.replace(/\D/g,'').length >= 7;
-    if (isPhone) return null; // phone lookup handled separately
-    try {
-        const url = `https://api.opencorporates.com/v0.4/companies/search?q=${encodeURIComponent(query)}&format=json&per_page=1`;
-        const res = await fetch(CORS + encodeURIComponent(url), { signal: AbortSignal.timeout(6000) });
-        const data = await res.json();
-        const companies = data?.results?.companies;
-        if (!companies || companies.length === 0) return null;
-        const c = companies[0].company;
-        return {
-            businessName:    c.name || null,
-            address:         c.registered_address_in_full || null,
-            industry:        c.company_type || null,
-            yearsInBusiness: c.incorporation_date ? `Since ${c.incorporation_date.slice(0,4)} (${new Date().getFullYear() - parseInt(c.incorporation_date.slice(0,4))} yrs)` : null,
-            ownerName:       null,
-            email:           null,
-            phone:           null,
-            source:          'OpenCorporates'
-        };
-    } catch(e) { return null; }
-}
-
-async function fetchGoogleKnowledgeGraph(query) {
-    // Google Knowledge Graph — no key for basic entity search via suggest
-    try {
-        const url = `https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(query + ' business owner address')}`;
-        const res = await fetch(CORS + encodeURIComponent(url), { signal: AbortSignal.timeout(5000) });
-        const data = await res.json();
-        return data?.[1] || [];
-    } catch(e) { return []; }
-}
-
-async function fetchDUNS(query) {
-    // D&B / Yellow Pages style lookup via public search snippet
-    const isPhone = /^[\d\s\-\(\)\+]+$/.test(query) && query.replace(/\D/g,'').length >= 7;
-    const searchQ = isPhone
-        ? `phone number ${query} business owner`
-        : `"${query}" business owner address email`;
-    try {
-        const url = `https://api.bing.com/v7.0/search?q=${encodeURIComponent(searchQ)}&count=5`;
-        // Bing requires key — skip, use DuckDuckGo instant answer instead
-        const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(searchQ)}&format=json&no_html=1&skip_disambig=1`;
-        const res = await fetch(CORS + encodeURIComponent(ddgUrl), { signal: AbortSignal.timeout(7000) });
-        const data = await res.json();
-        return {
-            abstract:  data?.AbstractText || null,
-            answer:    data?.Answer || null,
-            heading:   data?.Heading || null,
-            url:       data?.AbstractURL || null,
-            infobox:   data?.Infobox?.content || [],
-            relTopics: (data?.RelatedTopics || []).slice(0,3).map(t => t.Text).filter(Boolean)
-        };
-    } catch(e) { return null; }
-}
-
-async function fetchPhoneInfo(phone) {
-    // NumLookup free API (no key needed, 1000/day free)
-    const digits = phone.replace(/\D/g,'');
-    if (digits.length < 10) return null;
-    try {
-        const url = `https://www.numlookupapi.com/api/lookup/${digits}`;
-        const res = await fetch(CORS + encodeURIComponent(url), { signal: AbortSignal.timeout(6000) });
-        const data = await res.json();
-        if (data?.valid) {
-            return {
-                carrier:  data.carrier || null,
-                lineType: data.line_type || null,
-                location: data.location || null,
-                country:  data.country_name || null
-            };
-        }
-        return null;
-    } catch(e) { return null; }
-}
-
-async function fetchYelpData(query) {
-    // Yelp Fusion requires key — use Yelp's public search page scrape via CORS proxy
-    try {
-        const url = `https://www.yelp.com/search?find_desc=${encodeURIComponent(query)}&find_loc=United+States`;
-        const res = await fetch(CORS + encodeURIComponent(url), { signal: AbortSignal.timeout(7000) });
-        const html = await res.text();
-        // Extract structured data from Yelp's JSON-LD
-        const match = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
-        if (match) {
-            try {
-                const ld = JSON.parse(match[1]);
-                if (ld['@type'] === 'LocalBusiness' || ld.name) {
-                    return {
-                        businessName: ld.name || null,
-                        address:      ld.address ? [ld.address.streetAddress, ld.address.addressLocality, ld.address.addressRegion, ld.address.postalCode].filter(Boolean).join(', ') : null,
-                        phone:        ld.telephone || null,
-                        industry:     ld['@type'] || null,
-                        url:          ld.url || null
-                    };
-                }
-            } catch(e2) {}
-        }
-        return null;
-    } catch(e) { return null; }
-}
-
-function mergeResults(sources) {
-    // Merge fields from multiple sources, prefer first non-null
-    const merged = { businessName:'Not Found', ownerName:'Not Found', address:'Not Found', email:'Not Found', phone:'Not Found', industry:'Not Found', yearsInBusiness:'Not Found', confidence:'low', notes:'', sourcesList:[] };
-    for (const s of sources) {
-        if (!s) continue;
-        if (s.source) merged.sourcesList.push(s.source);
-        if (s.businessName && merged.businessName === 'Not Found') merged.businessName = s.businessName;
-        if (s.ownerName    && merged.ownerName    === 'Not Found') merged.ownerName    = s.ownerName;
-        if (s.address      && merged.address      === 'Not Found') merged.address      = s.address;
-        if (s.email        && merged.email        === 'Not Found') merged.email        = s.email;
-        if (s.phone        && merged.phone        === 'Not Found') merged.phone        = s.phone;
-        if (s.industry     && merged.industry     === 'Not Found') merged.industry     = s.industry;
-        if (s.yearsInBusiness && merged.yearsInBusiness === 'Not Found') merged.yearsInBusiness = s.yearsInBusiness;
+function buildQuery(q) {
+    if (isPhoneNum(q)) {
+        return 'For the phone number '+q+', give me: the business name, the name of the owner, the address, and email if possible';
     }
-    // Confidence based on how many fields we filled
-    const filled = ['businessName','address','phone','industry'].filter(k => merged[k] !== 'Not Found').length;
-    merged.confidence = filled >= 3 ? 'high' : filled >= 1 ? 'medium' : 'low';
-    return merged;
+    return 'For the business "'+q+'", give me: the business name, the name of the owner, the address, and email if possible';
 }
 
-function parseDDGForBusiness(ddg, query) {
-    if (!ddg) return null;
-    const result = { source: 'DuckDuckGo' };
-    // Try to extract business name from heading
-    if (ddg.heading && ddg.heading.length > 2) result.businessName = ddg.heading;
-    // Parse infobox for address, phone, email
-    if (ddg.infobox && ddg.infobox.length > 0) {
-        for (const item of ddg.infobox) {
-            const label = (item.label || '').toLowerCase();
-            const val   = item.value || '';
-            if (!val) continue;
-            if (label.includes('address') || label.includes('location')) result.address = val;
-            if (label.includes('phone') || label.includes('telephone'))  result.phone   = val;
-            if (label.includes('email'))                                  result.email   = val;
-            if (label.includes('founded') || label.includes('year'))     result.yearsInBusiness = val;
-            if (label.includes('industry') || label.includes('type'))    result.industry = val;
-            if (label.includes('owner') || label.includes('ceo') || label.includes('founder')) result.ownerName = val;
-        }
-    }
-    // Pull phone from abstract text
-    if (ddg.abstract) {
-        const phoneMatch = ddg.abstract.match(/\(?\d{3}\)?[\s\-]\d{3}[\s\-]\d{4}/);
-        if (phoneMatch && !result.phone) result.phone = phoneMatch[0];
-        const emailMatch = ddg.abstract.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/);
-        if (emailMatch && !result.email) result.email = emailMatch[0];
-        const addrMatch = ddg.abstract.match(/\d+\s[\w\s]+(?:Street|St|Avenue|Ave|Boulevard|Blvd|Road|Rd|Drive|Dr|Lane|Ln|Way|Court|Ct)[,\s]+[\w\s]+,\s*[A-Z]{2}\s*\d{5}/i);
-        if (addrMatch && !result.address) result.address = addrMatch[0];
-    }
-    return Object.keys(result).length > 1 ? result : null;
+function runLookup() {
+    const q = document.getElementById('lookup-input').value.trim();
+    if (!q) { document.getElementById('lookup-input').focus(); return; }
+    const prank = detectPrank(q);
+    showPrankResult(prank);
+    const entry = { query:q, prankScore:prank.prankScore, prankVerdict:prank.prankVerdict, prankReasons:prank.prankReasons, timestamp:new Date().toISOString() };
+    lookupHistory.unshift(entry);
+    if (lookupHistory.length>15) lookupHistory=lookupHistory.slice(0,15);
+    try { localStorage.setItem('bizlookup_history',JSON.stringify(lookupHistory)); } catch(e){}
+    renderLookupHistory();
+    openSite('google');
 }
 
-async function runLookup() {
-    const query = document.getElementById('lookup-input').value.trim();
-    if (!query) { document.getElementById('lookup-input').focus(); return; }
-
-    const btn = document.getElementById('lookup-btn');
-    btn.disabled = true;
-    document.getElementById('lookup-loading').classList.remove('hidden');
-    document.getElementById('lookup-result').classList.add('hidden');
-    document.getElementById('lookup-result').innerHTML = '';
-    startLoadingAnimation();
-
-    try {
-        const isPhone = /^[\d\s\-\(\)\+]+$/.test(query) && query.replace(/\D/g,'').length >= 7;
-
-        // Run prank detection instantly
-        const prankInfo = detectPrank(query);
-
-        // Run all sources in parallel
-        updateLoadingMsg('Scanning OpenCorporates registry...');
-        const [corpData, ddgData, yelpData, phoneData] = await Promise.allSettled([
-            fetchOpenCorporates(query),
-            fetchDUNS(query),
-            fetchYelpData(query),
-            isPhone ? fetchPhoneInfo(query) : Promise.resolve(null)
-        ]);
-
-        updateLoadingMsg('Compiling results from all sources...');
-
-        const corp  = corpData.status  === 'fulfilled' ? corpData.value  : null;
-        const ddg   = ddgData.status   === 'fulfilled' ? ddgData.value   : null;
-        const yelp  = yelpData.status  === 'fulfilled' ? yelpData.value  : null;
-        const phone = phoneData.status === 'fulfilled' ? phoneData.value : null;
-
-        const ddgParsed = parseDDGForBusiness(ddg, query);
-
-        // Merge all sources
-        let merged = mergeResults([corp, yelp, ddgParsed]);
-
-        // If phone lookup, enrich with carrier/location info
-        if (isPhone && phone) {
-            if (merged.phone === 'Not Found') merged.phone = query;
-            const locationStr = [phone.location, phone.country].filter(Boolean).join(', ');
-            merged.notes = [
-                merged.notes,
-                phone.carrier  ? `Carrier: ${phone.carrier}` : '',
-                phone.lineType ? `Line type: ${phone.lineType}` : '',
-                locationStr    ? `Location: ${locationStr}` : ''
-            ].filter(Boolean).join(' · ');
-        }
-
-        // If business name still not found, use the query itself
-        if (merged.businessName === 'Not Found' && !isPhone) {
-            merged.businessName = query;
-            merged.notes = (merged.notes ? merged.notes + ' · ' : '') + 'Business not found in public registries. Try searching by phone number or check Google.';
-            merged.confidence = 'low';
-        }
-
-        // Add related topics from DDG as notes
-        if (ddg?.relTopics?.length && merged.confidence !== 'high') {
-            const tip = ddg.relTopics[0];
-            if (tip && tip.length > 10 && tip.length < 200) {
-                merged.notes = (merged.notes ? merged.notes + ' · ' : '') + tip;
-            }
-        }
-
-        // Attach prank info
-        merged = { ...merged, ...prankInfo };
-
-        // Save to history
-        const historyEntry = { query, result: merged, timestamp: new Date().toISOString() };
-        lookupHistory.unshift(historyEntry);
-        if (lookupHistory.length > 10) lookupHistory = lookupHistory.slice(0, 10);
-        localStorage.setItem('bizlookup_history', JSON.stringify(lookupHistory));
-
-        displayResult(merged, query);
-
-    } catch(err) {
-        document.getElementById('lookup-result').innerHTML = `
-            <div class="glass p-6 rounded-3xl border-l-4 border-l-red-500 text-center">
-                <i class="fas fa-exclamation-triangle text-red-500 text-2xl mb-3"></i>
-                <div class="header-font text-sm font-black text-red-400 uppercase italic mb-2">Search Failed</div>
-                <p class="text-slate-500 text-xs mb-4">Could not reach data sources. Try the external search links below.</p>
-                <div class="flex gap-2 justify-center flex-wrap">
-                    <a href="https://www.google.com/search?q=${encodeURIComponent(document.getElementById('lookup-input').value + ' business owner address')}" target="_blank" class="glass px-4 py-2 rounded-xl text-xs font-black text-blue-400 uppercase tracking-wide hover:bg-white/10 transition-all">
-                        <i class="fab fa-google mr-1"></i>Google
-                    </a>
-                    <a href="https://www.bing.com/search?q=${encodeURIComponent(document.getElementById('lookup-input').value + ' business owner address')}" target="_blank" class="glass px-4 py-2 rounded-xl text-xs font-black text-blue-400 uppercase tracking-wide hover:bg-white/10 transition-all">
-                        <i class="fas fa-search mr-1"></i>Bing
-                    </a>
-                </div>
-            </div>`;
-        document.getElementById('lookup-result').classList.remove('hidden');
-        console.error(err);
-    } finally {
-        stopLoadingAnimation();
-        document.getElementById('lookup-loading').classList.add('hidden');
-        btn.disabled = false;
-    }
+function openSite(site) {
+    const q = document.getElementById('lookup-input').value.trim();
+    if (!q) { document.getElementById('lookup-input').focus(); return; }
+    const isPhone = isPhoneNum(q);
+    const digits  = q.replace(/\D/g,'');
+    const gq      = buildQuery(q);
+    const urls = {
+        // udm=50 triggers Google AI Mode
+        google:      'https://www.google.com/search?q='+encodeURIComponent(gq)+'&udm=50',
+        bing:        'https://www.bing.com/search?q='+encodeURIComponent(gq)+'&showconv=1',
+        yellowpages: isPhone ? 'https://www.yellowpages.com/phone-lookup?phone='+digits : 'https://www.yellowpages.com/search?search_terms='+encodeURIComponent(q)+'&geo_location_terms=United+States',
+        whitepages:  isPhone ? 'https://www.whitepages.com/phone/'+digits               : 'https://www.whitepages.com/business/'+encodeURIComponent(q),
+        yelp:        'https://www.yelp.com/search?find_desc='+encodeURIComponent(q)+'&find_loc=United+States',
+        '411':       isPhone ? 'https://www.411.com/phone/'+digits                       : 'https://www.411.com/business/search?q='+encodeURIComponent(q)
+    };
+    if (urls[site]) window.open(urls[site], '_blank');
 }
 
-function updateLoadingMsg(msg) {
-    const el = document.getElementById('lookup-loading-msg');
-    if (el) el.innerText = msg;
-}
-
-function displayResult(result, query) {
-    const confClass = result.confidence === 'high' ? 'conf-high' : result.confidence === 'medium' ? 'conf-med' : 'conf-low';
-    const confIcon  = result.confidence === 'high' ? 'fa-shield-alt' : result.confidence === 'medium' ? 'fa-exclamation-circle' : 'fa-question-circle';
-
-    const prankScore   = result.prankScore || 0;
-    const prankVerdict = result.prankVerdict || 'clean';
-    const isPrank      = prankScore >= 56;
-    const isDefinite   = prankScore >= 80;
-    const isSuspicious = prankScore >= 26 && prankScore < 56;
-
-    // Build prank alert banner if needed
-    let prankHTML = '';
-    if (isPrank || isSuspicious) {
-        const reasons = (result.prankReasons || []);
-        const reasonsHTML = reasons.length
-            ? reasons.map(r => `<div class="prank-flag"><i class="fas fa-exclamation-triangle text-red-500 text-xs flex-shrink-0"></i><span class="text-xs text-red-200 font-bold">${escapeHtml(r)}</span></div>`).join('')
-            : '';
-
-        const verdictLabel = isDefinite ? '🚨 DEFINITE PRANK — HANG UP NOW'
-            : isPrank ? '⚠️ LIKELY PRANK — PROCEED WITH CAUTION'
-            : '👀 SUSPICIOUS — VERIFY CAREFULLY';
-        const verdictColor = isDefinite ? '#ef4444' : isPrank ? '#f97316' : '#eab308';
-        const headerBg     = isDefinite
-            ? 'background:linear-gradient(135deg,rgba(239,68,68,0.3) 0%,rgba(185,28,28,0.4) 100%)'
-            : isPrank
-            ? 'background:linear-gradient(135deg,rgba(249,115,22,0.25) 0%,rgba(194,65,12,0.35) 100%)'
-            : 'background:linear-gradient(135deg,rgba(234,179,8,0.2) 0%,rgba(161,98,7,0.3) 100%)';
-        const borderColor  = isDefinite ? '#ef4444' : isPrank ? '#f97316' : '#eab308';
-        const glowColor    = isDefinite ? 'rgba(239,68,68,0.4)' : isPrank ? 'rgba(249,115,22,0.35)' : 'rgba(234,179,8,0.3)';
-
-        // Score ring conic gradient
-        const pct = Math.min(prankScore, 100);
-        const ringColor = isDefinite ? '#ef4444' : isPrank ? '#f97316' : '#eab308';
-
-        prankHTML = `
-        <div style="border-radius:20px;overflow:hidden;animation:fadeSlideIn 0.35s ease-out;border:2px solid ${borderColor};box-shadow:0 0 40px ${glowColor};margin-bottom:16px;">
-            <div style="${headerBg};padding:20px;border-bottom:1px solid ${borderColor}33;position:relative;overflow:hidden;">
-                <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,${borderColor}08 10px,${borderColor}08 20px);"></div>
-                <div style="position:relative;display:flex;align-items:center;gap:16px;">
-                    <div style="width:64px;height:64px;border-radius:50%;background:conic-gradient(${ringColor} ${pct}%, rgba(255,255,255,0.05) ${pct}%);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;border:2px solid ${borderColor}55;">
-                        <div style="position:absolute;inset:6px;border-radius:50%;background:#0a0000;"></div>
-                        <span style="position:relative;z-index:1;font-family:'Orbitron',sans-serif;font-weight:900;font-size:0.95rem;color:${ringColor};">${pct}</span>
-                    </div>
-                    <div>
-                        <div style="font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:${verdictColor};margin-bottom:4px;">${verdictLabel}</div>
-                        <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Prank Risk Score: <span style="color:${ringColor};font-weight:900;">${pct}/100</span></div>
-                    </div>
-                </div>
-            </div>
-            ${reasonsHTML.length ? `<div style="background:rgba(10,0,0,0.6);backdrop-filter:blur(10px);padding:16px;">
-                <div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#475569;margin-bottom:10px;"><i class="fas fa-flag mr-1"></i>Red Flags Detected</div>
-                <div style="display:flex;flex-direction:column;gap:6px;">${reasonsHTML}</div>
-            </div>` : ''}
-        </div>`;
-    }
-
-    const fields = [
-        { label: 'Business Name',    value: result.businessName,    icon: 'fa-building',      key: 'businessName' },
-        { label: 'Owner Name',       value: result.ownerName,       icon: 'fa-user-tie',      key: 'ownerName' },
-        { label: 'Address',          value: result.address,         icon: 'fa-map-marker-alt',key: 'address' },
-        { label: 'Email',            value: result.email,           icon: 'fa-envelope',      key: 'email' },
-        { label: 'Phone',            value: result.phone,           icon: 'fa-phone',         key: 'phone' },
-        { label: 'Industry',         value: result.industry,        icon: 'fa-briefcase',     key: 'industry' },
-        { label: 'Years in Business',value: result.yearsInBusiness, icon: 'fa-calendar-alt',  key: 'years' },
-    ];
-
-    const fieldsHTML = fields.map(f => {
-        const isNA  = !f.value || f.value === 'Not Found' || f.value === 'N/A';
-        const valClass = isNA ? 'na' : '';
-        const valDisplay = isNA ? '— Not Found' : escapeHtml(f.value);
-        const copyBtn = !isNA ? `<button class="copy-btn" onclick="copyField(this, '${escapeHtml(f.value).replace(/'/g,"\\'")}')"><i class="fas fa-copy mr-1"></i>Copy</button>` : '';
-        return `<div class="result-field">
-            <div class="result-label"><i class="fas ${f.icon} mr-1 opacity-60"></i>${f.label}</div>
-            <div class="result-value ${valClass}">${valDisplay}${copyBtn}</div>
-        </div>`;
-    }).join('');
-
-    const notesHTML = result.notes && result.notes !== 'N/A'
-        ? `<div class="mt-4 p-3 rounded-xl" style="background:rgba(234,179,8,0.05);border:1px solid rgba(234,179,8,0.15);">
-            <div class="text-[9px] font-black text-yellow-600 uppercase tracking-widest mb-1"><i class="fas fa-info-circle mr-1"></i>Notes</div>
-            <div class="text-xs text-slate-400">${escapeHtml(result.notes)}</div>
-           </div>` : '';
-
-    const cardBorderColor = isDefinite ? '#ef4444' : isPrank ? '#f97316' : isSuspicious ? '#eab308' : '#3b82f6';
-
-    const searchQ = encodeURIComponent(query + ' business owner address');
-    const externalLinks = `
-        <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
-            <div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#475569;margin-bottom:8px;"><i class="fas fa-external-link-alt mr-1"></i>Dig Deeper</div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <a href="https://www.google.com/search?q=${searchQ}" target="_blank" style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;padding:5px 10px;border-radius:8px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);color:#60a5fa;text-decoration:none;transition:all 0.2s;">
-                    <i class="fab fa-google mr-1"></i>Google
-                </a>
-                <a href="https://www.bing.com/search?q=${searchQ}" target="_blank" style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;padding:5px 10px;border-radius:8px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);color:#60a5fa;text-decoration:none;">
-                    <i class="fas fa-search mr-1"></i>Bing
-                </a>
-                <a href="https://search.yahoo.com/search?p=${searchQ}" target="_blank" style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;padding:5px 10px;border-radius:8px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);color:#60a5fa;text-decoration:none;">
-                    <i class="fas fa-globe mr-1"></i>Yahoo
-                </a>
-                <a href="https://www.yelp.com/search?find_desc=${encodeURIComponent(query)}" target="_blank" style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;padding:5px 10px;border-radius:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;text-decoration:none;">
-                    <i class="fab fa-yelp mr-1"></i>Yelp
-                </a>
-                <a href="https://opencorporates.com/companies?q=${encodeURIComponent(query)}" target="_blank" style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;padding:5px 10px;border-radius:8px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);color:#4ade80;text-decoration:none;">
-                    <i class="fas fa-building mr-1"></i>Registry
-                </a>
-            </div>
-        </div>`;
-
-    document.getElementById('lookup-result').innerHTML = `
-        ${prankHTML}
-        <div class="result-card" style="border-left-color:${cardBorderColor};">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <div class="header-font text-xs text-blue-500 uppercase tracking-widest italic mb-1">Results for</div>
-                    <div class="font-black text-white text-base">"${escapeHtml(query)}"</div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="confidence-badge ${confClass}"><i class="fas ${confIcon} mr-1"></i>${result.confidence || 'N/A'}</span>
-                    <button onclick="copyAllFields()" class="glass px-3 py-2 rounded-lg text-[10px] font-black text-slate-400 hover:text-white uppercase tracking-wide transition-all hover:bg-white/10">
-                        <i class="fas fa-clipboard mr-1"></i>Copy All
-                    </button>
-                </div>
-            </div>
-            ${fieldsHTML}
-            ${notesHTML}
-            ${externalLinks}
-        </div>`;
-    document.getElementById('lookup-result').classList.remove('hidden');
-
-    // Store for copy all
-    window._lastLookupResult = result;
-}
-
-function copyField(btn, value) {
-    navigator.clipboard.writeText(value).then(() => {
-        btn.classList.add('copied');
-        btn.innerHTML = '<i class="fas fa-check mr-1"></i>Copied';
-        setTimeout(() => {
-            btn.classList.remove('copied');
-            btn.innerHTML = '<i class="fas fa-copy mr-1"></i>Copy';
-        }, 2000);
-    });
-}
-
-function copyAllFields() {
-    const r = window._lastLookupResult;
-    if (!r) return;
-    const text = [
-        `Business: ${r.businessName || 'N/A'}`,
-        `Owner: ${r.ownerName || 'N/A'}`,
-        `Address: ${r.address || 'N/A'}`,
-        `Email: ${r.email || 'N/A'}`,
-        `Phone: ${r.phone || 'N/A'}`,
-        `Industry: ${r.industry || 'N/A'}`,
-        `Years in Business: ${r.yearsInBusiness || 'N/A'}`,
-    ].join('\n');
-    navigator.clipboard.writeText(text);
+function showPrankResult(prank) {
+    const el = document.getElementById('lookup-prank-result');
+    if (!prank || prank.prankScore < 26) { el.classList.add('hidden'); el.innerHTML=''; return; }
+    const s = prank.prankScore;
+    const isD=s>=80, isP=s>=56;
+    const label  = isD ? '🚨 DEFINITE PRANK — END CALL &amp; MOVE ON' : isP ? '⚠️ LIKELY PRANK — PROCEED WITH CAUTION' : '👀 SUSPICIOUS — VERIFY CAREFULLY';
+    const color  = isD ? '#ef4444' : isP ? '#f97316' : '#eab308';
+    const bg     = isD ? 'linear-gradient(135deg,rgba(239,68,68,0.22),rgba(185,28,28,0.32))' : isP ? 'linear-gradient(135deg,rgba(249,115,22,0.18),rgba(194,65,12,0.28))' : 'linear-gradient(135deg,rgba(234,179,8,0.14),rgba(161,98,7,0.24))';
+    const rHTML  = (prank.prankReasons||[]).map(r =>
+        '<div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:8px;padding:8px 12px;">'
+        +'<i class="fas fa-flag" style="color:'+color+';font-size:10px;flex-shrink:0;"></i>'
+        +'<span style="font-size:12px;color:#fca5a5;font-weight:700;">'+escapeHtml(r)+'</span></div>'
+    ).join('');
+    el.innerHTML =
+        '<div style="border-radius:18px;overflow:hidden;border:2px solid '+color+';box-shadow:0 0 30px '+color+'44;animation:fadeSlideIn 0.3s ease-out;">'
+        +'<div style="background:'+bg+';padding:18px 20px;border-bottom:1px solid '+color+'30;position:relative;overflow:hidden;">'
+        +'<div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,'+color+'08 10px,'+color+'08 20px);"></div>'
+        +'<div style="position:relative;display:flex;align-items:center;gap:14px;">'
+        +'<div style="width:58px;height:58px;border-radius:50%;background:conic-gradient('+color+' '+s+'%,rgba(255,255,255,0.04) '+s+'%);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;">'
+        +'<div style="position:absolute;inset:6px;border-radius:50%;background:#020617;"></div>'
+        +'<span style="position:relative;z-index:1;font-family:Orbitron,sans-serif;font-weight:900;font-size:0.9rem;color:'+color+';">'+s+'</span></div>'
+        +'<div><div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:'+color+';margin-bottom:3px;">'+label+'</div>'
+        +'<div style="font-size:10px;color:#94a3b8;font-weight:700;">Prank Risk Score: <span style="color:'+color+';font-weight:900;">'+s+'/100</span></div>'
+        +'</div></div></div>'
+        +(rHTML?'<div style="background:rgba(2,6,23,0.75);padding:14px;display:flex;flex-direction:column;gap:6px;">'+rHTML+'</div>':'')
+        +'</div>';
+    el.classList.remove('hidden');
 }
 
 function clearLookup() {
-    document.getElementById('lookup-input').value = '';
-    document.getElementById('lookup-result').classList.add('hidden');
-    document.getElementById('lookup-result').innerHTML = '';
-    document.getElementById('lookup-loading').classList.add('hidden');
+    document.getElementById('lookup-input').value='';
+    const pr=document.getElementById('lookup-prank-result');
+    if(pr){pr.classList.add('hidden');pr.innerHTML='';}
     document.getElementById('lookup-input').focus();
 }
 
 function renderLookupHistory() {
-    const section = document.getElementById('lookup-history-section');
-    const container = document.getElementById('lookup-history');
-    if (lookupHistory.length === 0) { section.classList.add('hidden'); return; }
-    section.classList.remove('hidden');
-    container.innerHTML = lookupHistory.map((h, i) => {
-        const ago = timeAgo(new Date(h.timestamp));
-        const name = h.result?.businessName || h.query;
-        const score = h.result?.prankScore || 0;
-        const prankBadge = score >= 80
-            ? `<span style="font-size:9px;font-weight:900;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">🚨 PRANK</span>`
-            : score >= 56
-            ? `<span style="font-size:9px;font-weight:900;background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">⚠️ SUSPECT</span>`
-            : score >= 26
-            ? `<span style="font-size:9px;font-weight:900;background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">👀 CHECK</span>`
+    const sec=document.getElementById('lookup-history-section');
+    const con=document.getElementById('lookup-history');
+    if (!lookupHistory.length) { sec.classList.add('hidden'); return; }
+    sec.classList.remove('hidden');
+    con.innerHTML = lookupHistory.map((h,i) => {
+        const ago=timeAgo(new Date(h.timestamp)), s=h.prankScore||0;
+        const badge = s>=80
+            ? '<span style="font-size:9px;font-weight:900;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">🚨 PRANK</span>'
+            : s>=56 ? '<span style="font-size:9px;font-weight:900;background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">⚠️ SUSPECT</span>'
+            : s>=26 ? '<span style="font-size:9px;font-weight:900;background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">👀 CHECK</span>'
             : '';
-        return `<div class="search-history-item" onclick="loadHistoryItem(${i})">
-            <div>
-                <div class="font-black text-sm text-white">${escapeHtml(name !== 'Not Found' ? name : h.query)}${prankBadge}</div>
-                <div class="text-[10px] text-slate-600 font-bold mt-0.5 uppercase tracking-wide">${ago}</div>
-            </div>
-            <i class="fas fa-chevron-right text-slate-700 text-xs"></i>
-        </div>`;
+        return '<div class="search-history-item" onclick="reloadHistory('+i+')">'
+            +'<div><div class="font-black text-sm text-white">'+escapeHtml(h.query)+badge+'</div>'
+            +'<div class="text-[10px] text-slate-600 font-bold mt-0.5 uppercase tracking-wide">'+ago+'</div></div>'
+            +'<i class="fas fa-chevron-right text-slate-700 text-xs"></i></div>';
     }).join('');
 }
 
-function loadHistoryItem(index) {
-    const entry = lookupHistory[index];
-    if (!entry) return;
-    document.getElementById('lookup-input').value = entry.query;
-    displayResult(entry.result, entry.query);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+function reloadHistory(i) {
+    const h=lookupHistory[i]; if(!h) return;
+    document.getElementById('lookup-input').value=h.query;
+    showPrankResult({prankScore:h.prankScore||0,prankReasons:h.prankReasons||[],prankVerdict:h.prankVerdict||'clean'});
 }
-
 function clearHistory() {
-    lookupHistory = [];
-    localStorage.setItem('bizlookup_history', JSON.stringify(lookupHistory));
+    lookupHistory=[];
+    try{localStorage.setItem('bizlookup_history','[]');}catch(e){}
     renderLookupHistory();
 }
 
 function timeAgo(date) {
-    const diff = Date.now() - date.getTime();
-    const m = Math.floor(diff / 60000);
-    if (m < 1) return 'Just now';
-    if (m < 60) return `${m}m ago`;
-    const h = Math.floor(m / 60);
-    if (h < 24) return `${h}h ago`;
-    return `${Math.floor(h/24)}d ago`;
+    const m=Math.floor((Date.now()-date.getTime())/60000);
+    if(m<1) return 'Just now';
+    if(m<60) return m+'m ago';
+    const h=Math.floor(m/60);
+    if(h<24) return h+'h ago';
+    return Math.floor(h/24)+'d ago';
+}
+function escapeHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ── INIT ─────────────────────────────────────────────────────
 updateDashboard();
 setInterval(updateDashboard, 30000);
 </script>
