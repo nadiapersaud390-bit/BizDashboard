@@ -53,6 +53,24 @@
         .search-history-item{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 14px;cursor:pointer;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;}
         .search-history-item:hover{background:rgba(255,255,255,0.05);}
         @keyframes fadeSlideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+        /* ── INDUSTRY DRILL DOWN ── */
+        .industry-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:16px;overflow:hidden;transition:all 0.2s;}
+        .industry-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;transition:background 0.2s;user-select:none;}
+        .industry-header:hover{background:rgba(255,255,255,0.04);}
+        .industry-arrow{transition:transform 0.3s ease;color:#64748b;font-size:12px;}
+        .industry-arrow.open{transform:rotate(180deg);color:#3b82f6;}
+        .industry-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.3s ease;}
+        .industry-body.open{max-height:600px;}
+        .industry-body-inner{padding:0 18px 18px;}
+        .drill-step{display:flex;gap:12px;padding:10px 14px;border-radius:10px;margin-bottom:6px;}
+        .drill-step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0;margin-top:1px;}
+        .can-work{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);}
+        .cannot-work{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);}
+        .neutral-step{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);}
+        .verdict-yes{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-top:8px;}
+        .verdict-no{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-top:8px;}
+
         @media(min-width:1024px){.main-container{max-width:1200px!important;}.leaderboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}.stat-card{padding:30px!important;}.stat-value{font-size:3rem!important;}}
     </style>
 </head>
@@ -173,20 +191,17 @@
                 <input id="lookup-input" type="text" class="lookup-input"
                     placeholder="e.g. (716) 771-6522 or Business Name..."
                     onkeydown="if(event.key==='Enter')runLookup()"
+                    oninput="onLookupInput(this.value)"
                     autocomplete="off"/>
-
                 <button onclick="runLookup()" class="lookup-btn">
                     <i class="fab fa-google mr-2"></i>Open Google AI — Search Now
                 </button>
-
                 <button onclick="clearLookup()" style="width:100%;background:none;border:none;color:#334155;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;padding:4px;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#334155'">
                     <i class="fas fa-times" style="margin-right:4px;"></i>Clear
                 </button>
             </div>
         </div>
-
         <div id="lookup-prank-result" class="hidden"></div>
-
         <div id="lookup-history-section" class="hidden">
             <div class="flex justify-between items-center mb-3 px-1">
                 <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Recent Lookups</span>
@@ -199,7 +214,7 @@
     <!-- PLAYBOOK -->
     <div id="playbook-view" class="hidden space-y-6 px-2 pb-20">
 
-        <!-- QUALITY GUIDELINES -->
+        <!-- ① QUALITY GUIDELINES — TOP / FULL WIDTH -->
         <div class="glass p-6 rounded-3xl border-l-8 border-l-green-500 bg-green-500/5">
             <h3 class="header-font text-sm md:text-xl font-black text-green-500 uppercase mb-4 italic">Quality Guidelines</h3>
             <div class="text-sm md:text-lg leading-relaxed text-slate-200 space-y-3">
@@ -215,38 +230,229 @@
             </div>
         </div>
 
-        <!-- REBUTTALS -->
-        <div class="glass p-6 rounded-3xl border-l-8 border-l-red-500 bg-red-500/5">
-            <h3 class="header-font text-sm md:text-xl font-black text-red-500 uppercase mb-4 italic">Rebuttals</h3>
-            <div class="text-sm md:text-lg leading-relaxed text-slate-300 space-y-6">
-                <div><p class="text-white font-black italic text-lg">"Which company do you represent?"</p><p class="text-slate-400 italic">"We're the Business Loan Division. We help connect business owners to the right lending programs through our partner network."</p></div>
-                <div><p class="text-white font-black italic text-lg">"Is this a scam?"</p><p class="text-slate-400 italic">"I understand the concern. This is a legitimate outreach from the Business Loan Division in California. We work only with licensed financial institutions. My part is to confirm basic details."</p></div>
-                <div><p class="text-white font-black italic text-lg">"Can you email me something first?"</p><p class="text-slate-400 italic">"Once I connect you with the senior advisor, they can send you all the information directly. I just need to confirm your business details first."</p></div>
-                <div><p class="text-white font-black italic text-lg">"Why are you calling me and not emailing first?"</p><p class="text-slate-400 italic">"Phone is the quickest way to confirm eligibility and make sure the right person gets connected. It only takes a minute."</p></div>
-                <div><p class="text-white font-black italic text-lg">"Are You a Bank?"</p><p class="text-slate-400 italic">"No, we're a direct private lender. We work with business-funding programs that provide working capital and lines of credit directly."</p></div>
+        <!-- ② TWO-COLUMN: REBUTTALS + MICRO-TRUST -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+            <!-- REBUTTALS -->
+            <div class="glass p-6 rounded-3xl border-l-8 border-l-red-500 bg-red-500/5">
+                <h3 class="header-font text-sm font-black text-red-500 uppercase mb-4 italic">Rebuttals</h3>
+                <div class="text-xs leading-relaxed text-slate-300 space-y-5">
+                    <div><p class="text-white font-black italic text-sm">"Which company do you represent?"</p><p class="text-slate-400 italic text-xs mt-1">"We're the Business Loan Division. We help connect business owners to the right lending programs through our partner network."</p></div>
+                    <div><p class="text-white font-black italic text-sm">"Is this a scam?"</p><p class="text-slate-400 italic text-xs mt-1">"I understand the concern. This is a legitimate outreach from the Business Loan Division in California. We work only with licensed financial institutions."</p></div>
+                    <div><p class="text-white font-black italic text-sm">"Can you email me something first?"</p><p class="text-slate-400 italic text-xs mt-1">"Once I connect you with the senior advisor, they can send you all the information directly. I just need to confirm your business details first."</p></div>
+                    <div><p class="text-white font-black italic text-sm">"Why are you calling and not emailing?"</p><p class="text-slate-400 italic text-xs mt-1">"Phone is the quickest way to confirm eligibility and make sure the right person gets connected. It only takes a minute."</p></div>
+                    <div><p class="text-white font-black italic text-sm">"Are You a Bank?"</p><p class="text-slate-400 italic text-xs mt-1">"No, we're a direct private lender. We work with business-funding programs that provide working capital and lines of credit directly."</p></div>
+                </div>
+            </div>
+
+            <!-- MICRO-TRUST TIPS -->
+            <div class="glass p-6 rounded-3xl border-l-8 border-l-blue-500 bg-blue-500/5">
+                <h3 class="header-font text-sm font-black text-blue-500 uppercase mb-4 italic">Micro-Trust Tips</h3>
+                <div class="text-xs leading-relaxed text-slate-200">
+                    <p class="mb-4 italic">After every 2 questions, give a short acknowledgment phrase like:</p>
+                    <div class="flex flex-col gap-3 text-blue-300 font-black italic text-center">
+                        <p class="glass p-3 rounded-xl">"Perfect, thank you."</p>
+                        <p class="glass p-3 rounded-xl">"Got it, that helps."</p>
+                        <p class="glass p-3 rounded-xl">"That's great to know."</p>
+                    </div>
+                    <p class="mt-6 text-xs text-slate-500 uppercase font-black tracking-widest text-center">Keep the rhythm human and build micro-trust.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ③ INDUSTRY DRILL DOWN — NEW SECTION -->
+        <div>
+            <!-- Section header -->
+            <div class="flex items-center gap-3 mb-4 px-1">
+                <div style="width:36px;height:36px;border-radius:10px;background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.3);display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-industry text-yellow-400 text-sm"></i>
+                </div>
+                <div>
+                    <div class="header-font text-xs text-yellow-500 uppercase tracking-widest italic mb-0.5">Know Before You Transfer</div>
+                    <div class="header-font text-base font-black text-white uppercase italic">Industry Drill-Down</div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+
+                <!-- TRACTOR -->
+                <div class="industry-card" style="border-color:rgba(249,115,22,0.25);">
+                    <div class="industry-header" onclick="toggleIndustry(this)" style="background:linear-gradient(90deg,rgba(249,115,22,0.08),transparent);">
+                        <div class="flex items-center gap-3">
+                            <span style="font-size:1.3rem;">🚜</span>
+                            <div>
+                                <div class="font-black text-white text-sm uppercase tracking-wide">Tractor</div>
+                                <div style="font-size:10px;font-weight:700;color:#f97316;text-transform:uppercase;letter-spacing:0.08em;">Depends on tractor type</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#f97316;background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.25);border-radius:20px;padding:2px 8px;">Ask First</span>
+                            <i class="fas fa-chevron-down industry-arrow"></i>
+                        </div>
+                    </div>
+                    <div class="industry-body">
+                        <div class="industry-body-inner">
+                            <div style="background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.15);border-radius:10px;padding:10px 14px;margin-bottom:12px;">
+                                <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#f97316;letter-spacing:0.08em;margin-bottom:4px;">Key Question to Ask</p>
+                                <p style="font-size:13px;font-weight:700;color:white;font-style:italic;">"Is it a detachable tractor?"</p>
+                            </div>
+                            <div class="verdict-no">
+                                <i class="fas fa-times-circle" style="color:#ef4444;flex-shrink:0;"></i>
+                                <div>
+                                    <p style="font-size:11px;font-weight:900;text-transform:uppercase;color:#ef4444;">Detachable Tractor = Truck — Cannot Work</p>
+                                    <p style="font-size:11px;color:#fca5a5;margin-top:2px;">A detachable tractor is classified as a truck. This falls under the No Trucking rule — end and move on.</p>
+                                </div>
+                            </div>
+                            <div class="verdict-yes" style="margin-top:8px;">
+                                <i class="fas fa-check-circle" style="color:#22c55e;flex-shrink:0;"></i>
+                                <div>
+                                    <p style="font-size:11px;font-weight:900;text-transform:uppercase;color:#22c55e;">Non-Detachable (Farm / Equipment) — Can Work</p>
+                                    <p style="font-size:11px;color:#86efac;margin-top:2px;">Farm tractors or heavy equipment that are not detachable semis can qualify.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONSTRUCTION -->
+                <div class="industry-card" style="border-color:rgba(59,130,246,0.25);">
+                    <div class="industry-header" onclick="toggleIndustry(this)" style="background:linear-gradient(90deg,rgba(59,130,246,0.08),transparent);">
+                        <div class="flex items-center gap-3">
+                            <span style="font-size:1.3rem;">🏗️</span>
+                            <div>
+                                <div class="font-black text-white text-sm uppercase tracking-wide">Construction</div>
+                                <div style="font-size:10px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:0.08em;">Depends on fund use</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#3b82f6;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25);border-radius:20px;padding:2px 8px;">Drill Down</span>
+                            <i class="fas fa-chevron-down industry-arrow"></i>
+                        </div>
+                    </div>
+                    <div class="industry-body">
+                        <div class="industry-body-inner">
+
+                            <!-- Step 1 -->
+                            <div class="drill-step neutral-step mb-3">
+                                <div class="drill-step-num" style="background:rgba(59,130,246,0.2);color:#60a5fa;">1</div>
+                                <div>
+                                    <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;margin-bottom:3px;">Ask</p>
+                                    <p style="font-size:13px;font-weight:700;color:white;font-style:italic;">"Does your construction business deal with trucking?"</p>
+                                </div>
+                            </div>
+
+                            <!-- If YES trucking -->
+                            <div style="border-left:2px solid rgba(249,115,22,0.4);padding-left:14px;margin-left:10px;margin-bottom:10px;">
+                                <p style="font-size:9px;font-weight:900;text-transform:uppercase;color:#f97316;letter-spacing:0.08em;margin-bottom:8px;">If Yes — Trucking Involved:</p>
+
+                                <!-- Step 2 -->
+                                <div class="drill-step neutral-step mb-3">
+                                    <div class="drill-step-num" style="background:rgba(249,115,22,0.2);color:#fb923c;">2</div>
+                                    <div>
+                                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#fb923c;letter-spacing:0.07em;margin-bottom:3px;">Ask</p>
+                                        <p style="font-size:13px;font-weight:700;color:white;font-style:italic;">"Is trucking a major part of your business?"</p>
+                                    </div>
+                                </div>
+
+                                <!-- If YES major trucking -->
+                                <div style="border-left:2px solid rgba(239,68,68,0.4);padding-left:14px;margin-left:10px;margin-bottom:10px;">
+                                    <p style="font-size:9px;font-weight:900;text-transform:uppercase;color:#ef4444;letter-spacing:0.08em;margin-bottom:8px;">If Yes — Major Part:</p>
+
+                                    <!-- Step 3 -->
+                                    <div class="drill-step neutral-step mb-3">
+                                        <div class="drill-step-num" style="background:rgba(239,68,68,0.2);color:#f87171;">3</div>
+                                        <div>
+                                            <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#f87171;letter-spacing:0.07em;margin-bottom:3px;">Ask</p>
+                                            <p style="font-size:13px;font-weight:700;color:white;font-style:italic;">"What will you be using the funds for?"</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="verdict-no">
+                                        <i class="fas fa-times-circle" style="color:#ef4444;flex-shrink:0;"></i>
+                                        <div>
+                                            <p style="font-size:11px;font-weight:900;text-transform:uppercase;color:#ef4444;">Funds for Trucks — Cannot Work</p>
+                                            <p style="font-size:11px;color:#fca5a5;margin-top:2px;">If funds are going toward trucks or trucking equipment — cannot proceed. End call professionally.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="verdict-yes" style="margin-top:8px;">
+                                        <i class="fas fa-check-circle" style="color:#22c55e;flex-shrink:0;"></i>
+                                        <div>
+                                            <p style="font-size:11px;font-weight:900;text-transform:uppercase;color:#22c55e;">Funds for Crew / Payroll / Other — Can Work</p>
+                                            <p style="font-size:11px;color:#86efac;margin-top:2px;">If funds are for crew, payroll, materials, or anything besides trucking — this qualifies. Transfer.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- If NO trucking -->
+                            <div class="verdict-yes">
+                                <i class="fas fa-check-circle" style="color:#22c55e;flex-shrink:0;"></i>
+                                <div>
+                                    <p style="font-size:11px;font-weight:900;text-transform:uppercase;color:#22c55e;">No Trucking Involved — Can Work</p>
+                                    <p style="font-size:11px;color:#86efac;margin-top:2px;">Construction with no trucking component qualifies. Proceed with transfer.</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LAWYER / ATTORNEY -->
+                <div class="industry-card" style="border-color:rgba(168,85,247,0.25);">
+                    <div class="industry-header" onclick="toggleIndustry(this)" style="background:linear-gradient(90deg,rgba(168,85,247,0.08),transparent);">
+                        <div class="flex items-center gap-3">
+                            <span style="font-size:1.3rem;">⚖️</span>
+                            <div>
+                                <div class="font-black text-white text-sm uppercase tracking-wide">Lawyer / Attorney</div>
+                                <div style="font-size:10px;font-weight:700;color:#a855f7;text-transform:uppercase;letter-spacing:0.08em;">Even if they own another business</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#a855f7;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.25);border-radius:20px;padding:2px 8px;">Read This</span>
+                            <i class="fas fa-chevron-down industry-arrow"></i>
+                        </div>
+                    </div>
+                    <div class="industry-body">
+                        <div class="industry-body-inner">
+                            <div style="background:rgba(168,85,247,0.07);border:1px solid rgba(168,85,247,0.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;">
+                                <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#a855f7;letter-spacing:0.08em;margin-bottom:4px;">Key Question to Ask</p>
+                                <p style="font-size:13px;font-weight:700;color:white;font-style:italic;">"What is your profession or primary occupation?"</p>
+                            </div>
+                            <div class="verdict-no">
+                                <i class="fas fa-times-circle" style="color:#ef4444;flex-shrink:0;"></i>
+                                <div>
+                                    <p style="font-size:11px;font-weight:900;text-transform:uppercase;color:#ef4444;">Lawyer or Attorney — Cannot Work. Period.</p>
+                                    <p style="font-size:11px;color:#fca5a5;margin-top:2px;">Even if they say they also own a separate business — if they are a lawyer or attorney in any capacity, this is an automatic disqualifier. Do not transfer under any circumstances.</p>
+                                </div>
+                            </div>
+                            <div style="background:rgba(168,85,247,0.07);border:1px solid rgba(168,85,247,0.2);border-radius:10px;padding:10px 14px;margin-top:10px;display:flex;align-items:flex-start;gap:8px;">
+                                <i class="fas fa-exclamation-triangle" style="color:#a855f7;flex-shrink:0;margin-top:2px;font-size:11px;"></i>
+                                <div>
+                                    <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#a855f7;margin-bottom:3px;">Watch Out For</p>
+                                    <p style="font-size:11px;color:#d8b4fe;line-height:1.5;">"I'm a lawyer but I also own a restaurant / retail store / other business" — the answer is still <strong style="color:white;">NO</strong>. The lawyer status disqualifies them entirely regardless of other business ownership.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PLACEHOLDER: Other Industries hint -->
+                <div style="border-radius:12px;border:1px dashed rgba(255,255,255,0.08);padding:14px 18px;text-align:center;">
+                    <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#334155;">More industries can be added here</p>
+                </div>
+
             </div>
         </div>
 
-        <!-- MICRO-TRUST TIPS -->
-        <div class="glass p-6 rounded-3xl border-l-8 border-l-blue-500 bg-blue-500/5">
-            <h3 class="header-font text-sm md:text-xl font-black text-blue-500 uppercase mb-4 italic">Micro-Trust Tips</h3>
-            <div class="text-sm md:text-lg leading-relaxed text-slate-200">
-                <p class="mb-4 italic">After every 2 questions, give a short acknowledgment phrase like:</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-blue-300 font-black italic text-center">
-                    <p class="glass p-3 rounded-xl">"Perfect, thank you."</p>
-                    <p class="glass p-3 rounded-xl">"Got it, that helps."</p>
-                    <p class="glass p-3 rounded-xl">"That's great to know."</p>
-                </div>
-                <p class="mt-6 text-xs text-slate-500 uppercase font-black tracking-widest text-center">Keep the rhythm human and build micro-trust.</p>
-            </div>
-        </div>
     </div>
 
 
     <!-- PRANK TAB -->
     <div id="prank-view" class="hidden space-y-5 px-2 pb-20">
 
-        <!-- 2-COL GRID LAYOUT FOR DESKTOP -->
         <style>
             @media(min-width:768px){
                 .prank-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
@@ -337,7 +543,7 @@
                     </div>
                 </div>
                 <div style="background:rgba(2,6,23,0.85);padding:14px 18px;display:flex;flex-direction:column;gap:8px;">
-                    <p style="color:#cbd5e1;font-size:12px;font-weight:600;line-height:1.6;">If anyone gives <span style="color:white;font-weight:900;">"OnlyFans"</span> as their business name — end the call professionally. No real business loan applicant lists this. Don't engage or try to qualify them further.</p>
+                    <p style="color:#cbd5e1;font-size:12px;font-weight:600;line-height:1.6;">If anyone gives <span style="color:white;font-weight:900;">"OnlyFans"</span> as their business name — end the call professionally. No real business loan applicant lists this.</p>
                     <div style="display:flex;align-items:center;gap:8px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:8px;padding:8px 12px;">
                         <i class="fas fa-flag" style="color:#f97316;flex-shrink:0;font-size:11px;"></i>
                         <span style="color:#fed7aa;font-size:12px;font-weight:700;">"My business is OnlyFans"</span>
@@ -358,53 +564,49 @@
             <p style="font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Spot these signs early — end the call professionally and move on</p>
         </div>
 
-        <!-- ROW: Flags 1 + 2 -->
         <div class="prank-grid-2">
             <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                 <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">1. Yes to Everything</p>
-                <p class="text-slate-300 text-sm">Real owners push back, ask questions, or pause to think. If someone says <span class="text-white font-black">"yes"</span> to every question instantly — ownership, revenue, years open — without hesitation, they're not real. Prankers agree to everything to see how far they can get.</p>
+                <p class="text-slate-300 text-sm">Real owners push back, ask questions, or pause to think. If someone says <span class="text-white font-black">"yes"</span> to every question instantly — they're not real.</p>
                 <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: robotic "yes yes yes," zero hesitation on every answer</p>
             </div>
             <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                 <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">2. Generic or Fake Business Name</p>
-                <p class="text-slate-300 text-sm">Vague names like <span class="text-white font-black">"My Company," "Business LLC,"</span> or names that change when you repeat them back are fake. Ask them to spell it out — real owners say their business name with confidence every single time.</p>
+                <p class="text-slate-300 text-sm">Vague names like <span class="text-white font-black">"My Company," "Business LLC,"</span> or names that change when you repeat them back are fake.</p>
                 <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "um… it's like… my business," name changes when repeated</p>
             </div>
         </div>
 
-        <!-- ROW: Flags 3 + 4 -->
         <div class="prank-grid-2">
             <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                 <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">3. Asking for Money / Reversing the Script</p>
-                <p class="text-slate-300 text-sm">If they flip the call — <span class="text-white font-black">"So how much will YOU give me?"</span> before you've even qualified them — they're wasting your time. Legitimate leads understand there's a qualification process first. Don't play along.</p>
+                <p class="text-slate-300 text-sm">If they flip the call — <span class="text-white font-black">"So how much will YOU give me?"</span> before you've even qualified them — they're wasting your time.</p>
                 <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "just send it," "how fast can I get it," "give me the max"</p>
             </div>
             <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                 <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">4. Laughing, Whispering, or Coached</p>
-                <p class="text-slate-300 text-sm">Giggling, muffled laughter, or someone <span class="text-white font-black">whispering answers</span> in the background means group prank. They pause then repeat exactly what someone just told them word for word. Real owners are in a quiet, professional environment.</p>
+                <p class="text-slate-300 text-sm">Giggling, muffled laughter, or someone <span class="text-white font-black">whispering answers</span> in the background means group prank.</p>
                 <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: echoing, whispering, covering the phone, coached replies</p>
             </div>
         </div>
 
-        <!-- ROW: Flags 5 + 6 -->
         <div class="prank-grid-2">
             <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                 <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">5. Inconsistent or Absurd Details</p>
-                <p class="text-slate-300 text-sm">Revenue of <span class="text-white font-black">$50 million</span> but open only <span class="text-white font-black">2 months</span>? Business name changes when you ask again? Numbers that don't add up. Real owners are consistent because they live their business every single day.</p>
+                <p class="text-slate-300 text-sm">Revenue of <span class="text-white font-black">$50 million</span> but open only <span class="text-white font-black">2 months</span>? Real owners are consistent because they live their business every day.</p>
                 <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: contradictory info, impossible numbers, changing their story</p>
             </div>
             <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                 <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">6. Refuses to Stay On Topic</p>
-                <p class="text-slate-300 text-sm">Prankers <span class="text-white font-black">derail the call</span> with jokes and random questions to waste your time for laughs. If you've redirected them twice and they still won't engage seriously — that's your sign. End it professionally and protect your time.</p>
+                <p class="text-slate-300 text-sm">Prankers <span class="text-white font-black">derail the call</span> with jokes and random questions. If you've redirected them twice and they still won't engage — end it.</p>
                 <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: tangents, jokes about the call, refusing to answer directly</p>
             </div>
         </div>
 
-        <!-- ROW: Flag 7 + Keywords -->
         <div class="prank-grid-2">
             <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                 <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">7. Suspicious Tone &amp; Energy</p>
-                <p class="text-slate-300 text-sm">Real owners are <span class="text-white font-black">slightly guarded, professional, measured</span> — even when skeptical. Prank callers sound <span class="text-white font-black">too casual, overly excited, or flat and robotic</span>. If the energy feels off — trust your gut every time. Use it.</p>
+                <p class="text-slate-300 text-sm">Real owners are <span class="text-white font-black">slightly guarded, professional, measured</span>. Prank callers sound <span class="text-white font-black">too casual, overly excited, or flat and robotic</span>.</p>
                 <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: giggling, overly eager, robotic monotone, acting a role</p>
             </div>
             <div class="glass p-4 rounded-2xl border border-yellow-900/40 bg-yellow-900/5">
@@ -420,13 +622,11 @@
                     <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"Just approve me"</span>
                     <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"Can you skip that part?"</span>
                     <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"We make millions"</span>
-                    <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"I own everything 100%"</span>
-                    <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"I've been in business forever"</span>
                 </div>
             </div>
         </div>
 
-        <!-- TONE GUIDE — FULL WIDTH BOTTOM -->
+        <!-- TONE GUIDE -->
         <div class="glass p-6 rounded-3xl border-l-8 border-l-blue-400 bg-blue-500/5">
             <h3 class="header-font text-sm md:text-xl font-black text-blue-400 uppercase mb-2 italic">🎙️ Tone &amp; Voice Tells</h3>
             <p class="text-xs text-slate-500 uppercase font-black tracking-widest mb-4">Real owner vs. prank caller — side by side</p>
@@ -478,6 +678,19 @@ try { lookupHistory = JSON.parse(localStorage.getItem('bizlookup_history') || '[
 
 function getTeam(name) { return (!name) ? 'PR' : name.trim().startsWith('GYB') ? 'BB' : 'PR'; }
 
+// ── INDUSTRY DRILL DOWN TOGGLE ──────────────────────────────────
+function toggleIndustry(header) {
+    const card   = header.closest('.industry-card');
+    const body   = card.querySelector('.industry-body');
+    const arrow  = header.querySelector('.industry-arrow');
+    const isOpen = body.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.industry-body.open').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.industry-arrow.open').forEach(a => a.classList.remove('open'));
+    // Toggle clicked
+    if (!isOpen) { body.classList.add('open'); arrow.classList.add('open'); }
+}
+
 async function updateDashboard() {
     const btn = document.getElementById('refresh-btn');
     btn.classList.add('spin-anim');
@@ -503,7 +716,7 @@ async function updateDashboard() {
 function renderDaySubTabs() {
     const wrapper = document.getElementById('day-sub-tabs-wrapper');
     const container = document.getElementById('day-sub-tabs-container');
-    if (currentTab !== 'daily') { wrapper.classList.add('hidden'); return; } // prank/lookup/playbook/weekly all hide sub-tabs
+    if (currentTab !== 'daily') { wrapper.classList.add('hidden'); return; }
     if (!dayHistory.length) { wrapper.classList.add('hidden'); return; }
     let html = '<button onclick="switchDayView(\'today\')" class="day-sub-tab is-today ' + (currentDayView==='today'?'active':'') + '">Today</button>';
     dayHistory.forEach(d => {
@@ -635,7 +848,66 @@ function render() {
     document.getElementById('goal-percent').innerText    = Math.floor(pct)+'%';
 }
 
-// ── PRANK DETECTION ───────────────────────────────────────────
+// ── KNOWN BAD NUMBER DATABASE ────────────────────────────────────
+// UPDATE THIS SECTION whenever you get new numbers from the team
+const KNOWN_PRANK_NUMBERS = [
+    // 🎭 Confirmed Prank Callers
+    '9163656189','7725380078','5155382287','2524125130','3476615074','8034917478','6169472405','8303121902',
+    '7817273254','8125934420','2692084907','7347656604','9046699713','5866301595','4696646148','7274393370',
+    '7754127556','5202569909','4434637648','4026507658','7347771643','4023781266','4016627245','7208104461',
+    '6023413890','2104136710','3042885760','5749711748','8583345667','5409150496','5137086199','6142070065',
+    '4095472837','9718066475','6512474567','6162834112','4782998816','9368706243','6783726123','3472378760',
+    '7165784421','2029200305','3232748776','5595798373','5129871649','6195403929','4702182848','3107018620',
+    '7023711117','4135360569','8594093815','7274233955','9197959486','3619465172','8083040256','6087991146',
+    '5302635014','9188559954','7028901379','2188515079','5135081874','9492930673','7657174789','8149772413',
+    '6087126517','3162045097','2392097915','7142879786','3103477579','7208789184','2705855042','3024380616',
+    '3238259109','3617745483','4136687667','2148682933','5309211552','2142320070','9563795560','7035985800',
+    '5864277879','2317293085','4064597681','7042937588','5165099960','4083791440','3259980598','3194613217',
+    '5714360194','5027417606','2708737700','7192987437','5305627400','6172331045','3126361686','7072919309',
+    '3186216032','6128035158','7607376012','8703120279','5048008555','9704021036','3058047064','5033347391',
+    '4013690190','8638851134','4053206801'
+];
+
+const KNOWN_TRUCKING_NUMBERS = [
+    // 🚛 Trucking Business (DNQ)
+    '8037355052','9094384996','4073752418','9175613116','9049451857','6122136729','2282787454','4784519553',
+    '7708916065','8327711931','7734915634','9196044629','3345908864','5135182367','8646014987','9168786362',
+    '9313388267','8126218311','7123308224','9099129813','7739561628','8048220400','8133319694','3302068622',
+    '2038855026','6083061773','3252476208','8645852073','8037471102','8043249527','2765664965','8036248184',
+    '8593539222','2158506881','3203333445','6692921025','3465228286','3134925553','8636571633','3194503310',
+    '2313711551','2677675579','7869012853','9104177920','7708991115','7346120002','2244886335','6066224334',
+    '3126759631','3194718151','4069301685','9562633814','3033195765','9095182805','5164440447','3013189419',
+    '2602371073','8326128410','9518370245','6156486511','6613756862','6204086324','4697816350','3234473277',
+    '7542130413','8645209840','2024251872','7573444483','2108348944','9102319543'
+];
+
+const KNOWN_NOT_SERIOUS_NUMBERS = [
+    // ⚠️ Not Serious Leads
+    '8315969595','6025249999','9545531044','9545998844','6108587766','4049363703','3525526656','4403902075',
+    '2482400067','6176920021','7855500429','7074907029','7077389769','3869371667','2172425249','7153401448',
+    '8087477788','8635576929','9012192066','5415154514','5607500429','5129379494','3124793437','6265900828',
+    '9144699875','7408918422','7862185383','8325151689','9727487356','2173161719','9016128611','9157908824',
+    '8132848555','8703120279','8324413144','2103632150','7708996994','6284883332','9287654951','7732506946',
+    '3505627400','5806197420','8158146330','3478604021','4809955447','8134654567','5038870600','5083264440',
+    '6015736850','5188782513','3046737500','2162693152','8088603481','2533818589','7868283211','9096930598',
+    '3083059178','3053218180','7575742897','7012619840','8623687500','3058898191','5326247000','7039693579',
+    '8134203849','5314669271','3109087986','3105988171','6023634805','7865976907','6628008473','8054447815',
+    '6787566023','3052095548','3053365569'
+];
+
+function normalizePhone(q) { return q.replace(/\D/g,''); }
+
+function checkKnownBadNumber(q) {
+    const digits = normalizePhone(q);
+    if (digits.length < 7) return null;
+    const d10 = digits.slice(-10);
+    if (KNOWN_PRANK_NUMBERS.includes(d10))       return { type:'prank',     label:'🎭 CONFIRMED PRANK CALLER',   color:'#ef4444', msg:'This number is on the confirmed prank caller list. End the call professionally and move on.' };
+    if (KNOWN_TRUCKING_NUMBERS.includes(d10))    return { type:'trucking',  label:'🚛 CONFIRMED TRUCKING — DNQ', color:'#f97316', msg:'This number is a confirmed trucking business. They do not qualify. Do not transfer.' };
+    if (KNOWN_NOT_SERIOUS_NUMBERS.includes(d10)) return { type:'notserious',label:'⚠️ NOT A SERIOUS LEAD',       color:'#eab308', msg:'This number is flagged as not a serious lead. Proceed with extreme caution or skip.' };
+    return null;
+}
+
+// ── PRANK DETECTION ──────────────────────────────────────────────
 function detectPrank(query) {
     const q = query.trim().toLowerCase();
     const reasons = [];
@@ -661,7 +933,7 @@ function detectPrank(query) {
     return { prankScore:score, prankReasons:reasons, prankVerdict: score>=80?'definite_prank':score>=56?'likely_prank':score>=26?'suspicious':'clean' };
 }
 
-// ── LOOKUP ─────────────────────────────────────────────────────
+// ── LOOKUP ───────────────────────────────────────────────────────
 function isPhoneNum(q) { return /^[\d\s\-\(\)\+\.]+$/.test(q) && q.replace(/\D/g,'').length >= 7; }
 
 function buildQuery(q) {
@@ -674,6 +946,19 @@ function buildQuery(q) {
 function runLookup() {
     const q = document.getElementById('lookup-input').value.trim();
     if (!q) { document.getElementById('lookup-input').focus(); return; }
+
+    // Check known bad numbers FIRST — highest priority alert
+    const knownBad = checkKnownBadNumber(q);
+    if (knownBad) {
+        showKnownBadAlert(knownBad, q);
+        const entry = { query:q, prankScore: knownBad.type==='prank'?100:knownBad.type==='trucking'?90:70, prankVerdict: knownBad.type==='prank'?'definite_prank':'suspicious', prankReasons:['Found in known bad number database: '+knownBad.label], timestamp:new Date().toISOString() };
+        lookupHistory.unshift(entry);
+        if (lookupHistory.length>15) lookupHistory=lookupHistory.slice(0,15);
+        try { localStorage.setItem('bizlookup_history',JSON.stringify(lookupHistory)); } catch(e){}
+        renderLookupHistory();
+        return; // Don't open Google — this is a known bad number
+    }
+
     const prank = detectPrank(q);
     showPrankResult(prank);
     const entry = { query:q, prankScore:prank.prankScore, prankVerdict:prank.prankVerdict, prankReasons:prank.prankReasons, timestamp:new Date().toISOString() };
@@ -684,6 +969,32 @@ function runLookup() {
     openSite('google');
 }
 
+function showKnownBadAlert(bad, q) {
+    const el = document.getElementById('lookup-prank-result');
+    const colorMap = { prank:'#ef4444', trucking:'#f97316', notserious:'#eab308' };
+    const iconMap  = { prank:'fas fa-ban', trucking:'fas fa-truck', notserious:'fas fa-exclamation-triangle' };
+    const bgMap    = { prank:'linear-gradient(135deg,rgba(239,68,68,0.25),rgba(185,28,28,0.35))', trucking:'linear-gradient(135deg,rgba(249,115,22,0.2),rgba(194,65,12,0.3))', notserious:'linear-gradient(135deg,rgba(234,179,8,0.18),rgba(161,98,7,0.28))' };
+    const c = bad.color, icon = iconMap[bad.type], bg = bgMap[bad.type];
+    el.innerHTML =
+        '<div style="border-radius:18px;overflow:hidden;border:3px solid '+c+';box-shadow:0 0 40px '+c+'55;animation:fadeSlideIn 0.25s ease-out;">'
+        +'<div style="background:'+bg+';padding:20px 22px;position:relative;overflow:hidden;">'
+        +'<div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,'+c+'09 10px,'+c+'09 20px);"></div>'
+        +'<div style="position:relative;display:flex;align-items:center;gap:16px;">'
+        +'<div style="width:56px;height:56px;border-radius:50%;background:'+c+'22;border:2px solid '+c+'55;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+        +'<i class="'+icon+'" style="color:'+c+';font-size:1.3rem;"></i></div>'
+        +'<div style="flex:1;">'
+        +'<div style="font-family:Orbitron,sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:'+c+';margin-bottom:4px;">'+bad.label+'</div>'
+        +'<div style="font-size:12px;font-weight:700;color:#e2e8f0;line-height:1.5;">'+bad.msg+'</div>'
+        +'<div style="margin-top:8px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#475569;">Number: <span style="color:'+c+';">'+escapeHtml(q)+'</span> — Found in database</div>'
+        +'</div></div></div>'
+        +'<div style="background:rgba(2,6,23,0.85);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;">'
+        +'<span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#334155;">Still want to search anyway?</span>'
+        +'<button onclick="openSite(\'google\')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:6px 14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#64748b;cursor:pointer;" onmouseover="this.style.color=\'#94a3b8\'" onmouseout="this.style.color=\'#64748b\'">Search Anyway <i class="fas fa-external-link-alt ml-1"></i></button>'
+        +'</div></div>';
+    el.classList.remove('hidden');
+    el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
 function openSite(site) {
     const q = document.getElementById('lookup-input').value.trim();
     if (!q) { document.getElementById('lookup-input').focus(); return; }
@@ -691,7 +1002,6 @@ function openSite(site) {
     const digits  = q.replace(/\D/g,'');
     const gq      = buildQuery(q);
     const urls = {
-        // udm=50 triggers Google AI Mode
         google:      'https://www.google.com/search?q='+encodeURIComponent(gq)+'&udm=50',
         bing:        'https://www.bing.com/search?q='+encodeURIComponent(gq)+'&showconv=1',
         yellowpages: isPhone ? 'https://www.yellowpages.com/phone-lookup?phone='+digits : 'https://www.yellowpages.com/search?search_terms='+encodeURIComponent(q)+'&geo_location_terms=United+States',
@@ -729,6 +1039,21 @@ function showPrankResult(prank) {
         +(rHTML?'<div style="background:rgba(2,6,23,0.75);padding:14px;display:flex;flex-direction:column;gap:6px;">'+rHTML+'</div>':'')
         +'</div>';
     el.classList.remove('hidden');
+}
+
+function onLookupInput(val) {
+    const q = val.trim();
+    const digits = normalizePhone(q);
+    // Only auto-check if it looks like a phone number and has 10 digits
+    if (digits.length === 10) {
+        const bad = checkKnownBadNumber(q);
+        if (bad) { showKnownBadAlert(bad, q); return; }
+    }
+    // Clear result if input is wiped
+    if (!q) {
+        const pr = document.getElementById('lookup-prank-result');
+        if (pr) { pr.classList.add('hidden'); pr.innerHTML=''; }
+    }
 }
 
 function clearLookup() {
