@@ -101,6 +101,48 @@
         .conf-med {background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3);}
         .conf-low {background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);}
 
+        /* ── Prank Alert ── */
+        .prank-alert {
+            border-radius:20px;padding:0;overflow:hidden;
+            animation:fadeSlideIn 0.35s ease-out, prankPulse 2s ease-in-out infinite;
+            border:2px solid #ef4444;
+            box-shadow:0 0 40px rgba(239,68,68,0.35), 0 0 80px rgba(239,68,68,0.1);
+        }
+        @keyframes prankPulse {
+            0%,100%{box-shadow:0 0 40px rgba(239,68,68,0.35),0 0 80px rgba(239,68,68,0.1);}
+            50%{box-shadow:0 0 60px rgba(239,68,68,0.6),0 0 120px rgba(239,68,68,0.2);}
+        }
+        .prank-header {
+            background:linear-gradient(135deg,rgba(239,68,68,0.3) 0%,rgba(185,28,28,0.4) 100%);
+            padding:24px;border-bottom:1px solid rgba(239,68,68,0.3);
+            position:relative;overflow:hidden;
+        }
+        .prank-header::before {
+            content:'';position:absolute;inset:0;
+            background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(239,68,68,0.04) 10px,rgba(239,68,68,0.04) 20px);
+        }
+        .prank-body { background:rgba(10,0,0,0.6);backdrop-filter:blur(10px);padding:20px; }
+        .prank-flag {
+            display:flex;align-items:center;gap:10px;
+            background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);
+            border-radius:10px;padding:10px 14px;
+        }
+        .prank-score-ring {
+            width:64px;height:64px;border-radius:50%;
+            background:conic-gradient(#ef4444 0%, transparent 0%);
+            display:flex;align-items:center;justify-content:center;
+            position:relative;flex-shrink:0;
+            border:3px solid rgba(239,68,68,0.3);
+        }
+        .prank-score-ring::before {
+            content:'';position:absolute;inset:6px;border-radius:50%;
+            background:#0a0000;
+        }
+        .prank-score-num {
+            position:relative;z-index:1;font-family:'Orbitron',sans-serif;
+            font-weight:900;font-size:1rem;color:#ef4444;
+        }
+
         @media(min-width:1024px){.main-container{max-width:1200px!important;}.leaderboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}.stat-card{padding:30px!important;}.stat-value{font-size:3rem!important;}}
     </style>
 </head>
@@ -324,7 +366,6 @@
 // ── CONFIG ───────────────────────────────────────────────────
 const API_URL = 'https://script.google.com/macros/s/AKfycbxEz0oA-FRcZ9c0lp18bKbBLZZbGW3sGba0PBaoIynMz_qaF6mCfs4KzYuY6HdOmlzwZw/exec';
 const WEEKLY_PASSWORD = 'bizlevelup2025';
-const ANTHROPIC_API  = 'https://api.anthropic.com/v1/messages';
 
 const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -543,91 +584,306 @@ function stopLoadingAnimation() {
     loadingInterval = null;
 }
 
+// ── PRANK DETECTION (runs instantly, no API needed) ──────────
+function detectPrank(query) {
+    const q = query.trim().toLowerCase();
+    const reasons = [];
+    let score = 0;
+
+    // Obviously fake phone patterns
+    const isPhone = /^[\d\s\-\(\)\+]+$/.test(query) && query.replace(/\D/g,'').length >= 7;
+    if (isPhone) {
+        const digits = query.replace(/\D/g,'');
+        const allSame    = /^(\d)\1+$/.test(digits);
+        const sequential = ['1234567890','0987654321','1234567','7654321','123456789','987654321'].some(s => digits.includes(s.slice(0,7)));
+        const knownFake  = ['0000000000','1111111111','1234567890','9999999999','5555555555','1231231234'].includes(digits);
+        if (allSame)    { score += 85; reasons.push('All same digits — clearly fake number'); }
+        if (sequential) { score += 70; reasons.push('Sequential digits pattern — common fake number'); }
+        if (knownFake)  { score += 90; reasons.push('Known placeholder/test phone number'); }
+        if (digits.startsWith('0000')) { score += 80; reasons.push('Starts with 0000 — invalid number'); }
+    }
+
+    // Fictional / meme companies
+    const fictional = ['dunder mifflin','umbrella corp','initech','globex','vandelay','acme corp','nakatomi','aperture','weyland','wayne enterprises','stark industries','oscorp','bluth','virtucon'];
+    if (fictional.some(f => q.includes(f))) { score += 95; reasons.push('Fictional company name detected'); }
+
+    // Nonsense / keyboard mashing
+    if (/^[a-z]{1,3}$/.test(q))           { score += 85; reasons.push('Too short to be a real business name'); }
+    if (/(.)\1{3,}/.test(q))              { score += 75; reasons.push('Repeated characters — keyboard mashing'); }
+    if (/^(asdf|qwer|zxcv|hjkl|test|fake|blah|lol|haha|yolo)/.test(q)) { score += 90; reasons.push('Nonsense or test input detected'); }
+
+    // Generic placeholder names
+    const placeholders = ['business name','company name','my business','test business','business here','enter business','sample','placeholder','n/a','none','null','undefined','lorem ipsum'];
+    if (placeholders.some(p => q.includes(p))) { score += 88; reasons.push('Generic placeholder name'); }
+
+    // Joke/absurd patterns
+    const jokeWords = ['money inc','cash cash','big bucks','easy money','get rich','scam','fraud','bank of nigeria','prince','inheritance','bitcoin profits','free money'];
+    if (jokeWords.some(j => q.includes(j))) { score += 80; reasons.push('Name matches known scam/joke phrase'); }
+
+    // Excessive punctuation or emojis
+    if (/[!@#$%^&*]{2,}/.test(query))     { score += 60; reasons.push('Excessive special characters'); }
+    if (/\p{Emoji}/u.test(query))          { score += 50; reasons.push('Contains emojis — not a real business name'); }
+
+    // Repeating words
+    const words = q.split(/\s+/).filter(Boolean);
+    const uniqueWords = new Set(words);
+    if (words.length > 1 && uniqueWords.size === 1) { score += 75; reasons.push('All words are identical — suspicious input'); }
+
+    // Numbers only (not a phone)
+    if (!isPhone && /^\d+$/.test(query.trim())) { score += 70; reasons.push('Pure numbers entered — not a valid business name'); }
+
+    score = Math.min(score, 100);
+    const verdict = score >= 80 ? 'definite_prank' : score >= 56 ? 'likely_prank' : score >= 26 ? 'suspicious' : 'clean';
+    return { prankScore: score, prankReasons: reasons, prankVerdict: verdict };
+}
+
+// ── MULTI-SOURCE FREE SEARCH ─────────────────────────────────
+const CORS = 'https://corsproxy.io/?';
+
+async function fetchOpenCorporates(query) {
+    // OpenCorporates free API — no key needed
+    const isPhone = /^[\d\s\-\(\)\+]+$/.test(query) && query.replace(/\D/g,'').length >= 7;
+    if (isPhone) return null; // phone lookup handled separately
+    try {
+        const url = `https://api.opencorporates.com/v0.4/companies/search?q=${encodeURIComponent(query)}&format=json&per_page=1`;
+        const res = await fetch(CORS + encodeURIComponent(url), { signal: AbortSignal.timeout(6000) });
+        const data = await res.json();
+        const companies = data?.results?.companies;
+        if (!companies || companies.length === 0) return null;
+        const c = companies[0].company;
+        return {
+            businessName:    c.name || null,
+            address:         c.registered_address_in_full || null,
+            industry:        c.company_type || null,
+            yearsInBusiness: c.incorporation_date ? `Since ${c.incorporation_date.slice(0,4)} (${new Date().getFullYear() - parseInt(c.incorporation_date.slice(0,4))} yrs)` : null,
+            ownerName:       null,
+            email:           null,
+            phone:           null,
+            source:          'OpenCorporates'
+        };
+    } catch(e) { return null; }
+}
+
+async function fetchGoogleKnowledgeGraph(query) {
+    // Google Knowledge Graph — no key for basic entity search via suggest
+    try {
+        const url = `https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(query + ' business owner address')}`;
+        const res = await fetch(CORS + encodeURIComponent(url), { signal: AbortSignal.timeout(5000) });
+        const data = await res.json();
+        return data?.[1] || [];
+    } catch(e) { return []; }
+}
+
+async function fetchDUNS(query) {
+    // D&B / Yellow Pages style lookup via public search snippet
+    const isPhone = /^[\d\s\-\(\)\+]+$/.test(query) && query.replace(/\D/g,'').length >= 7;
+    const searchQ = isPhone
+        ? `phone number ${query} business owner`
+        : `"${query}" business owner address email`;
+    try {
+        const url = `https://api.bing.com/v7.0/search?q=${encodeURIComponent(searchQ)}&count=5`;
+        // Bing requires key — skip, use DuckDuckGo instant answer instead
+        const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(searchQ)}&format=json&no_html=1&skip_disambig=1`;
+        const res = await fetch(CORS + encodeURIComponent(ddgUrl), { signal: AbortSignal.timeout(7000) });
+        const data = await res.json();
+        return {
+            abstract:  data?.AbstractText || null,
+            answer:    data?.Answer || null,
+            heading:   data?.Heading || null,
+            url:       data?.AbstractURL || null,
+            infobox:   data?.Infobox?.content || [],
+            relTopics: (data?.RelatedTopics || []).slice(0,3).map(t => t.Text).filter(Boolean)
+        };
+    } catch(e) { return null; }
+}
+
+async function fetchPhoneInfo(phone) {
+    // NumLookup free API (no key needed, 1000/day free)
+    const digits = phone.replace(/\D/g,'');
+    if (digits.length < 10) return null;
+    try {
+        const url = `https://www.numlookupapi.com/api/lookup/${digits}`;
+        const res = await fetch(CORS + encodeURIComponent(url), { signal: AbortSignal.timeout(6000) });
+        const data = await res.json();
+        if (data?.valid) {
+            return {
+                carrier:  data.carrier || null,
+                lineType: data.line_type || null,
+                location: data.location || null,
+                country:  data.country_name || null
+            };
+        }
+        return null;
+    } catch(e) { return null; }
+}
+
+async function fetchYelpData(query) {
+    // Yelp Fusion requires key — use Yelp's public search page scrape via CORS proxy
+    try {
+        const url = `https://www.yelp.com/search?find_desc=${encodeURIComponent(query)}&find_loc=United+States`;
+        const res = await fetch(CORS + encodeURIComponent(url), { signal: AbortSignal.timeout(7000) });
+        const html = await res.text();
+        // Extract structured data from Yelp's JSON-LD
+        const match = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+        if (match) {
+            try {
+                const ld = JSON.parse(match[1]);
+                if (ld['@type'] === 'LocalBusiness' || ld.name) {
+                    return {
+                        businessName: ld.name || null,
+                        address:      ld.address ? [ld.address.streetAddress, ld.address.addressLocality, ld.address.addressRegion, ld.address.postalCode].filter(Boolean).join(', ') : null,
+                        phone:        ld.telephone || null,
+                        industry:     ld['@type'] || null,
+                        url:          ld.url || null
+                    };
+                }
+            } catch(e2) {}
+        }
+        return null;
+    } catch(e) { return null; }
+}
+
+function mergeResults(sources) {
+    // Merge fields from multiple sources, prefer first non-null
+    const merged = { businessName:'Not Found', ownerName:'Not Found', address:'Not Found', email:'Not Found', phone:'Not Found', industry:'Not Found', yearsInBusiness:'Not Found', confidence:'low', notes:'', sourcesList:[] };
+    for (const s of sources) {
+        if (!s) continue;
+        if (s.source) merged.sourcesList.push(s.source);
+        if (s.businessName && merged.businessName === 'Not Found') merged.businessName = s.businessName;
+        if (s.ownerName    && merged.ownerName    === 'Not Found') merged.ownerName    = s.ownerName;
+        if (s.address      && merged.address      === 'Not Found') merged.address      = s.address;
+        if (s.email        && merged.email        === 'Not Found') merged.email        = s.email;
+        if (s.phone        && merged.phone        === 'Not Found') merged.phone        = s.phone;
+        if (s.industry     && merged.industry     === 'Not Found') merged.industry     = s.industry;
+        if (s.yearsInBusiness && merged.yearsInBusiness === 'Not Found') merged.yearsInBusiness = s.yearsInBusiness;
+    }
+    // Confidence based on how many fields we filled
+    const filled = ['businessName','address','phone','industry'].filter(k => merged[k] !== 'Not Found').length;
+    merged.confidence = filled >= 3 ? 'high' : filled >= 1 ? 'medium' : 'low';
+    return merged;
+}
+
+function parseDDGForBusiness(ddg, query) {
+    if (!ddg) return null;
+    const result = { source: 'DuckDuckGo' };
+    // Try to extract business name from heading
+    if (ddg.heading && ddg.heading.length > 2) result.businessName = ddg.heading;
+    // Parse infobox for address, phone, email
+    if (ddg.infobox && ddg.infobox.length > 0) {
+        for (const item of ddg.infobox) {
+            const label = (item.label || '').toLowerCase();
+            const val   = item.value || '';
+            if (!val) continue;
+            if (label.includes('address') || label.includes('location')) result.address = val;
+            if (label.includes('phone') || label.includes('telephone'))  result.phone   = val;
+            if (label.includes('email'))                                  result.email   = val;
+            if (label.includes('founded') || label.includes('year'))     result.yearsInBusiness = val;
+            if (label.includes('industry') || label.includes('type'))    result.industry = val;
+            if (label.includes('owner') || label.includes('ceo') || label.includes('founder')) result.ownerName = val;
+        }
+    }
+    // Pull phone from abstract text
+    if (ddg.abstract) {
+        const phoneMatch = ddg.abstract.match(/\(?\d{3}\)?[\s\-]\d{3}[\s\-]\d{4}/);
+        if (phoneMatch && !result.phone) result.phone = phoneMatch[0];
+        const emailMatch = ddg.abstract.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/);
+        if (emailMatch && !result.email) result.email = emailMatch[0];
+        const addrMatch = ddg.abstract.match(/\d+\s[\w\s]+(?:Street|St|Avenue|Ave|Boulevard|Blvd|Road|Rd|Drive|Dr|Lane|Ln|Way|Court|Ct)[,\s]+[\w\s]+,\s*[A-Z]{2}\s*\d{5}/i);
+        if (addrMatch && !result.address) result.address = addrMatch[0];
+    }
+    return Object.keys(result).length > 1 ? result : null;
+}
+
 async function runLookup() {
     const query = document.getElementById('lookup-input').value.trim();
-    if (!query) {
-        document.getElementById('lookup-input').focus();
-        return;
-    }
+    if (!query) { document.getElementById('lookup-input').focus(); return; }
 
     const btn = document.getElementById('lookup-btn');
     btn.disabled = true;
-
     document.getElementById('lookup-loading').classList.remove('hidden');
     document.getElementById('lookup-result').classList.add('hidden');
     document.getElementById('lookup-result').innerHTML = '';
     startLoadingAnimation();
 
     try {
-        const systemPrompt = `You are a business research assistant. When given a phone number or business name, search for and extract:
-1. Business Name (official/registered name)
-2. Owner Name (primary owner or registered agent)
-3. Business Address (full street address, city, state, zip)
-4. Email Address (contact email if available)
-5. Phone Number (if not provided, find it; if provided, confirm it)
-6. Business Type/Industry
-7. Years in Business (approximate if needed)
-8. Confidence Level: high, medium, or low based on how certain you are about the accuracy
+        const isPhone = /^[\d\s\-\(\)\+]+$/.test(query) && query.replace(/\D/g,'').length >= 7;
 
-Return ONLY a JSON object with these exact keys:
-{
-  "businessName": "...",
-  "ownerName": "...",
-  "address": "...",
-  "email": "...",
-  "phone": "...",
-  "industry": "...",
-  "yearsInBusiness": "...",
-  "confidence": "high|medium|low",
-  "notes": "any important caveats"
-}
+        // Run prank detection instantly
+        const prankInfo = detectPrank(query);
 
-If a field cannot be found, use "Not Found" as the value.
-Do NOT include any text outside the JSON object.`;
+        // Run all sources in parallel
+        updateLoadingMsg('Scanning OpenCorporates registry...');
+        const [corpData, ddgData, yelpData, phoneData] = await Promise.allSettled([
+            fetchOpenCorporates(query),
+            fetchDUNS(query),
+            fetchYelpData(query),
+            isPhone ? fetchPhoneInfo(query) : Promise.resolve(null)
+        ]);
 
-        const response = await fetch(ANTHROPIC_API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: 'claude-sonnet-4-20250514',
-                max_tokens: 1000,
-                tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-                system: systemPrompt,
-                messages: [{ role: 'user', content: `Look up this business: ${query}` }]
-            })
-        });
+        updateLoadingMsg('Compiling results from all sources...');
 
-        const data = await response.json();
-        const fullText = data.content.map(i => i.type === 'text' ? i.text : '').filter(Boolean).join('\n');
-        const cleaned = fullText.replace(/```json|```/g, '').trim();
+        const corp  = corpData.status  === 'fulfilled' ? corpData.value  : null;
+        const ddg   = ddgData.status   === 'fulfilled' ? ddgData.value   : null;
+        const yelp  = yelpData.status  === 'fulfilled' ? yelpData.value  : null;
+        const phone = phoneData.status === 'fulfilled' ? phoneData.value : null;
 
-        let result;
-        try {
-            const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-            result = JSON.parse(jsonMatch ? jsonMatch[0] : cleaned);
-        } catch(pe) {
-            result = {
-                businessName: 'Parse Error', ownerName: 'N/A', address: 'N/A',
-                email: 'N/A', phone: query, industry: 'N/A',
-                yearsInBusiness: 'N/A', confidence: 'low',
-                notes: 'Could not parse results. Try a more specific search.'
-            };
+        const ddgParsed = parseDDGForBusiness(ddg, query);
+
+        // Merge all sources
+        let merged = mergeResults([corp, yelp, ddgParsed]);
+
+        // If phone lookup, enrich with carrier/location info
+        if (isPhone && phone) {
+            if (merged.phone === 'Not Found') merged.phone = query;
+            const locationStr = [phone.location, phone.country].filter(Boolean).join(', ');
+            merged.notes = [
+                merged.notes,
+                phone.carrier  ? `Carrier: ${phone.carrier}` : '',
+                phone.lineType ? `Line type: ${phone.lineType}` : '',
+                locationStr    ? `Location: ${locationStr}` : ''
+            ].filter(Boolean).join(' · ');
         }
 
+        // If business name still not found, use the query itself
+        if (merged.businessName === 'Not Found' && !isPhone) {
+            merged.businessName = query;
+            merged.notes = (merged.notes ? merged.notes + ' · ' : '') + 'Business not found in public registries. Try searching by phone number or check Google.';
+            merged.confidence = 'low';
+        }
+
+        // Add related topics from DDG as notes
+        if (ddg?.relTopics?.length && merged.confidence !== 'high') {
+            const tip = ddg.relTopics[0];
+            if (tip && tip.length > 10 && tip.length < 200) {
+                merged.notes = (merged.notes ? merged.notes + ' · ' : '') + tip;
+            }
+        }
+
+        // Attach prank info
+        merged = { ...merged, ...prankInfo };
+
         // Save to history
-        const historyEntry = { query, result, timestamp: new Date().toISOString() };
+        const historyEntry = { query, result: merged, timestamp: new Date().toISOString() };
         lookupHistory.unshift(historyEntry);
         if (lookupHistory.length > 10) lookupHistory = lookupHistory.slice(0, 10);
         localStorage.setItem('bizlookup_history', JSON.stringify(lookupHistory));
 
-        displayResult(result, query);
+        displayResult(merged, query);
 
     } catch(err) {
         document.getElementById('lookup-result').innerHTML = `
             <div class="glass p-6 rounded-3xl border-l-4 border-l-red-500 text-center">
                 <i class="fas fa-exclamation-triangle text-red-500 text-2xl mb-3"></i>
                 <div class="header-font text-sm font-black text-red-400 uppercase italic mb-2">Search Failed</div>
-                <p class="text-slate-500 text-xs">Unable to complete lookup. Check your connection and try again.</p>
+                <p class="text-slate-500 text-xs mb-4">Could not reach data sources. Try the external search links below.</p>
+                <div class="flex gap-2 justify-center flex-wrap">
+                    <a href="https://www.google.com/search?q=${encodeURIComponent(document.getElementById('lookup-input').value + ' business owner address')}" target="_blank" class="glass px-4 py-2 rounded-xl text-xs font-black text-blue-400 uppercase tracking-wide hover:bg-white/10 transition-all">
+                        <i class="fab fa-google mr-1"></i>Google
+                    </a>
+                    <a href="https://www.bing.com/search?q=${encodeURIComponent(document.getElementById('lookup-input').value + ' business owner address')}" target="_blank" class="glass px-4 py-2 rounded-xl text-xs font-black text-blue-400 uppercase tracking-wide hover:bg-white/10 transition-all">
+                        <i class="fas fa-search mr-1"></i>Bing
+                    </a>
+                </div>
             </div>`;
         document.getElementById('lookup-result').classList.remove('hidden');
         console.error(err);
@@ -638,9 +894,66 @@ Do NOT include any text outside the JSON object.`;
     }
 }
 
+function updateLoadingMsg(msg) {
+    const el = document.getElementById('lookup-loading-msg');
+    if (el) el.innerText = msg;
+}
+
 function displayResult(result, query) {
     const confClass = result.confidence === 'high' ? 'conf-high' : result.confidence === 'medium' ? 'conf-med' : 'conf-low';
     const confIcon  = result.confidence === 'high' ? 'fa-shield-alt' : result.confidence === 'medium' ? 'fa-exclamation-circle' : 'fa-question-circle';
+
+    const prankScore   = result.prankScore || 0;
+    const prankVerdict = result.prankVerdict || 'clean';
+    const isPrank      = prankScore >= 56;
+    const isDefinite   = prankScore >= 80;
+    const isSuspicious = prankScore >= 26 && prankScore < 56;
+
+    // Build prank alert banner if needed
+    let prankHTML = '';
+    if (isPrank || isSuspicious) {
+        const reasons = (result.prankReasons || []);
+        const reasonsHTML = reasons.length
+            ? reasons.map(r => `<div class="prank-flag"><i class="fas fa-exclamation-triangle text-red-500 text-xs flex-shrink-0"></i><span class="text-xs text-red-200 font-bold">${escapeHtml(r)}</span></div>`).join('')
+            : '';
+
+        const verdictLabel = isDefinite ? '🚨 DEFINITE PRANK — HANG UP NOW'
+            : isPrank ? '⚠️ LIKELY PRANK — PROCEED WITH CAUTION'
+            : '👀 SUSPICIOUS — VERIFY CAREFULLY';
+        const verdictColor = isDefinite ? '#ef4444' : isPrank ? '#f97316' : '#eab308';
+        const headerBg     = isDefinite
+            ? 'background:linear-gradient(135deg,rgba(239,68,68,0.3) 0%,rgba(185,28,28,0.4) 100%)'
+            : isPrank
+            ? 'background:linear-gradient(135deg,rgba(249,115,22,0.25) 0%,rgba(194,65,12,0.35) 100%)'
+            : 'background:linear-gradient(135deg,rgba(234,179,8,0.2) 0%,rgba(161,98,7,0.3) 100%)';
+        const borderColor  = isDefinite ? '#ef4444' : isPrank ? '#f97316' : '#eab308';
+        const glowColor    = isDefinite ? 'rgba(239,68,68,0.4)' : isPrank ? 'rgba(249,115,22,0.35)' : 'rgba(234,179,8,0.3)';
+
+        // Score ring conic gradient
+        const pct = Math.min(prankScore, 100);
+        const ringColor = isDefinite ? '#ef4444' : isPrank ? '#f97316' : '#eab308';
+
+        prankHTML = `
+        <div style="border-radius:20px;overflow:hidden;animation:fadeSlideIn 0.35s ease-out;border:2px solid ${borderColor};box-shadow:0 0 40px ${glowColor};margin-bottom:16px;">
+            <div style="${headerBg};padding:20px;border-bottom:1px solid ${borderColor}33;position:relative;overflow:hidden;">
+                <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,${borderColor}08 10px,${borderColor}08 20px);"></div>
+                <div style="position:relative;display:flex;align-items:center;gap:16px;">
+                    <div style="width:64px;height:64px;border-radius:50%;background:conic-gradient(${ringColor} ${pct}%, rgba(255,255,255,0.05) ${pct}%);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;border:2px solid ${borderColor}55;">
+                        <div style="position:absolute;inset:6px;border-radius:50%;background:#0a0000;"></div>
+                        <span style="position:relative;z-index:1;font-family:'Orbitron',sans-serif;font-weight:900;font-size:0.95rem;color:${ringColor};">${pct}</span>
+                    </div>
+                    <div>
+                        <div style="font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:${verdictColor};margin-bottom:4px;">${verdictLabel}</div>
+                        <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Prank Risk Score: <span style="color:${ringColor};font-weight:900;">${pct}/100</span></div>
+                    </div>
+                </div>
+            </div>
+            ${reasonsHTML.length ? `<div style="background:rgba(10,0,0,0.6);backdrop-filter:blur(10px);padding:16px;">
+                <div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#475569;margin-bottom:10px;"><i class="fas fa-flag mr-1"></i>Red Flags Detected</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">${reasonsHTML}</div>
+            </div>` : ''}
+        </div>`;
+    }
 
     const fields = [
         { label: 'Business Name',    value: result.businessName,    icon: 'fa-building',      key: 'businessName' },
@@ -669,8 +982,34 @@ function displayResult(result, query) {
             <div class="text-xs text-slate-400">${escapeHtml(result.notes)}</div>
            </div>` : '';
 
+    const cardBorderColor = isDefinite ? '#ef4444' : isPrank ? '#f97316' : isSuspicious ? '#eab308' : '#3b82f6';
+
+    const searchQ = encodeURIComponent(query + ' business owner address');
+    const externalLinks = `
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
+            <div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#475569;margin-bottom:8px;"><i class="fas fa-external-link-alt mr-1"></i>Dig Deeper</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <a href="https://www.google.com/search?q=${searchQ}" target="_blank" style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;padding:5px 10px;border-radius:8px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);color:#60a5fa;text-decoration:none;transition:all 0.2s;">
+                    <i class="fab fa-google mr-1"></i>Google
+                </a>
+                <a href="https://www.bing.com/search?q=${searchQ}" target="_blank" style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;padding:5px 10px;border-radius:8px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);color:#60a5fa;text-decoration:none;">
+                    <i class="fas fa-search mr-1"></i>Bing
+                </a>
+                <a href="https://search.yahoo.com/search?p=${searchQ}" target="_blank" style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;padding:5px 10px;border-radius:8px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);color:#60a5fa;text-decoration:none;">
+                    <i class="fas fa-globe mr-1"></i>Yahoo
+                </a>
+                <a href="https://www.yelp.com/search?find_desc=${encodeURIComponent(query)}" target="_blank" style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;padding:5px 10px;border-radius:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;text-decoration:none;">
+                    <i class="fab fa-yelp mr-1"></i>Yelp
+                </a>
+                <a href="https://opencorporates.com/companies?q=${encodeURIComponent(query)}" target="_blank" style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;padding:5px 10px;border-radius:8px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);color:#4ade80;text-decoration:none;">
+                    <i class="fas fa-building mr-1"></i>Registry
+                </a>
+            </div>
+        </div>`;
+
     document.getElementById('lookup-result').innerHTML = `
-        <div class="result-card">
+        ${prankHTML}
+        <div class="result-card" style="border-left-color:${cardBorderColor};">
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <div class="header-font text-xs text-blue-500 uppercase tracking-widest italic mb-1">Results for</div>
@@ -685,6 +1024,7 @@ function displayResult(result, query) {
             </div>
             ${fieldsHTML}
             ${notesHTML}
+            ${externalLinks}
         </div>`;
     document.getElementById('lookup-result').classList.remove('hidden');
 
@@ -734,9 +1074,17 @@ function renderLookupHistory() {
     container.innerHTML = lookupHistory.map((h, i) => {
         const ago = timeAgo(new Date(h.timestamp));
         const name = h.result?.businessName || h.query;
+        const score = h.result?.prankScore || 0;
+        const prankBadge = score >= 80
+            ? `<span style="font-size:9px;font-weight:900;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">🚨 PRANK</span>`
+            : score >= 56
+            ? `<span style="font-size:9px;font-weight:900;background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">⚠️ SUSPECT</span>`
+            : score >= 26
+            ? `<span style="font-size:9px;font-weight:900;background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">👀 CHECK</span>`
+            : '';
         return `<div class="search-history-item" onclick="loadHistoryItem(${i})">
             <div>
-                <div class="font-black text-sm text-white">${escapeHtml(name !== 'Not Found' ? name : h.query)}</div>
+                <div class="font-black text-sm text-white">${escapeHtml(name !== 'Not Found' ? name : h.query)}${prankBadge}</div>
                 <div class="text-[10px] text-slate-600 font-bold mt-0.5 uppercase tracking-wide">${ago}</div>
             </div>
             <i class="fas fa-chevron-right text-slate-700 text-xs"></i>
