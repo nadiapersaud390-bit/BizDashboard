@@ -246,221 +246,217 @@
     <!-- PRANK TAB -->
     <div id="prank-view" class="hidden space-y-5 px-2 pb-20">
 
-        <!-- SUPERVISOR ESCALATION TIP -->
-        <div style="border-radius:20px;overflow:hidden;border:2px solid #22c55e;box-shadow:0 0 30px rgba(34,197,94,0.25);">
-            <div style="background:linear-gradient(135deg,rgba(34,197,94,0.25),rgba(21,128,61,0.35));padding:18px 22px;position:relative;overflow:hidden;">
-                <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(34,197,94,0.05) 10px,rgba(34,197,94,0.05) 20px);"></div>
-                <div style="position:relative;display:flex;align-items:center;gap:12px;">
-                    <span style="font-size:1.8rem;">🎯</span>
-                    <div>
-                        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#22c55e;margin-bottom:3px;">Pro Move — Use This When Unsure</div>
-                        <div style="font-family:Orbitron,sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;color:white;">Supervisor Test — They'll Give Up</div>
-                    </div>
-                </div>
-            </div>
-            <div style="background:rgba(2,6,23,0.85);padding:18px 22px;display:flex;flex-direction:column;gap:12px;">
-                <p style="color:#cbd5e1;font-size:14px;font-weight:600;line-height:1.7;">If a customer is giving you a hard time and you're not 100% sure if it's a prank — <span style="color:white;font-weight:900;">don't waste time trying to figure it out yourself.</span> Use the supervisor move. Most prank callers will drop the act the moment a supervisor gets on the line.</p>
+        <!-- 2-COL GRID LAYOUT FOR DESKTOP -->
+        <style>
+            @media(min-width:768px){
+                .prank-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+                .prank-grid-1{display:grid;grid-template-columns:1fr;gap:16px;}
+            }
+            @media(max-width:767px){
+                .prank-grid-2{display:flex;flex-direction:column;gap:14px;}
+                .prank-grid-1{display:flex;flex-direction:column;gap:14px;}
+            }
+        </style>
 
-                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:14px 16px;">
-                    <p style="color:#22c55e;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Step 1 — What You Say to the Customer</p>
-                    <p style="color:white;font-size:14px;font-weight:700;font-style:italic;line-height:1.6;">"No problem at all — just let me get my supervisor on the line for you, one moment."</p>
-                    <p style="color:#94a3b8;font-size:11px;font-weight:600;margin-top:6px;">Say it calm and confident. Don't tip them off. Act like it's totally normal.</p>
-                </div>
+        <!-- ROW 1: Supervisor + Mexico side by side -->
+        <div class="prank-grid-2">
 
-                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:14px 16px;">
-                    <p style="color:#22c55e;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Step 2 — Get the Supervisor (Come Get Me)</p>
-                    <p style="color:#cbd5e1;font-size:13px;font-weight:600;line-height:1.6;">Put them on a brief hold and come get me directly. Don't transfer blindly — come find me so I know the situation before I pick up.</p>
-                </div>
-
-                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:14px 16px;">
-                    <p style="color:#22c55e;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Step 3 — What You Say Before Handing Off</p>
-                    <p style="color:white;font-size:14px;font-weight:700;font-style:italic;line-height:1.6;">"Thank you for holding — I'm going to hand you over to my supervisor now."</p>
-                    <p style="color:#94a3b8;font-size:11px;font-weight:600;margin-top:6px;">The moment they hear a supervisor's voice, most prank callers will hang up or drop the act immediately. Real customers will stay on — that's how you know.</p>
-                </div>
-
-                <div style="background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
-                    <span style="font-size:1rem;">💡</span>
-                    <span style="color:#fde68a;font-size:12px;font-weight:700;">If they hang up when the supervisor gets on — it was a prank. Move to your next call. You did the right thing.</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- MEXICO WARNING -->
-        <div style="border-radius:20px;overflow:hidden;border:3px solid #ef4444;box-shadow:0 0 40px rgba(239,68,68,0.4);">
-            <div style="background:linear-gradient(135deg,rgba(239,68,68,0.35),rgba(185,28,28,0.5));padding:20px 22px;position:relative;overflow:hidden;">
-                <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(239,68,68,0.07) 10px,rgba(239,68,68,0.07) 20px);"></div>
-                <div style="position:relative;">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                        <span style="font-size:1.6rem;">🇲🇽</span>
+            <!-- SUPERVISOR ESCALATION -->
+            <div style="border-radius:20px;overflow:hidden;border:2px solid #22c55e;box-shadow:0 0 30px rgba(34,197,94,0.2);">
+                <div style="background:linear-gradient(135deg,rgba(34,197,94,0.25),rgba(21,128,61,0.35));padding:16px 18px;position:relative;overflow:hidden;">
+                    <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(34,197,94,0.05) 10px,rgba(34,197,94,0.05) 20px);"></div>
+                    <div style="position:relative;display:flex;align-items:center;gap:10px;">
+                        <span style="font-size:1.5rem;">🎯</span>
                         <div>
-                            <div style="font-family:Orbitron,sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#ef4444;">⚠️ ACTIVE ONGOING SCAM — END CALL PROFESSIONALLY &amp; MOVE ON</div>
-                            <div style="font-family:Orbitron,sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;color:white;margin-top:2px;">Mexico / Fund Transfer Alert</div>
+                            <div style="font-family:Orbitron,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#22c55e;margin-bottom:2px;">Pro Move — Use When Unsure</div>
+                            <div style="font-family:Orbitron,sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;color:white;">Supervisor Test</div>
                         </div>
                     </div>
-                    <p style="color:#fca5a5;font-size:14px;font-weight:700;line-height:1.6;">
-                        If anyone on a call <span style="color:white;font-weight:900;">mentions Mexico</span>, asks to <span style="color:white;font-weight:900;">send funds to Mexico</span>, or requests any <span style="color:white;font-weight:900;">international money transfer</span> — this is a <span style="color:#ef4444;font-weight:900;">confirmed prank / scam</span>. Do not engage further.
-                    </p>
+                </div>
+                <div style="background:rgba(2,6,23,0.85);padding:14px 18px;display:flex;flex-direction:column;gap:10px;">
+                    <p style="color:#cbd5e1;font-size:12px;font-weight:600;line-height:1.6;">If you're not sure — <span style="color:white;font-weight:900;">don't guess.</span> Use the supervisor move. Most prank callers drop the act the moment a supervisor picks up.</p>
+                    <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:10px 12px;">
+                        <p style="color:#22c55e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Step 1 — Say to the Customer</p>
+                        <p style="color:white;font-size:12px;font-weight:700;font-style:italic;">"No problem — just let me get my supervisor on the line, one moment."</p>
+                        <p style="color:#64748b;font-size:10px;margin-top:4px;">Stay calm. Act like it's totally normal.</p>
+                    </div>
+                    <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:10px 12px;">
+                        <p style="color:#22c55e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Step 2 — Come Get Me Directly</p>
+                        <p style="color:#cbd5e1;font-size:12px;font-weight:600;">Put them on hold and come find me. Don't blind transfer — tell me the situation first.</p>
+                    </div>
+                    <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:10px 12px;">
+                        <p style="color:#22c55e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Step 3 — Hand Off</p>
+                        <p style="color:white;font-size:12px;font-weight:700;font-style:italic;">"I'm going to hand you over to my supervisor now."</p>
+                        <p style="color:#64748b;font-size:10px;margin-top:4px;">Prank callers hang up. Real customers stay on.</p>
+                    </div>
+                    <div style="background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;">
+                        <span>💡</span>
+                        <span style="color:#fde68a;font-size:11px;font-weight:700;">If they hang up when I get on — it was a prank. Move to your next call.</span>
+                    </div>
                 </div>
             </div>
-            <div style="background:rgba(2,6,23,0.85);padding:14px 22px;display:flex;flex-direction:column;gap:8px;">
-                <div style="display:flex;align-items:center;gap:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:10px 14px;">
-                    <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;"></i>
-                    <span style="color:#fca5a5;font-size:13px;font-weight:700;">"Can you send the funds to Mexico?" — End call professionally &amp; move on</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:10px 14px;">
-                    <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;"></i>
-                    <span style="color:#fca5a5;font-size:13px;font-weight:700;">Any mention of Mexico as a business location or fund destination — End call &amp; move on</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:10px 14px;">
-                    <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;"></i>
-                    <span style="color:#fca5a5;font-size:13px;font-weight:700;">Requesting wire transfer or cash to international account — End call &amp; move on</span>
-                </div>
-                <p style="color:#64748b;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;text-align:center;margin-top:4px;">This is an ongoing scam targeting our reps. Do not transfer under any circumstances.</p>
-            </div>
-        </div>
 
-        <!-- ONLYFANS PRANK -->
-        <div style="border-radius:16px;overflow:hidden;border:2px solid #f97316;background:rgba(249,115,22,0.06);">
-            <div style="background:linear-gradient(135deg,rgba(249,115,22,0.25),rgba(194,65,12,0.35));padding:16px 20px;display:flex;align-items:center;gap:12px;">
-                <span style="font-size:1.5rem;">🔞</span>
-                <div>
-                    <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#f97316;">Instant Disqualifier — End Call Professionally</div>
-                    <div style="font-family:Orbitron,sans-serif;font-size:15px;font-weight:900;text-transform:uppercase;color:white;margin-top:2px;">OnlyFans = Prank. Full Stop.</div>
+            <!-- MEXICO WARNING -->
+            <div style="border-radius:20px;overflow:hidden;border:3px solid #ef4444;box-shadow:0 0 30px rgba(239,68,68,0.3);">
+                <div style="background:linear-gradient(135deg,rgba(239,68,68,0.35),rgba(185,28,28,0.5));padding:16px 18px;position:relative;overflow:hidden;">
+                    <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(239,68,68,0.07) 10px,rgba(239,68,68,0.07) 20px);"></div>
+                    <div style="position:relative;display:flex;align-items:center;gap:10px;">
+                        <span style="font-size:1.5rem;">🇲🇽</span>
+                        <div>
+                            <div style="font-family:Orbitron,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#ef4444;margin-bottom:2px;">⚠️ Active Ongoing Scam</div>
+                            <div style="font-family:Orbitron,sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;color:white;">Mexico / Fund Transfer</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="background:rgba(2,6,23,0.85);padding:14px 18px;display:flex;flex-direction:column;gap:8px;">
+                    <p style="color:#fca5a5;font-size:12px;font-weight:600;line-height:1.6;">If anyone <span style="color:white;font-weight:900;">mentions Mexico</span>, asks to <span style="color:white;font-weight:900;">send funds to Mexico</span>, or requests any <span style="color:white;font-weight:900;">international money transfer</span> — confirmed scam. End call professionally.</p>
+                    <div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px 12px;">
+                        <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;font-size:11px;"></i>
+                        <span style="color:#fca5a5;font-size:12px;font-weight:700;">"Can you send the funds to Mexico?" — End call &amp; move on</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px 12px;">
+                        <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;font-size:11px;"></i>
+                        <span style="color:#fca5a5;font-size:12px;font-weight:700;">Mexico as business location or fund destination — End call &amp; move on</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px 12px;">
+                        <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;font-size:11px;"></i>
+                        <span style="color:#fca5a5;font-size:12px;font-weight:700;">Wire transfer or cash to international account — End call &amp; move on</span>
+                    </div>
+                    <p style="color:#475569;font-size:10px;font-weight:900;text-transform:uppercase;text-align:center;margin-top:4px;">Do not transfer under any circumstances.</p>
                 </div>
             </div>
-            <div style="padding:14px 20px;display:flex;flex-direction:column;gap:8px;">
-                <p style="color:#cbd5e1;font-size:13px;font-weight:600;line-height:1.6;">If anyone gives <span style="color:white;font-weight:900;">"OnlyFans"</span> as their business name or says they run an OnlyFans account — end the call professionally and move on immediately. This is a prank. We do not work with adult content platforms, and no legitimate business loan applicant would list this as their company. Don't engage, don't try to qualify them further.</p>
-                <div style="display:flex;align-items:center;gap:10px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:10px;padding:10px 14px;margin-top:4px;">
-                    <i class="fas fa-flag" style="color:#f97316;flex-shrink:0;"></i>
-                    <span style="color:#fed7aa;font-size:13px;font-weight:700;">"My business is OnlyFans" — End call professionally &amp; move on</span>
+
+        </div><!-- end row 1 -->
+
+        <!-- ROW 2: OnlyFans + Red Flags side by side -->
+        <div class="prank-grid-2">
+
+            <!-- ONLYFANS -->
+            <div style="border-radius:16px;overflow:hidden;border:2px solid #f97316;">
+                <div style="background:linear-gradient(135deg,rgba(249,115,22,0.25),rgba(194,65,12,0.35));padding:16px 18px;display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:1.4rem;">🔞</span>
+                    <div>
+                        <div style="font-family:Orbitron,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#f97316;">Instant Disqualifier</div>
+                        <div style="font-family:Orbitron,sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;color:white;">OnlyFans = Prank</div>
+                    </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:10px;padding:10px 14px;">
-                    <i class="fas fa-flag" style="color:#f97316;flex-shrink:0;"></i>
-                    <span style="color:#fed7aa;font-size:13px;font-weight:700;">"I'm a content creator on OnlyFans" — End call professionally &amp; move on</span>
+                <div style="background:rgba(2,6,23,0.85);padding:14px 18px;display:flex;flex-direction:column;gap:8px;">
+                    <p style="color:#cbd5e1;font-size:12px;font-weight:600;line-height:1.6;">If anyone gives <span style="color:white;font-weight:900;">"OnlyFans"</span> as their business name — end the call professionally. No real business loan applicant lists this. Don't engage or qualify further.</p>
+                    <div style="display:flex;align-items:center;gap:8px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:8px;padding:8px 12px;">
+                        <i class="fas fa-flag" style="color:#f97316;flex-shrink:0;font-size:11px;"></i>
+                        <span style="color:#fed7aa;font-size:12px;font-weight:700;">"My business is OnlyFans" — End call &amp; move on</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:8px;padding:8px 12px;">
+                        <i class="fas fa-flag" style="color:#f97316;flex-shrink:0;font-size:11px;"></i>
+                        <span style="color:#fed7aa;font-size:12px;font-weight:700;">"I'm a content creator on OnlyFans" — End call &amp; move on</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- PRANK RED FLAGS -->
-        <div class="glass p-6 rounded-3xl border-l-8 border-l-purple-500 bg-purple-500/5">
-            <h3 class="header-font text-sm md:text-xl font-black text-purple-400 uppercase mb-2 italic">🚨 Prank Caller Red Flags</h3>
-            <p class="text-xs text-slate-500 uppercase font-black tracking-widest mb-5">Spot these signs early — end the call professionally and move on</p>
-            <div class="text-sm md:text-base leading-relaxed text-slate-200 space-y-4">
-
+            <!-- RED FLAG 1 + 2 stacked -->
+            <div style="display:flex;flex-direction:column;gap:12px;">
                 <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
                     <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">1. Yes to Everything</p>
-                    <p class="text-slate-300 text-sm">A real business owner will ask questions, push back, or need a moment to think. If someone says <span class="text-white font-black">"yes"</span> instantly to every single question — business type, revenue, ownership, years open — without any hesitation, they are not a real lead. Real owners don't always have the answer ready. Prankers agree to everything to see how far they can get.</p>
-                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: zero hesitation, perfect answers, robotic "yes yes yes"</p>
+                    <p class="text-slate-300 text-sm">Real owners push back, ask questions, or pause to think. If someone says <span class="text-white font-black">"yes"</span> to every question instantly — ownership, revenue, years open — without hesitation, they're not real. Prankers agree to everything to see how far they can get.</p>
+                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: robotic "yes yes yes," zero hesitation</p>
                 </div>
-
                 <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">2. Generic or Unverifiable Business Name</p>
-                    <p class="text-slate-300 text-sm">When you ask the business name and they give something vague like <span class="text-white font-black">"John's Business," "My Company," "Business LLC,"</span> or something that sounds made up on the spot — that's a red flag. Real owners say their business name with confidence. Ask them to spell it out. If they hesitate or change it, it's fake.</p>
-                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "um… it's called… like… my business," names that change when repeated back</p>
+                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">2. Generic or Fake Business Name</p>
+                    <p class="text-slate-300 text-sm">Vague names like <span class="text-white font-black">"My Company," "Business LLC,"</span> or names that change when you repeat them back are fake. Ask them to spell it out — real owners say it with confidence every time.</p>
+                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "um… it's like… my business," names that change</p>
                 </div>
+            </div>
 
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">3. Asking for Money or Reversing the Script</p>
-                    <p class="text-slate-300 text-sm">If they flip the call and start asking <span class="text-white font-black">"So how much will YOU give me?"</span> or <span class="text-white font-black">"When can I get the money?"</span> before you've even qualified them — they're trying to waste your time or play a game. Legitimate leads understand there's a qualification process first.</p>
-                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "just send it," "how fast can I get it," "give me the max"</p>
-                </div>
+        </div><!-- end row 2 -->
 
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">4. Laughing, Whispering, or Coached Answers</p>
-                    <p class="text-slate-300 text-sm">If you hear <span class="text-white font-black">giggling, muffled laughter, or someone whispering answers</span> to them in the background, end the call. This is a group prank where multiple people are listening. Sometimes you'll hear a pause then they repeat what someone else just said to them word for word. Real owners are alone or in a quiet office environment.</p>
-                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: echoing, whispering, covering the phone, sudden "hold on" with background noise</p>
-                </div>
-
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">5. Inconsistent or Absurd Details</p>
-                    <p class="text-slate-300 text-sm">Ask the business name — then ask again a minute later. If it changed, that's a prank. Or they give a revenue of <span class="text-white font-black">$50 million</span> but say they've been open <span class="text-white font-black">2 months</span>. Numbers that don't add up, industries that don't make sense, addresses in random states with local area codes — real owners are consistent because they live their business every day.</p>
-                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: contradictory info, impossible numbers, changing their story</p>
-                </div>
-
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">6. Refuses to Stay On Topic</p>
-                    <p class="text-slate-300 text-sm">Prankers love to <span class="text-white font-black">derail the call</span> — making jokes, asking unrelated questions, or being purposely difficult to string you along. They want to waste 10 minutes of your time for laughs. If you've redirected them twice and they still won't engage seriously, that's your sign. Don't try to save the call — end it professionally and protect your time.</p>
-                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: random tangents, jokes about the call, refusing to answer direct questions</p>
-                </div>
-
-                <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                    <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">7. Suspicious Tone &amp; Energy</p>
-                    <p class="text-slate-300 text-sm">Real business owners are usually <span class="text-white font-black">busy, slightly guarded, and professional</span> — even if skeptical. A prank caller often sounds <span class="text-white font-black">too casual, overly excited, or flat and robotic</span>. If the energy feels off — too eager, too silly, or suspiciously perfect — trust your instinct. Your gut is trained from every real call you've taken. Use it.</p>
-                    <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: overly enthusiastic, bored monotone, giggling energy, acting performance</p>
-                </div>
-
+        <!-- ROW 3: Red Flags 3 + 4 -->
+        <div class="prank-grid-2">
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">3. Asking for Money / Reversing the Script</p>
+                <p class="text-slate-300 text-sm">If they flip the call — <span class="text-white font-black">"So how much will YOU give me?"</span> before you've even qualified them — they're playing a game. Legitimate leads understand there's a process first.</p>
+                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "just send it," "how fast can I get it," "give me the max"</p>
+            </div>
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">4. Laughing, Whispering, or Coached</p>
+                <p class="text-slate-300 text-sm">Giggling, muffled laughter, or someone <span class="text-white font-black">whispering answers</span> in the background means group prank. Sometimes they pause then repeat what someone just told them word for word.</p>
+                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: echoing, whispering, covering the phone, coached replies</p>
             </div>
         </div>
 
-        <!-- KEYWORDS TO LISTEN FOR -->
-        <div class="glass p-6 rounded-3xl border-l-8 border-l-yellow-500 bg-yellow-500/5">
-            <h3 class="header-font text-sm md:text-xl font-black text-yellow-400 uppercase mb-2 italic">🔑 Prank Keywords &amp; Phrases</h3>
-            <p class="text-xs text-slate-500 uppercase font-black tracking-widest mb-5">The moment you hear these — stay alert or end the call</p>
-            <div class="space-y-3">
-                <div style="background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.25);border-radius:12px;padding:14px 16px;">
-                    <p class="text-yellow-400 font-black text-xs uppercase tracking-widest mb-2">🚩 Immediate Red Flags — End Call</p>
-                    <div class="flex flex-wrap gap-2 mt-1">
-                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"Send it to Mexico"</span>
-                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"Wire the money"</span>
-                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"Give me the cash"</span>
-                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"I need it today"</span>
-                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"How much can you give me?"</span>
-                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"Send it internationally"</span>
-                        <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fca5a5;">"My business is called… uh…"</span>
-                    </div>
-                </div>
-                <div style="background:rgba(234,179,8,0.06);border:1px solid rgba(234,179,8,0.2);border-radius:12px;padding:14px 16px;">
-                    <p class="text-yellow-400 font-black text-xs uppercase tracking-widest mb-2">⚠️ Proceed With Caution</p>
-                    <div class="flex flex-wrap gap-2 mt-1">
-                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"Yeah, yeah, whatever you need"</span>
-                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"I own everything 100%"</span>
-                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"We make millions"</span>
-                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"Just approve me"</span>
-                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"I've been in business forever"</span>
-                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"Can you just skip that part?"</span>
-                        <span style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#fde68a;">"What's the minimum I qualify for?"</span>
-                    </div>
+        <!-- ROW 4: Red Flags 5 + 6 -->
+        <div class="prank-grid-2">
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">5. Inconsistent or Absurd Details</p>
+                <p class="text-slate-300 text-sm">Revenue of <span class="text-white font-black">$50 million</span> but open only <span class="text-white font-black">2 months</span>? Business name changes when asked again? Numbers that don't add up. Real owners are consistent because they live their business every day.</p>
+                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: contradictory info, impossible numbers, changing story</p>
+            </div>
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">6. Refuses to Stay On Topic</p>
+                <p class="text-slate-300 text-sm">Prankers <span class="text-white font-black">derail the call</span> with jokes and random questions to waste your time. If you've redirected them twice and they still won't engage seriously — that's your sign. Protect your time.</p>
+                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: tangents, jokes, refusing to answer direct questions</p>
+            </div>
+        </div>
+
+        <!-- ROW 5: Red Flag 7 + Keywords side by side -->
+        <div class="prank-grid-2">
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
+                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">7. Suspicious Tone &amp; Energy</p>
+                <p class="text-slate-300 text-sm">Real owners are <span class="text-white font-black">busy, slightly guarded, professional</span> — even if skeptical. Prank callers sound <span class="text-white font-black">too casual, too excited, or flat and robotic</span>. If the energy feels off — trust your gut. Use it.</p>
+                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: giggling, overly enthusiastic, robotic tone, acting</p>
+            </div>
+            <div class="glass p-4 rounded-2xl border border-yellow-900/40 bg-yellow-900/5">
+                <p class="text-yellow-400 font-black uppercase text-xs tracking-widest mb-3">🔑 Instant Prank Keywords</p>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Send it to Mexico"</span>
+                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Wire the money"</span>
+                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Give me the cash"</span>
+                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"I need it today"</span>
+                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"How much can you give me?"</span>
+                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Send it internationally"</span>
+                    <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"Yeah whatever you need"</span>
+                    <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"Just approve me"</span>
+                    <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"Can you skip that part?"</span>
+                    <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"We make millions"</span>
                 </div>
             </div>
         </div>
 
-        <!-- TONE GUIDE -->
-        <div class="glass p-6 rounded-3xl border-l-8 border-l-blue-400 bg-blue-500/5">
-            <h3 class="header-font text-sm md:text-xl font-black text-blue-400 uppercase mb-2 italic">🎙️ Tone &amp; Voice Tells</h3>
-            <p class="text-xs text-slate-500 uppercase font-black tracking-widest mb-5">What a real owner sounds like vs. a prank caller</p>
-            <div class="grid grid-cols-1 gap-3">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <!-- ROW 6: Tone Guide full width -->
+        <div class="prank-grid-1">
+            <div class="glass p-6 rounded-3xl border-l-8 border-l-blue-400 bg-blue-500/5">
+                <h3 class="header-font text-sm md:text-xl font-black text-blue-400 uppercase mb-2 italic">🎙️ Tone &amp; Voice Tells</h3>
+                <p class="text-xs text-slate-500 uppercase font-black tracking-widest mb-4">Real owner vs. prank caller — side by side</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                     <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:14px;">
-                        <p class="text-green-400 font-black text-xs uppercase tracking-widest mb-3">✅ Real Owner Sounds Like</p>
+                        <p class="text-green-400 font-black text-xs uppercase tracking-widest mb-3">✅ Real Owner</p>
                         <ul class="space-y-2 text-slate-300 text-xs font-semibold">
                             <li>• Slightly busy or distracted</li>
                             <li>• Asks "what is this for exactly?"</li>
                             <li>• Pauses to recall their revenue</li>
-                            <li>• Says their business name confidently</li>
+                            <li>• States business name confidently</li>
                             <li>• Skeptical but willing to listen</li>
                             <li>• Professional, measured tone</li>
-                            <li>• Asks about the process / next steps</li>
+                            <li>• Asks about process / next steps</li>
                             <li>• Background sounds like a real workplace</li>
                         </ul>
                     </div>
                     <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:14px;">
-                        <p class="text-red-400 font-black text-xs uppercase tracking-widest mb-3">🚨 Prank Caller Sounds Like</p>
+                        <p class="text-red-400 font-black text-xs uppercase tracking-widest mb-3">🚨 Prank Caller</p>
                         <ul class="space-y-2 text-slate-300 text-xs font-semibold">
-                            <li>• Too casual or too excited</li>
+                            <li>• Too casual or overly excited</li>
                             <li>• Agrees to everything instantly</li>
                             <li>• Never hesitates on any answer</li>
                             <li>• Gives absurd or vague business name</li>
                             <li>• Giggles or sounds entertained</li>
-                            <li>• Flat robotic tone like reading a script</li>
+                            <li>• Flat robotic tone, reading a script</li>
                             <li>• Keeps pushing for the money amount</li>
                             <li>• Background sounds like a group or party</li>
                         </ul>
                     </div>
                 </div>
+                <p style="color:#475569;font-size:10px;font-weight:900;text-transform:uppercase;text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);">End the call: <span style="color:white;">"Thank you for your time, we're not able to proceed. Have a great day."</span></p>
             </div>
-            <p class="text-slate-500 font-black italic mt-5 border-t border-white/5 pt-4 uppercase text-center text-xs">End the call professionally: <span class="text-white">"Thank you for your time, we're not able to proceed at this time. Have a great day."</span></p>
         </div>
-
 
     </div>
 
