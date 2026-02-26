@@ -53,15 +53,13 @@
         .search-history-item{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 14px;cursor:pointer;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;}
         .search-history-item:hover{background:rgba(255,255,255,0.05);}
         @keyframes fadeSlideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-
-        /* ── INDUSTRY DRILL DOWN ── */
         .industry-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:16px;overflow:hidden;transition:all 0.2s;}
         .industry-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;transition:background 0.2s;user-select:none;}
         .industry-header:hover{background:rgba(255,255,255,0.04);}
         .industry-arrow{transition:transform 0.3s ease;color:#64748b;font-size:12px;}
         .industry-arrow.open{transform:rotate(180deg);color:#3b82f6;}
         .industry-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.3s ease;}
-        .industry-body.open{max-height:600px;}
+        .industry-body.open{max-height:900px;}
         .industry-body-inner{padding:0 18px 18px;}
         .drill-step{display:flex;gap:12px;padding:10px 14px;border-radius:10px;margin-bottom:6px;}
         .drill-step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0;margin-top:1px;}
@@ -70,7 +68,6 @@
         .neutral-step{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);}
         .verdict-yes{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-top:8px;}
         .verdict-no{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-top:8px;}
-
         @media(min-width:1024px){.main-container{max-width:1200px!important;}.leaderboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}.stat-card{padding:30px!important;}.stat-value{font-size:3rem!important;}}
     </style>
 </head>
@@ -214,23 +211,158 @@
     <!-- PLAYBOOK -->
     <div id="playbook-view" class="hidden space-y-6 px-2 pb-20">
 
-        <!-- ① QUALITY GUIDELINES — TOP / FULL WIDTH -->
+        <!-- QUALITY GUIDELINES -->
         <div class="glass p-6 rounded-3xl border-l-8 border-l-green-500 bg-green-500/5">
             <h3 class="header-font text-sm md:text-xl font-black text-green-500 uppercase mb-4 italic">Quality Guidelines</h3>
             <div class="text-sm md:text-lg leading-relaxed text-slate-200 space-y-3">
                 <p>1. Need to be in business for over 1 Year</p>
                 <p>2. Primary Owner of the business 100% or at least 50%</p>
-                <p>3. No Trucking Companies, No Van</p>
-                <p>4. No attorneys, No Lawyers</p>
-                <div class="pl-4 border-l-2 border-white/10 mt-4 space-y-2 text-white font-bold">
-                    <p>• Over 1 million — Line for transfer</p>
-                    <p>• Under 1 million (200k minimum) — Line for transfer</p>
+                <p>3. <span class="text-red-400 font-black">No</span> Trucking Companies &nbsp;·&nbsp; <span class="text-red-400 font-black">No</span> Van &nbsp;·&nbsp; <span class="text-red-400 font-black">No</span> Attorneys / Lawyers &nbsp;·&nbsp; <span class="text-red-400 font-black">No</span> Detachable Tractor</p>
+
+                <!-- REVENUE DROPDOWN -->
+                <div style="margin-top:8px;border-radius:14px;overflow:hidden;border:1px solid rgba(34,197,94,0.3);">
+                    <div onclick="toggleRevenueDropdown()" style="background:rgba(34,197,94,0.1);padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(34,197,94,0.16)'" onmouseout="this.style.background='rgba(34,197,94,0.1)'">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span style="font-size:1rem;">💰</span>
+                            <div>
+                                <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#22c55e;">4. Last Year Revenue</div>
+                                <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-top:1px;">Tap to see how to ask &amp; what qualifies</div>
+                            </div>
+                        </div>
+                        <i id="revenue-arrow" class="fas fa-chevron-down" style="color:#22c55e;font-size:12px;transition:transform 0.3s;"></i>
+                    </div>
+                    <div id="revenue-body" style="max-height:0;overflow:hidden;transition:max-height 0.5s ease;">
+                        <div style="background:rgba(2,6,23,0.6);padding:16px;display:flex;flex-direction:column;gap:12px;">
+
+                            <!-- What it means -->
+                            <div style="background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;">
+                                <i class="fas fa-info-circle" style="color:#22c55e;flex-shrink:0;margin-top:2px;font-size:12px;"></i>
+                                <div>
+                                    <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#22c55e;letter-spacing:0.08em;margin-bottom:4px;">What You're Asking For</p>
+                                    <p style="font-size:12px;font-weight:600;color:#cbd5e1;line-height:1.6;">You need their <strong style="color:white;">2025 gross annual revenue</strong> — that's the total the business brought in before any taxes, deductions, or expenses. Not what they kept. The full top-line number.</p>
+                                </div>
+                            </div>
+
+                            <!-- STEP A: Over $1M? -->
+                            <div style="border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">
+                                <div style="background:rgba(255,255,255,0.04);padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:8px;">
+                                    <span style="background:rgba(59,130,246,0.25);color:#60a5fa;font-size:9px;font-weight:900;border-radius:20px;padding:2px 9px;letter-spacing:0.07em;">STEP A</span>
+                                    <p style="font-size:12px;font-weight:700;color:white;font-style:italic;">"Does your business generate at least $1 million a year in revenue?"</p>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+                                    <!-- YES -->
+                                    <div style="background:rgba(34,197,94,0.07);padding:12px 14px;border-right:1px solid rgba(255,255,255,0.07);">
+                                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                                            <span style="background:rgba(34,197,94,0.25);color:#4ade80;font-size:9px;font-weight:900;border-radius:20px;padding:2px 8px;">YES</span>
+                                        </div>
+                                        <p style="font-size:11px;font-weight:700;color:#86efac;font-style:italic;line-height:1.5;">"Can you please provide a rough estimate of how much?"</p>
+                                        <div style="margin-top:8px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);border-radius:8px;padding:8px 10px;text-align:center;">
+                                            <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#22c55e;">✓ QUALIFIED</p>
+                                            <p style="font-size:10px;font-weight:700;color:#86efac;margin-top:2px;">Transfer — Over $1M Line</p>
+                                        </div>
+                                    </div>
+                                    <!-- NO → go to B -->
+                                    <div style="background:rgba(239,68,68,0.05);padding:12px 14px;">
+                                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                                            <span style="background:rgba(239,68,68,0.2);color:#f87171;font-size:9px;font-weight:900;border-radius:20px;padding:2px 8px;">NO</span>
+                                        </div>
+                                        <p style="font-size:11px;font-weight:700;color:#fca5a5;line-height:1.5;">No problem — continue to <strong style="color:white;">Step B</strong> below.</p>
+                                        <div style="margin-top:8px;display:flex;align-items:center;gap:6px;">
+                                            <i class="fas fa-arrow-down" style="color:#475569;font-size:10px;"></i>
+                                            <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#475569;">Move to next question</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STEP B: Over $200K? -->
+                            <div style="border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">
+                                <div style="background:rgba(255,255,255,0.04);padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:8px;">
+                                    <span style="background:rgba(234,179,8,0.25);color:#facc15;font-size:9px;font-weight:900;border-radius:20px;padding:2px 9px;letter-spacing:0.07em;">STEP B</span>
+                                    <p style="font-size:12px;font-weight:700;color:white;font-style:italic;">"Does your business generate at least $200K in revenue per year?"</p>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+                                    <!-- YES -->
+                                    <div style="background:rgba(34,197,94,0.07);padding:12px 14px;border-right:1px solid rgba(255,255,255,0.07);">
+                                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                                            <span style="background:rgba(34,197,94,0.25);color:#4ade80;font-size:9px;font-weight:900;border-radius:20px;padding:2px 8px;">YES</span>
+                                        </div>
+                                        <p style="font-size:11px;font-weight:700;color:#86efac;font-style:italic;line-height:1.5;">"Can you please provide a rough estimate of how much?"</p>
+                                        <div style="margin-top:8px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);border-radius:8px;padding:8px 10px;text-align:center;">
+                                            <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#22c55e;">✓ QUALIFIED</p>
+                                            <p style="font-size:10px;font-weight:700;color:#86efac;margin-top:2px;">Transfer — Under $1M Line</p>
+                                        </div>
+                                    </div>
+                                    <!-- NO → DNQ -->
+                                    <div style="background:rgba(239,68,68,0.05);padding:12px 14px;">
+                                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                                            <span style="background:rgba(239,68,68,0.2);color:#f87171;font-size:9px;font-weight:900;border-radius:20px;padding:2px 8px;">NO</span>
+                                        </div>
+                                        <p style="font-size:11px;font-weight:700;color:#fca5a5;line-height:1.5;">Revenue is below minimum. <strong style="color:white;">Does not qualify.</strong></p>
+                                        <div style="margin-top:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:6px;padding:6px 10px;text-align:center;">
+                                            <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#ef4444;">✗ DNQ — End Call</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Divider -->
+                            <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;">
+                                <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#64748b;letter-spacing:0.08em;margin-bottom:8px;">If They're Unsure of Their Annual Number</p>
+                                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 13px;display:flex;align-items:flex-start;gap:8px;">
+                                    <span style="background:rgba(234,179,8,0.2);color:#facc15;font-size:9px;font-weight:900;border-radius:4px;padding:2px 6px;flex-shrink:0;margin-top:1px;">IF UNSURE</span>
+                                    <div>
+                                        <p style="font-size:12px;font-weight:700;color:white;font-style:italic;">"No problem — roughly how much does the business bring in each month?"</p>
+                                        <p style="font-size:10px;color:#64748b;margin-top:3px;">Multiply their monthly number by 12 to get an annual estimate. That counts — use it to determine Step A or B above.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- "Should be around the same as 2024" -->
+                            <div style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.3);border-radius:10px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;">
+                                <i class="fas fa-exclamation-triangle" style="color:#f97316;flex-shrink:0;margin-top:2px;font-size:13px;"></i>
+                                <div>
+                                    <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#f97316;letter-spacing:0.08em;margin-bottom:5px;">⚠️ If They Say "It Should Be Around the Same as Last Year"</p>
+                                    <p style="font-size:12px;font-weight:600;color:#fed7aa;line-height:1.6;">Do <strong style="color:white;">not</strong> accept this. Revenue fluctuates — every year is different and you cannot assume 2025 matches 2024. You need the actual 2025 number, not an assumption based on a prior year.</p>
+                                    <div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.2);border-radius:8px;padding:9px 12px;margin-top:10px;">
+                                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#f97316;margin-bottom:5px;">Push Back With:</p>
+                                        <p style="font-size:12px;font-weight:700;color:white;font-style:italic;line-height:1.6;">"I understand — but revenue can change quite a bit year to year. Do you have a rough idea of what 2025 actually came in at, or what a typical month looks like for you?"</p>
+                                    </div>
+                                    <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+                                        <div style="flex:1;min-width:0;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:6px;padding:7px 10px;">
+                                            <p style="font-size:9px;font-weight:900;text-transform:uppercase;color:#22c55e;margin-bottom:2px;">If They Give a Number</p>
+                                            <p style="font-size:10px;font-weight:700;color:#86efac;">Use it — go back to Step A or B above.</p>
+                                        </div>
+                                        <div style="flex:1;min-width:0;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:6px;padding:7px 10px;">
+                                            <p style="font-size:9px;font-weight:900;text-transform:uppercase;color:#ef4444;margin-bottom:2px;">Still Can't Give One</p>
+                                            <p style="font-size:10px;font-weight:700;color:#fca5a5;">Schedule a callback — see below.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Only knows 2024 -->
+                            <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;">
+                                <i class="fas fa-times-circle" style="color:#ef4444;flex-shrink:0;margin-top:2px;font-size:13px;"></i>
+                                <div>
+                                    <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#ef4444;letter-spacing:0.08em;margin-bottom:4px;">They Only Know 2024 — Cannot Work</p>
+                                    <p style="font-size:12px;font-weight:600;color:#fca5a5;line-height:1.6;">If they have no idea of their 2025 revenue and can't give a monthly estimate either — but can only give 2024 — <strong style="color:white;">do not proceed.</strong> You need current numbers to qualify them. Schedule a callback.</p>
+                                    <div style="background:rgba(239,68,68,0.08);border-radius:6px;padding:7px 10px;margin-top:8px;display:flex;align-items:center;gap:6px;">
+                                        <i class="fas fa-calendar-alt" style="color:#ef4444;font-size:10px;flex-shrink:0;"></i>
+                                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#f87171;">"Let me schedule a follow-up for when you have that number ready."</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
-                <p class="text-red-400 font-black italic mt-6 border-t border-red-900/50 pt-4 uppercase text-center">If qualifiers are not met you cannot transfer!!!</p>
+
             </div>
+            <p class="text-red-400 font-black italic mt-6 border-t border-red-900/50 pt-4 uppercase text-center text-sm">If qualifiers are not met you cannot transfer!!!</p>
         </div>
 
-        <!-- ② INDUSTRY DRILL DOWN — directly under Quality Guidelines -->
+        <!-- INDUSTRY DRILL DOWN -->
         <div>
             <div class="flex items-center gap-3 mb-4 px-1">
                 <div style="width:36px;height:36px;border-radius:10px;background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.3);display:flex;align-items:center;justify-content:center;">
@@ -282,6 +414,93 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- ══ LOGGING — NEW CARD ══ -->
+                <div class="industry-card" style="border-color:rgba(34,197,94,0.25);">
+                    <div class="industry-header" onclick="toggleIndustry(this)" style="background:linear-gradient(90deg,rgba(34,197,94,0.08),transparent);">
+                        <div class="flex items-center gap-3">
+                            <span style="font-size:1.3rem;">🌲</span>
+                            <div>
+                                <div class="font-black text-white text-sm uppercase tracking-wide">Logging</div>
+                                <div style="font-size:10px;font-weight:700;color:#22c55e;text-transform:uppercase;letter-spacing:0.08em;">Must operate all 12 months — no exceptions</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#22c55e;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25);border-radius:20px;padding:2px 8px;">Ask First</span>
+                            <i class="fas fa-chevron-down industry-arrow"></i>
+                        </div>
+                    </div>
+                    <div class="industry-body">
+                        <div class="industry-body-inner">
+
+                            <!-- Why This Matters -->
+                            <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.18);border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;">
+                                <i class="fas fa-snowflake" style="color:#22c55e;flex-shrink:0;margin-top:2px;font-size:12px;"></i>
+                                <div>
+                                    <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#22c55e;letter-spacing:0.08em;margin-bottom:4px;">Why This Matters</p>
+                                    <p style="font-size:12px;font-weight:600;color:#cbd5e1;line-height:1.55;">Logging is a seasonal industry. Many operators shut down in winter — frozen ground, icy roads, and dangerous conditions make it impossible to work. To qualify, they must be operating <strong style="color:white;">all 12 months of the year</strong>. Anything less and they cannot work. You need to confirm this before going any further.</p>
+                                </div>
+                            </div>
+
+                            <!-- Step 1 -->
+                            <div class="drill-step neutral-step mb-2">
+                                <div class="drill-step-num" style="background:rgba(34,197,94,0.2);color:#4ade80;">1</div>
+                                <div>
+                                    <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#4ade80;letter-spacing:0.07em;margin-bottom:3px;">Confirm the Industry</p>
+                                    <p style="font-size:13px;font-weight:700;color:white;font-style:italic;">"Is this a logging or timber business?"</p>
+                                    <p style="font-size:11px;color:#64748b;margin-top:4px;">Some operators call themselves "land clearing" or "forestry services" — same industry, same rules apply.</p>
+                                </div>
+                            </div>
+
+                            <!-- Arrow connector -->
+                            <div style="display:flex;justify-content:center;margin:4px 0 10px;">
+                                <i class="fas fa-arrow-down" style="color:#334155;font-size:11px;"></i>
+                            </div>
+
+                            <!-- Step 2 — Critical Question -->
+                            <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+                                <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#22c55e;letter-spacing:0.08em;margin-bottom:6px;">Step 2 — The Critical Question</p>
+                                <p style="font-size:14px;font-weight:700;color:white;font-style:italic;line-height:1.5;">"How many months out of the year is your business actively operating?"</p>
+                                <p style="font-size:11px;color:#64748b;margin-top:6px;">Listen closely to how they answer — the only acceptable answer is <em>year-round</em> or <em>all 12 months</em>.</p>
+                            </div>
+
+                            <!-- Two verdict boxes side by side -->
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                                <div class="verdict-no" style="margin-top:0;flex-direction:column;align-items:flex-start;gap:6px;">
+                                    <div style="display:flex;align-items:center;gap:6px;">
+                                        <i class="fas fa-times-circle" style="color:#ef4444;flex-shrink:0;font-size:13px;"></i>
+                                        <p style="font-size:11px;font-weight:900;text-transform:uppercase;color:#ef4444;">Under 12 Months — Cannot Work</p>
+                                    </div>
+                                    <p style="font-size:11px;color:#fca5a5;line-height:1.5;">If they take any time off during the year — even a month or two — they do not qualify. This is a hard rule. End the call professionally and move on.</p>
+                                    <div style="background:rgba(239,68,68,0.1);border-radius:6px;padding:6px 10px;margin-top:2px;width:100%;box-sizing:border-box;">
+                                        <p style="font-size:10px;font-weight:900;color:#f87171;text-transform:uppercase;">e.g. "Just summer," "We slow down in winter," "About 9–10 months," "We take a few months off"</p>
+                                    </div>
+                                </div>
+                                <div class="verdict-yes" style="margin-top:0;flex-direction:column;align-items:flex-start;gap:6px;">
+                                    <div style="display:flex;align-items:center;gap:6px;">
+                                        <i class="fas fa-check-circle" style="color:#22c55e;flex-shrink:0;font-size:13px;"></i>
+                                        <p style="font-size:11px;font-weight:900;text-transform:uppercase;color:#22c55e;">Full 12 Months — Can Work</p>
+                                    </div>
+                                    <p style="font-size:11px;color:#86efac;line-height:1.5;">They must confirm they operate all year with no seasonal shutdown. If they say year-round or 12 months, and all other standard requirements are met, proceed to transfer.</p>
+                                    <div style="background:rgba(34,197,94,0.1);border-radius:6px;padding:6px 10px;margin-top:2px;width:100%;box-sizing:border-box;">
+                                        <p style="font-size:10px;font-weight:900;color:#4ade80;text-transform:uppercase;">e.g. "We work year-round," "All 12 months," "We never shut down"</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Listen Carefully callout -->
+                            <div style="background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.25);border-radius:10px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;">
+                                <i class="fas fa-headphones" style="color:#eab308;flex-shrink:0;margin-top:2px;font-size:14px;"></i>
+                                <div>
+                                    <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#eab308;margin-bottom:5px;">🎧 Also Read Their Energy</p>
+                                    <p style="font-size:12px;font-weight:600;color:#fde68a;line-height:1.6;">Even if the months qualify, pay close attention to whether they actually seem <strong style="color:white;">interested and engaged</strong>. A logging owner who is vague, distracted, or giving one-word answers is unlikely to convert — even if the numbers check out. Your time is valuable. Focus on leads who are <strong style="color:white;">locked in and genuinely responsive</strong>. If they sound checked out, move on.</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- ══ END LOGGING ══ -->
 
                 <!-- CONSTRUCTION -->
                 <div class="industry-card" style="border-color:rgba(59,130,246,0.25);">
@@ -391,7 +610,7 @@
                     </div>
                 </div>
 
-                <!-- PLACEHOLDER: Other Industries hint -->
+                <!-- Placeholder -->
                 <div style="border-radius:12px;border:1px dashed rgba(255,255,255,0.08);padding:14px 18px;text-align:center;">
                     <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#334155;">More industries can be added here</p>
                 </div>
@@ -399,10 +618,8 @@
             </div>
         </div>
 
-        <!-- ③ TWO-COLUMN: REBUTTALS + MICRO-TRUST -->
+        <!-- TWO-COLUMN: REBUTTALS + MICRO-TRUST -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-
-            <!-- REBUTTALS -->
             <div class="glass p-6 rounded-3xl border-l-8 border-l-red-500 bg-red-500/5">
                 <h3 class="header-font text-sm font-black text-red-500 uppercase mb-4 italic">Rebuttals</h3>
                 <div class="text-xs leading-relaxed text-slate-300 space-y-5">
@@ -413,8 +630,6 @@
                     <div><p class="text-white font-black italic text-sm">"Are You a Bank?"</p><p class="text-slate-400 italic text-xs mt-1">"No, we're a direct private lender. We work with business-funding programs that provide working capital and lines of credit directly."</p></div>
                 </div>
             </div>
-
-            <!-- MICRO-TRUST TIPS -->
             <div class="glass p-6 rounded-3xl border-l-8 border-l-blue-500 bg-blue-500/5">
                 <h3 class="header-font text-sm font-black text-blue-500 uppercase mb-4 italic">Micro-Trust Tips</h3>
                 <div class="text-xs leading-relaxed text-slate-200">
@@ -427,223 +642,64 @@
                     <p class="mt-6 text-xs text-slate-500 uppercase font-black tracking-widest text-center">Keep the rhythm human and build micro-trust.</p>
                 </div>
             </div>
-
         </div>
 
     </div>
 
-
     <!-- PRANK TAB -->
     <div id="prank-view" class="hidden space-y-5 px-2 pb-20">
-
         <style>
-            @media(min-width:768px){
-                .prank-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-                .prank-grid-1{display:grid;grid-template-columns:1fr;gap:16px;}
-            }
-            @media(max-width:767px){
-                .prank-grid-2{display:flex;flex-direction:column;gap:14px;}
-                .prank-grid-1{display:flex;flex-direction:column;gap:14px;}
-            }
+            @media(min-width:768px){.prank-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}.prank-grid-1{display:grid;grid-template-columns:1fr;gap:16px;}}
+            @media(max-width:767px){.prank-grid-2{display:flex;flex-direction:column;gap:14px;}.prank-grid-1{display:flex;flex-direction:column;gap:14px;}}
         </style>
-
-        <!-- SUPERVISOR — FULL WIDTH TOP -->
         <div style="border-radius:20px;overflow:hidden;border:2px solid #22c55e;box-shadow:0 0 30px rgba(34,197,94,0.2);">
             <div style="background:linear-gradient(135deg,rgba(34,197,94,0.25),rgba(21,128,61,0.35));padding:16px 22px;position:relative;overflow:hidden;">
                 <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(34,197,94,0.05) 10px,rgba(34,197,94,0.05) 20px);"></div>
-                <div style="position:relative;display:flex;align-items:center;gap:12px;">
-                    <span style="font-size:1.7rem;">🎯</span>
-                    <div>
-                        <div style="font-family:Orbitron,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#22c55e;margin-bottom:2px;">Pro Move — Use When Unsure</div>
-                        <div style="font-family:Orbitron,sans-serif;font-size:15px;font-weight:900;text-transform:uppercase;color:white;">Supervisor Test — They'll Give Up</div>
-                    </div>
-                </div>
+                <div style="position:relative;display:flex;align-items:center;gap:12px;"><span style="font-size:1.7rem;">🎯</span><div><div style="font-family:Orbitron,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#22c55e;margin-bottom:2px;">Pro Move — Use When Unsure</div><div style="font-family:Orbitron,sans-serif;font-size:15px;font-weight:900;text-transform:uppercase;color:white;">Supervisor Test — They'll Give Up</div></div></div>
             </div>
             <div style="background:rgba(2,6,23,0.85);padding:16px 22px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:12px 14px;">
-                    <p style="color:#22c55e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Step 1 — Say to the Customer</p>
-                    <p style="color:white;font-size:12px;font-weight:700;font-style:italic;line-height:1.5;">"No problem — just let me get my supervisor on the line, one moment."</p>
-                    <p style="color:#64748b;font-size:10px;margin-top:6px;">Stay calm. Act like it's totally normal. Don't tip them off.</p>
-                </div>
-                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:12px 14px;">
-                    <p style="color:#22c55e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Step 2 — Come Get Me Directly</p>
-                    <p style="color:#cbd5e1;font-size:12px;font-weight:600;line-height:1.5;">Put them on hold and come find me. Don't blind transfer — tell me the situation first so I know before I pick up.</p>
-                </div>
-                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:12px 14px;">
-                    <p style="color:#22c55e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Step 3 — Hand Off</p>
-                    <p style="color:white;font-size:12px;font-weight:700;font-style:italic;line-height:1.5;">"I'm going to hand you over to my supervisor now."</p>
-                    <p style="color:#64748b;font-size:10px;margin-top:6px;">Prank callers hang up. Real customers stay on — that's how you know.</p>
-                </div>
+                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:12px 14px;"><p style="color:#22c55e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Step 1 — Say to the Customer</p><p style="color:white;font-size:12px;font-weight:700;font-style:italic;line-height:1.5;">"No problem — just let me get my supervisor on the line, one moment."</p><p style="color:#64748b;font-size:10px;margin-top:6px;">Stay calm. Act like it's totally normal. Don't tip them off.</p></div>
+                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:12px 14px;"><p style="color:#22c55e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Step 2 — Come Get Me Directly</p><p style="color:#cbd5e1;font-size:12px;font-weight:600;line-height:1.5;">Put them on hold and come find me. Don't blind transfer — tell me the situation first so I know before I pick up.</p></div>
+                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:12px 14px;"><p style="color:#22c55e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Step 3 — Hand Off</p><p style="color:white;font-size:12px;font-weight:700;font-style:italic;line-height:1.5;">"I'm going to hand you over to my supervisor now."</p><p style="color:#64748b;font-size:10px;margin-top:6px;">Prank callers hang up. Real customers stay on — that's how you know.</p></div>
             </div>
-            <div style="background:rgba(2,6,23,0.85);padding:0 22px 14px;display:flex;">
-                <div style="background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:8px;width:100%;">
-                    <span>💡</span>
-                    <span style="color:#fde68a;font-size:12px;font-weight:700;">If they hang up the moment I get on — it was a prank. Move to your next call. You did the right thing.</span>
-                </div>
-            </div>
+            <div style="background:rgba(2,6,23,0.85);padding:0 22px 14px;display:flex;"><div style="background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:8px;width:100%;"><span>💡</span><span style="color:#fde68a;font-size:12px;font-weight:700;">If they hang up the moment I get on — it was a prank. Move to your next call. You did the right thing.</span></div></div>
         </div>
-
-        <!-- ROW: Mexico + OnlyFans side by side -->
         <div class="prank-grid-2">
-
-            <!-- MEXICO -->
             <div style="border-radius:20px;overflow:hidden;border:3px solid #ef4444;box-shadow:0 0 30px rgba(239,68,68,0.3);">
-                <div style="background:linear-gradient(135deg,rgba(239,68,68,0.35),rgba(185,28,28,0.5));padding:16px 18px;position:relative;overflow:hidden;">
-                    <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(239,68,68,0.07) 10px,rgba(239,68,68,0.07) 20px);"></div>
-                    <div style="position:relative;display:flex;align-items:center;gap:10px;">
-                        <span style="font-size:1.5rem;">🇲🇽</span>
-                        <div>
-                            <div style="font-family:Orbitron,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#ef4444;margin-bottom:2px;">⚠️ Active Ongoing Scam</div>
-                            <div style="font-family:Orbitron,sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;color:white;">Mexico / Fund Transfer</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="background:rgba(2,6,23,0.85);padding:14px 18px;display:flex;flex-direction:column;gap:8px;">
-                    <p style="color:#fca5a5;font-size:12px;font-weight:600;line-height:1.6;">If anyone <span style="color:white;font-weight:900;">mentions Mexico</span>, asks to <span style="color:white;font-weight:900;">send funds to Mexico</span>, or requests any <span style="color:white;font-weight:900;">international money transfer</span> — confirmed scam. End call professionally &amp; move on.</p>
-                    <div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px 12px;">
-                        <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;font-size:11px;"></i>
-                        <span style="color:#fca5a5;font-size:12px;font-weight:700;">"Can you send the funds to Mexico?"</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px 12px;">
-                        <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;font-size:11px;"></i>
-                        <span style="color:#fca5a5;font-size:12px;font-weight:700;">Mexico as business location or fund destination</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px 12px;">
-                        <i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;font-size:11px;"></i>
-                        <span style="color:#fca5a5;font-size:12px;font-weight:700;">Wire transfer or cash to international account</span>
-                    </div>
-                    <p style="color:#475569;font-size:10px;font-weight:900;text-transform:uppercase;text-align:center;margin-top:2px;">Do not transfer under any circumstances.</p>
-                </div>
+                <div style="background:linear-gradient(135deg,rgba(239,68,68,0.35),rgba(185,28,28,0.5));padding:16px 18px;position:relative;overflow:hidden;"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(239,68,68,0.07) 10px,rgba(239,68,68,0.07) 20px);"></div><div style="position:relative;display:flex;align-items:center;gap:10px;"><span style="font-size:1.5rem;">🇲🇽</span><div><div style="font-family:Orbitron,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#ef4444;margin-bottom:2px;">⚠️ Active Ongoing Scam</div><div style="font-family:Orbitron,sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;color:white;">Mexico / Fund Transfer</div></div></div></div>
+                <div style="background:rgba(2,6,23,0.85);padding:14px 18px;display:flex;flex-direction:column;gap:8px;"><p style="color:#fca5a5;font-size:12px;font-weight:600;line-height:1.6;">If anyone <span style="color:white;font-weight:900;">mentions Mexico</span>, asks to <span style="color:white;font-weight:900;">send funds to Mexico</span>, or requests any <span style="color:white;font-weight:900;">international money transfer</span> — confirmed scam. End call professionally &amp; move on.</p><div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px 12px;"><i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;font-size:11px;"></i><span style="color:#fca5a5;font-size:12px;font-weight:700;">"Can you send the funds to Mexico?"</span></div><div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px 12px;"><i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;font-size:11px;"></i><span style="color:#fca5a5;font-size:12px;font-weight:700;">Mexico as business location or fund destination</span></div><div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px 12px;"><i class="fas fa-flag" style="color:#ef4444;flex-shrink:0;font-size:11px;"></i><span style="color:#fca5a5;font-size:12px;font-weight:700;">Wire transfer or cash to international account</span></div><p style="color:#475569;font-size:10px;font-weight:900;text-transform:uppercase;text-align:center;margin-top:2px;">Do not transfer under any circumstances.</p></div>
             </div>
-
-            <!-- ONLYFANS -->
             <div style="border-radius:16px;overflow:hidden;border:2px solid #f97316;">
-                <div style="background:linear-gradient(135deg,rgba(249,115,22,0.25),rgba(194,65,12,0.35));padding:16px 18px;display:flex;align-items:center;gap:10px;">
-                    <span style="font-size:1.4rem;">🔞</span>
-                    <div>
-                        <div style="font-family:Orbitron,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#f97316;">Instant Disqualifier</div>
-                        <div style="font-family:Orbitron,sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;color:white;">OnlyFans = Prank. Full Stop.</div>
-                    </div>
-                </div>
-                <div style="background:rgba(2,6,23,0.85);padding:14px 18px;display:flex;flex-direction:column;gap:8px;">
-                    <p style="color:#cbd5e1;font-size:12px;font-weight:600;line-height:1.6;">If anyone gives <span style="color:white;font-weight:900;">"OnlyFans"</span> as their business name — end the call professionally. No real business loan applicant lists this.</p>
-                    <div style="display:flex;align-items:center;gap:8px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:8px;padding:8px 12px;">
-                        <i class="fas fa-flag" style="color:#f97316;flex-shrink:0;font-size:11px;"></i>
-                        <span style="color:#fed7aa;font-size:12px;font-weight:700;">"My business is OnlyFans"</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:8px;padding:8px 12px;">
-                        <i class="fas fa-flag" style="color:#f97316;flex-shrink:0;font-size:11px;"></i>
-                        <span style="color:#fed7aa;font-size:12px;font-weight:700;">"I'm a content creator on OnlyFans"</span>
-                    </div>
-                    <p style="color:#475569;font-size:10px;font-weight:900;text-transform:uppercase;text-align:center;margin-top:2px;">End call professionally &amp; move on immediately.</p>
-                </div>
+                <div style="background:linear-gradient(135deg,rgba(249,115,22,0.25),rgba(194,65,12,0.35));padding:16px 18px;display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🔞</span><div><div style="font-family:Orbitron,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#f97316;">Instant Disqualifier</div><div style="font-family:Orbitron,sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;color:white;">OnlyFans = Prank. Full Stop.</div></div></div>
+                <div style="background:rgba(2,6,23,0.85);padding:14px 18px;display:flex;flex-direction:column;gap:8px;"><p style="color:#cbd5e1;font-size:12px;font-weight:600;line-height:1.6;">If anyone gives <span style="color:white;font-weight:900;">"OnlyFans"</span> as their business name — end the call professionally. No real business loan applicant lists this.</p><div style="display:flex;align-items:center;gap:8px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:8px;padding:8px 12px;"><i class="fas fa-flag" style="color:#f97316;flex-shrink:0;font-size:11px;"></i><span style="color:#fed7aa;font-size:12px;font-weight:700;">"My business is OnlyFans"</span></div><div style="display:flex;align-items:center;gap:8px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:8px;padding:8px 12px;"><i class="fas fa-flag" style="color:#f97316;flex-shrink:0;font-size:11px;"></i><span style="color:#fed7aa;font-size:12px;font-weight:700;">"I'm a content creator on OnlyFans"</span></div><p style="color:#475569;font-size:10px;font-weight:900;text-transform:uppercase;text-align:center;margin-top:2px;">End call professionally &amp; move on immediately.</p></div>
             </div>
-
-        </div><!-- end Mexico + OnlyFans row -->
-
-        <!-- RED FLAGS HEADER -->
-        <div style="padding:4px 2px 0;">
-            <p style="font-family:Orbitron,sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#a855f7;">🚨 Prank Caller Red Flags</p>
-            <p style="font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Spot these signs early — end the call professionally and move on</p>
         </div>
-
+        <div style="padding:4px 2px 0;"><p style="font-family:Orbitron,sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#a855f7;">🚨 Prank Caller Red Flags</p><p style="font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;">Spot these signs early — end the call professionally and move on</p></div>
         <div class="prank-grid-2">
-            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">1. Yes to Everything</p>
-                <p class="text-slate-300 text-sm">Real owners push back, ask questions, or pause to think. If someone says <span class="text-white font-black">"yes"</span> to every question instantly — they're not real.</p>
-                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: robotic "yes yes yes," zero hesitation on every answer</p>
-            </div>
-            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">2. Generic or Fake Business Name</p>
-                <p class="text-slate-300 text-sm">Vague names like <span class="text-white font-black">"My Company," "Business LLC,"</span> or names that change when you repeat them back are fake.</p>
-                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "um… it's like… my business," name changes when repeated</p>
-            </div>
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">1. Yes to Everything</p><p class="text-slate-300 text-sm">Real owners push back, ask questions, or pause to think. If someone says <span class="text-white font-black">"yes"</span> to every question instantly — they're not real.</p><p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: robotic "yes yes yes," zero hesitation on every answer</p></div>
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">2. Generic or Fake Business Name</p><p class="text-slate-300 text-sm">Vague names like <span class="text-white font-black">"My Company," "Business LLC,"</span> or names that change when you repeat them back are fake.</p><p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "um… it's like… my business," name changes when repeated</p></div>
         </div>
-
         <div class="prank-grid-2">
-            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">3. Asking for Money / Reversing the Script</p>
-                <p class="text-slate-300 text-sm">If they flip the call — <span class="text-white font-black">"So how much will YOU give me?"</span> before you've even qualified them — they're wasting your time.</p>
-                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "just send it," "how fast can I get it," "give me the max"</p>
-            </div>
-            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">4. Laughing, Whispering, or Coached</p>
-                <p class="text-slate-300 text-sm">Giggling, muffled laughter, or someone <span class="text-white font-black">whispering answers</span> in the background means group prank.</p>
-                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: echoing, whispering, covering the phone, coached replies</p>
-            </div>
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">3. Asking for Money / Reversing the Script</p><p class="text-slate-300 text-sm">If they flip the call — <span class="text-white font-black">"So how much will YOU give me?"</span> before you've even qualified them — they're wasting your time.</p><p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: "just send it," "how fast can I get it," "give me the max"</p></div>
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">4. Laughing, Whispering, or Coached</p><p class="text-slate-300 text-sm">Giggling, muffled laughter, or someone <span class="text-white font-black">whispering answers</span> in the background means group prank.</p><p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: echoing, whispering, covering the phone, coached replies</p></div>
         </div>
-
         <div class="prank-grid-2">
-            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">5. Inconsistent or Absurd Details</p>
-                <p class="text-slate-300 text-sm">Revenue of <span class="text-white font-black">$50 million</span> but open only <span class="text-white font-black">2 months</span>? Real owners are consistent because they live their business every day.</p>
-                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: contradictory info, impossible numbers, changing their story</p>
-            </div>
-            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">6. Refuses to Stay On Topic</p>
-                <p class="text-slate-300 text-sm">Prankers <span class="text-white font-black">derail the call</span> with jokes and random questions. If you've redirected them twice and they still won't engage — end it.</p>
-                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: tangents, jokes about the call, refusing to answer directly</p>
-            </div>
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">5. Inconsistent or Absurd Details</p><p class="text-slate-300 text-sm">Revenue of <span class="text-white font-black">$50 million</span> but open only <span class="text-white font-black">2 months</span>? Real owners are consistent because they live their business every day.</p><p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: contradictory info, impossible numbers, changing their story</p></div>
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">6. Refuses to Stay On Topic</p><p class="text-slate-300 text-sm">Prankers <span class="text-white font-black">derail the call</span> with jokes and random questions. If you've redirected them twice and they still won't engage — end it.</p><p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: tangents, jokes about the call, refusing to answer directly</p></div>
         </div>
-
         <div class="prank-grid-2">
-            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10">
-                <p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">7. Suspicious Tone &amp; Energy</p>
-                <p class="text-slate-300 text-sm">Real owners are <span class="text-white font-black">slightly guarded, professional, measured</span>. Prank callers sound <span class="text-white font-black">too casual, overly excited, or flat and robotic</span>.</p>
-                <p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: giggling, overly eager, robotic monotone, acting a role</p>
-            </div>
-            <div class="glass p-4 rounded-2xl border border-yellow-900/40 bg-yellow-900/5">
-                <p class="text-yellow-400 font-black uppercase text-xs tracking-widest mb-3">🔑 Instant Prank Keywords</p>
-                <div style="display:flex;flex-wrap:wrap;gap:5px;">
-                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Send it to Mexico"</span>
-                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Wire the money"</span>
-                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Give me the cash"</span>
-                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"I need it today"</span>
-                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"How much can you give me?"</span>
-                    <span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Send it internationally"</span>
-                    <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"Yeah whatever you need"</span>
-                    <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"Just approve me"</span>
-                    <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"Can you skip that part?"</span>
-                    <span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"We make millions"</span>
-                </div>
-            </div>
+            <div class="glass p-4 rounded-2xl border border-purple-900/40 bg-purple-900/10"><p class="text-purple-300 font-black uppercase text-xs tracking-widest mb-2">7. Suspicious Tone &amp; Energy</p><p class="text-slate-300 text-sm">Real owners are <span class="text-white font-black">slightly guarded, professional, measured</span>. Prank callers sound <span class="text-white font-black">too casual, overly excited, or flat and robotic</span>.</p><p class="text-yellow-400 font-black text-xs mt-2 uppercase">Watch for: giggling, overly eager, robotic monotone, acting a role</p></div>
+            <div class="glass p-4 rounded-2xl border border-yellow-900/40 bg-yellow-900/5"><p class="text-yellow-400 font-black uppercase text-xs tracking-widest mb-3">🔑 Instant Prank Keywords</p><div style="display:flex;flex-wrap:wrap;gap:5px;"><span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Send it to Mexico"</span><span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Wire the money"</span><span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Give me the cash"</span><span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"I need it today"</span><span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"How much can you give me?"</span><span style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fca5a5;">"Send it internationally"</span><span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"Yeah whatever you need"</span><span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"Just approve me"</span><span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"Can you skip that part?"</span><span style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:#fde68a;">"We make millions"</span></div></div>
         </div>
-
-        <!-- TONE GUIDE -->
         <div class="glass p-6 rounded-3xl border-l-8 border-l-blue-400 bg-blue-500/5">
             <h3 class="header-font text-sm md:text-xl font-black text-blue-400 uppercase mb-2 italic">🎙️ Tone &amp; Voice Tells</h3>
             <p class="text-xs text-slate-500 uppercase font-black tracking-widest mb-4">Real owner vs. prank caller — side by side</p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:14px;">
-                    <p class="text-green-400 font-black text-xs uppercase tracking-widest mb-3">✅ Real Owner Sounds Like</p>
-                    <ul class="space-y-2 text-slate-300 text-xs font-semibold">
-                        <li>• Slightly busy or distracted</li>
-                        <li>• Asks "what is this for exactly?"</li>
-                        <li>• Pauses to recall their revenue</li>
-                        <li>• States business name confidently</li>
-                        <li>• Skeptical but willing to listen</li>
-                        <li>• Professional, measured tone</li>
-                        <li>• Asks about process / next steps</li>
-                        <li>• Background sounds like a real workplace</li>
-                    </ul>
-                </div>
-                <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:14px;">
-                    <p class="text-red-400 font-black text-xs uppercase tracking-widest mb-3">🚨 Prank Caller Sounds Like</p>
-                    <ul class="space-y-2 text-slate-300 text-xs font-semibold">
-                        <li>• Too casual or overly excited</li>
-                        <li>• Agrees to everything instantly</li>
-                        <li>• Never hesitates on any answer</li>
-                        <li>• Gives absurd or vague business name</li>
-                        <li>• Giggles or sounds entertained</li>
-                        <li>• Flat robotic tone, reading a script</li>
-                        <li>• Keeps pushing for the money amount</li>
-                        <li>• Background sounds like a group or party</li>
-                    </ul>
-                </div>
+                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:14px;"><p class="text-green-400 font-black text-xs uppercase tracking-widest mb-3">✅ Real Owner Sounds Like</p><ul class="space-y-2 text-slate-300 text-xs font-semibold"><li>• Slightly busy or distracted</li><li>• Asks "what is this for exactly?"</li><li>• Pauses to recall their revenue</li><li>• States business name confidently</li><li>• Skeptical but willing to listen</li><li>• Professional, measured tone</li><li>• Asks about process / next steps</li><li>• Background sounds like a real workplace</li></ul></div>
+                <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:14px;"><p class="text-red-400 font-black text-xs uppercase tracking-widest mb-3">🚨 Prank Caller Sounds Like</p><ul class="space-y-2 text-slate-300 text-xs font-semibold"><li>• Too casual or overly excited</li><li>• Agrees to everything instantly</li><li>• Never hesitates on any answer</li><li>• Gives absurd or vague business name</li><li>• Giggles or sounds entertained</li><li>• Flat robotic tone, reading a script</li><li>• Keeps pushing for the money amount</li><li>• Background sounds like a group or party</li></ul></div>
             </div>
             <p style="color:#475569;font-size:10px;font-weight:900;text-transform:uppercase;text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);">End the call: <span style="color:white;">"Thank you for your time, we're not able to proceed. Have a great day."</span></p>
         </div>
-
     </div>
 
 </div>
@@ -653,441 +709,102 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbyqcpUpXI6-1mxNDLZ05Wmf
 const WEEKLY_PASSWORD = 'bizlevelup2025';
 const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-
 let agents = [], dayHistory = [];
 let currentTab = 'daily', currentDayView = 'today', weeklyUnlocked = false;
 let lookupHistory = [];
 try { lookupHistory = JSON.parse(localStorage.getItem('bizlookup_history') || '[]'); } catch(e) {}
-
 function getTeam(name) { return (!name) ? 'PR' : name.trim().startsWith('GYB') ? 'BB' : 'PR'; }
-
 function toggleIndustry(header) {
-    const card   = header.closest('.industry-card');
-    const body   = card.querySelector('.industry-body');
-    const arrow  = header.querySelector('.industry-arrow');
-    const isOpen = body.classList.contains('open');
-    document.querySelectorAll('.industry-body.open').forEach(b => b.classList.remove('open'));
-    document.querySelectorAll('.industry-arrow.open').forEach(a => a.classList.remove('open'));
-    if (!isOpen) { body.classList.add('open'); arrow.classList.add('open'); }
+    const card=header.closest('.industry-card'),body=card.querySelector('.industry-body'),arrow=header.querySelector('.industry-arrow'),isOpen=body.classList.contains('open');
+    document.querySelectorAll('.industry-body.open').forEach(b=>b.classList.remove('open'));
+    document.querySelectorAll('.industry-arrow.open').forEach(a=>a.classList.remove('open'));
+    if(!isOpen){body.classList.add('open');arrow.classList.add('open');}
 }
-
+function toggleRevenueDropdown() {
+    const body = document.getElementById('revenue-body');
+    const arrow = document.getElementById('revenue-arrow');
+    const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+    if (isOpen) {
+        body.style.maxHeight = '0px';
+        arrow.style.transform = 'rotate(0deg)';
+    } else {
+        body.style.maxHeight = '800px';
+        arrow.style.transform = 'rotate(180deg)';
+    }
+}
 async function updateDashboard() {
-    const btn = document.getElementById('refresh-btn');
-    btn.classList.add('spin-anim');
+    const btn=document.getElementById('refresh-btn');btn.classList.add('spin-anim');
     try {
-        const res = await fetch(API_URL);
-        agents = await res.json();
-        agents.forEach(a => { if (!a.team) a.team = getTeam(a.name); });
-        if (agents.length > 0) {
-            if (agents[0].dayHistory) dayHistory = agents[0].dayHistory;
-            dayHistory.forEach(d => { d.agents.forEach(a => { if (!a.team) a.team = getTeam(a.name); }); });
-        }
-        if (agents.length > 0 && !agents[0].prTotal && !agents[0].bbTotal) {
-            let pr = 0, bb = 0;
-            agents.forEach(a => { if (a.team==='PR') pr+=(a.dailyLeads||0); else bb+=(a.dailyLeads||0); });
-            agents[0].prTotal = pr; agents[0].bbTotal = bb;
-        }
-        // ── MERGE prank numbers from sheet into live list ──
-        if (agents.length > 0 && agents[0].prankNumbers && agents[0].prankNumbers.length > 0) {
-          agents[0].prankNumbers.forEach(n => {
-            if (n && !KNOWN_PRANK_NUMBERS.includes(n)) KNOWN_PRANK_NUMBERS.push(n);
-          });
-        }
-
-        render(); renderDaySubTabs();
-        document.getElementById('timestamp').innerText = 'Live: ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    } catch(e) { document.getElementById('timestamp').innerText = 'System Offline'; }
-    finally { setTimeout(() => btn.classList.remove('spin-anim'), 1000); }
+        const res=await fetch(API_URL);agents=await res.json();
+        agents.forEach(a=>{if(!a.team)a.team=getTeam(a.name);});
+        if(agents.length>0){if(agents[0].dayHistory)dayHistory=agents[0].dayHistory;dayHistory.forEach(d=>{d.agents.forEach(a=>{if(!a.team)a.team=getTeam(a.name);});});}
+        if(agents.length>0&&!agents[0].prTotal&&!agents[0].bbTotal){let pr=0,bb=0;agents.forEach(a=>{if(a.team==='PR')pr+=(a.dailyLeads||0);else bb+=(a.dailyLeads||0);});agents[0].prTotal=pr;agents[0].bbTotal=bb;}
+        if(agents.length>0&&agents[0].prankNumbers&&agents[0].prankNumbers.length>0){agents[0].prankNumbers.forEach(n=>{if(n&&!KNOWN_PRANK_NUMBERS.includes(n))KNOWN_PRANK_NUMBERS.push(n);});}
+        render();renderDaySubTabs();
+        document.getElementById('timestamp').innerText='Live: '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    } catch(e){document.getElementById('timestamp').innerText='System Offline';}
+    finally{setTimeout(()=>btn.classList.remove('spin-anim'),1000);}
 }
-
 function renderDaySubTabs() {
-    const wrapper = document.getElementById('day-sub-tabs-wrapper');
-    const container = document.getElementById('day-sub-tabs-container');
-    if (currentTab !== 'daily') { wrapper.classList.add('hidden'); return; }
-    if (!dayHistory.length) { wrapper.classList.add('hidden'); return; }
-    let html = '<button onclick="switchDayView(\'today\')" class="day-sub-tab is-today ' + (currentDayView==='today'?'active':'') + '">Today</button>';
-    dayHistory.forEach(d => {
-        html += '<button onclick="switchDayView(' + d.day + ')" class="day-sub-tab is-history ' + (currentDayView===d.day?'active':'') + '">' + DAY_SHORT[d.day] + '<span class="history-dot"></span></button>';
-    });
-    container.innerHTML = html;
-    wrapper.classList.remove('hidden');
+    const wrapper=document.getElementById('day-sub-tabs-wrapper'),container=document.getElementById('day-sub-tabs-container');
+    if(currentTab!=='daily'){wrapper.classList.add('hidden');return;}
+    if(!dayHistory.length){wrapper.classList.add('hidden');return;}
+    let html='<button onclick="switchDayView(\'today\')" class="day-sub-tab is-today '+(currentDayView==='today'?'active':'')+'">Today</button>';
+    dayHistory.forEach(d=>{html+='<button onclick="switchDayView('+d.day+')" class="day-sub-tab is-history '+(currentDayView===d.day?'active':'')+'">'+DAY_SHORT[d.day]+'<span class="history-dot"></span></button>';});
+    container.innerHTML=html;wrapper.classList.remove('hidden');
 }
-function switchDayView(key) { currentDayView = key; renderDaySubTabs(); render(); }
-
-function requestWeekly() {
-    if (weeklyUnlocked) { currentTab='weekly'; updateTabUI(); render(); renderDaySubTabs(); return; }
-    document.getElementById('pw-modal').classList.remove('hidden');
-    document.getElementById('pw-input').value = '';
-    document.getElementById('pw-error').innerText = '';
-    document.getElementById('pw-input').classList.remove('error');
-    setTimeout(() => document.getElementById('pw-input').focus(), 100);
-}
-function checkPassword() {
-    if (document.getElementById('pw-input').value === WEEKLY_PASSWORD) {
-        weeklyUnlocked = true;
-        document.getElementById('pw-modal').classList.add('hidden');
-        document.getElementById('tab-weekly').innerHTML = 'Weekly';
-        currentTab = 'weekly'; currentDayView = 'today';
-        updateTabUI(); render(); renderDaySubTabs();
-    } else {
-        const inp = document.getElementById('pw-input');
-        inp.classList.add('error');
-        document.getElementById('pw-error').innerText = 'Incorrect access code. Try again.';
-        inp.value = '';
-        setTimeout(() => inp.classList.remove('error'), 500);
-        setTimeout(() => inp.focus(), 100);
-    }
-}
-function cancelPassword() { document.getElementById('pw-modal').classList.add('hidden'); }
-
-function switchTab(tab) {
-    if (tab === 'weekly') { requestWeekly(); return; }
-    currentTab = tab; currentDayView = 'today';
-    updateTabUI(); render(); renderDaySubTabs();
-    if (tab === 'lookup') renderLookupHistory();
-}
-function updateTabUI() {
-    ['daily','lookup','playbook','prank','weekly'].forEach(t => {
-        const b = document.getElementById('tab-' + t);
-        if (b) b.className = 'flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all ' + (t===currentTab ? 'tab-active' : 'text-slate-500');
-    });
-}
-
-function getLevel(l) {
-    if (l>=17) return {title:'CONQUEROR',cls:'conqueror-tier',color:'text-red-500'};
-    if (l>=12) return {title:'MASTER',   cls:'gold-tier',     color:'text-yellow-500'};
-    if (l>=7)  return {title:'ELITE',    cls:'orange-tier',   color:'text-orange-500'};
-    if (l>=4)  return {title:'PRO',      cls:'blue-tier',     color:'text-blue-500'};
-    return            {title:'ROOKIE',   cls:'slate-tier',    color:'text-slate-500'};
-}
-
-function render() {
-    const lView  = document.getElementById('leaderboard-view');
-    const pView  = document.getElementById('playbook-view');
-    const luView = document.getElementById('lookup-view');
-    const prView = document.getElementById('prank-view');
-    lView.classList.add('hidden');
-    pView.classList.add('hidden');
-    luView.classList.add('hidden');
-    if (prView) prView.classList.add('hidden');
-    if (currentTab==='playbook') { pView.classList.remove('hidden'); return; }
-    if (currentTab==='lookup')   { luView.classList.remove('hidden'); return; }
-    if (currentTab==='prank')    { if (prView) prView.classList.remove('hidden'); return; }
+function switchDayView(key){currentDayView=key;renderDaySubTabs();render();}
+function requestWeekly(){if(weeklyUnlocked){currentTab='weekly';updateTabUI();render();renderDaySubTabs();return;}document.getElementById('pw-modal').classList.remove('hidden');document.getElementById('pw-input').value='';document.getElementById('pw-error').innerText='';document.getElementById('pw-input').classList.remove('error');setTimeout(()=>document.getElementById('pw-input').focus(),100);}
+function checkPassword(){if(document.getElementById('pw-input').value===WEEKLY_PASSWORD){weeklyUnlocked=true;document.getElementById('pw-modal').classList.add('hidden');document.getElementById('tab-weekly').innerHTML='Weekly';currentTab='weekly';currentDayView='today';updateTabUI();render();renderDaySubTabs();}else{const inp=document.getElementById('pw-input');inp.classList.add('error');document.getElementById('pw-error').innerText='Incorrect access code. Try again.';inp.value='';setTimeout(()=>inp.classList.remove('error'),500);setTimeout(()=>inp.focus(),100);}}
+function cancelPassword(){document.getElementById('pw-modal').classList.add('hidden');}
+function switchTab(tab){if(tab==='weekly'){requestWeekly();return;}currentTab=tab;currentDayView='today';updateTabUI();render();renderDaySubTabs();if(tab==='lookup')renderLookupHistory();}
+function updateTabUI(){['daily','lookup','playbook','prank','weekly'].forEach(t=>{const b=document.getElementById('tab-'+t);if(b)b.className='flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all '+(t===currentTab?'tab-active':'text-slate-500');});}
+function getLevel(l){if(l>=17)return{title:'CONQUEROR',cls:'conqueror-tier',color:'text-red-500'};if(l>=12)return{title:'MASTER',cls:'gold-tier',color:'text-yellow-500'};if(l>=7)return{title:'ELITE',cls:'orange-tier',color:'text-orange-500'};if(l>=4)return{title:'PRO',cls:'blue-tier',color:'text-blue-500'};return{title:'ROOKIE',cls:'slate-tier',color:'text-slate-500'};}
+function render(){
+    const lView=document.getElementById('leaderboard-view'),pView=document.getElementById('playbook-view'),luView=document.getElementById('lookup-view'),prView=document.getElementById('prank-view');
+    lView.classList.add('hidden');pView.classList.add('hidden');luView.classList.add('hidden');if(prView)prView.classList.add('hidden');
+    if(currentTab==='playbook'){pView.classList.remove('hidden');return;}
+    if(currentTab==='lookup'){luView.classList.remove('hidden');return;}
+    if(currentTab==='prank'){if(prView)prView.classList.remove('hidden');return;}
     lView.classList.remove('hidden');
-
-    const isWeekly  = currentTab === 'weekly';
-    const isHistory = currentTab === 'daily' && currentDayView !== 'today';
-    const target    = isWeekly ? 800 : 150;
-    const todayName = agents.length > 0 ? (agents[0].todayName || 'Today') : 'Today';
-    const banner    = document.getElementById('history-banner');
-
-    if (isHistory) {
-        const snap = dayHistory.find(d => d.day === currentDayView);
-        document.getElementById('history-banner-text').innerText = 'Viewing ' + (snap ? snap.dayName : DAY_FULL[currentDayView]) + ' — Final Results';
-        banner.classList.remove('hidden');
-    } else { banner.classList.add('hidden'); }
-
-    document.getElementById('goal-label').innerText    = isWeekly ? 'Weekly Team Goal' : isHistory ? DAY_FULL[currentDayView] + ' Final' : todayName + ' Daily Goal';
-    document.getElementById('target-display').innerText = 'Target: ' + target;
-    document.getElementById('day-indicator').innerText  = isWeekly ? 'Weekly Sprint' : isHistory ? DAY_SHORT[currentDayView] + ' — Completed' : todayName + ' Performance';
-
-    let displayData = [], prTotal = 0, bbTotal = 0;
-    if (isHistory) {
-        const snap = dayHistory.find(d => d.day === currentDayView);
-        if (snap) {
-            displayData = [...snap.agents].sort((a,b) => b.leads-a.leads);
-            prTotal = snap.prTotal||0; bbTotal = snap.bbTotal||0;
-            if (!prTotal && !bbTotal) displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; });
-        }
-    } else {
-        displayData = agents.map(a => ({name:a.name,leads:isWeekly?(a.weeklyLeads||0):(a.dailyLeads||0),team:a.team||getTeam(a.name)})).sort((a,b)=>b.leads-a.leads);
-        if (isWeekly) { displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; }); }
-        else if (agents.length > 0) {
-            prTotal = agents[0].prTotal||0; bbTotal = agents[0].bbTotal||0;
-            if (!prTotal && !bbTotal) displayData.forEach(a => { if(a.team==='PR') prTotal+=a.leads; else bbTotal+=a.leads; });
-        }
-    }
-
-    let totalLeads=0, masters=0, activeReps=0;
-    document.getElementById('leaderboard').innerHTML = displayData.map((agent,i) => {
-        const lvl = getLevel(agent.leads);
-        totalLeads+=agent.leads; if(agent.leads>=12) masters++; if(agent.leads>0) activeReps++;
-        const badge = agent.team==='PR'
-            ? '<span style="font-size:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:1px 5px;color:#a78bfa;font-weight:900;margin-left:6px;">PROV</span>'
-            : '<span style="font-size:8px;background:rgba(192,132,252,0.15);border:1px solid rgba(192,132,252,0.3);border-radius:4px;padding:1px 5px;color:#c084fc;font-weight:900;margin-left:6px;">BERB</span>';
-        return '<div class="glass p-5 rounded-2xl flex justify-between items-center transition-all hover:bg-white/5 '+lvl.cls+' mb-3 md:mb-0 md:m-2">'
-            +'<div class="flex items-center gap-4">'
-            +'<span class="text-xl font-black italic '+(i<3?'text-white':'text-slate-700')+'">'+String(i+1).padStart(2,'0')+'</span>'
-            +'<div><div class="font-black text-sm md:text-lg text-white uppercase flex items-center flex-wrap gap-1">'+agent.name+badge+'</div>'
-            +'<div class="text-[9px] font-black uppercase tracking-widest '+lvl.color+'">'+lvl.title+' STATUS</div></div></div>'
-            +'<div class="text-right"><div class="text-2xl md:text-3xl font-black text-white leading-none">'+agent.leads+'</div>'
-            +'<div class="text-[8px] text-slate-500 uppercase font-black mt-1">Transfers</div></div></div>';
+    const isWeekly=currentTab==='weekly',isHistory=currentTab==='daily'&&currentDayView!=='today',target=isWeekly?800:150,todayName=agents.length>0?(agents[0].todayName||'Today'):'Today',banner=document.getElementById('history-banner');
+    if(isHistory){const snap=dayHistory.find(d=>d.day===currentDayView);document.getElementById('history-banner-text').innerText='Viewing '+(snap?snap.dayName:DAY_FULL[currentDayView])+' — Final Results';banner.classList.remove('hidden');}else{banner.classList.add('hidden');}
+    document.getElementById('goal-label').innerText=isWeekly?'Weekly Team Goal':isHistory?DAY_FULL[currentDayView]+' Final':todayName+' Daily Goal';
+    document.getElementById('target-display').innerText='Target: '+target;
+    document.getElementById('day-indicator').innerText=isWeekly?'Weekly Sprint':isHistory?DAY_SHORT[currentDayView]+' — Completed':todayName+' Performance';
+    let displayData=[],prTotal=0,bbTotal=0;
+    if(isHistory){const snap=dayHistory.find(d=>d.day===currentDayView);if(snap){displayData=[...snap.agents].sort((a,b)=>b.leads-a.leads);prTotal=snap.prTotal||0;bbTotal=snap.bbTotal||0;if(!prTotal&&!bbTotal)displayData.forEach(a=>{if(a.team==='PR')prTotal+=a.leads;else bbTotal+=a.leads;});}}
+    else{displayData=agents.map(a=>({name:a.name,leads:isWeekly?(a.weeklyLeads||0):(a.dailyLeads||0),team:a.team||getTeam(a.name)})).sort((a,b)=>b.leads-a.leads);if(isWeekly){displayData.forEach(a=>{if(a.team==='PR')prTotal+=a.leads;else bbTotal+=a.leads;});}else if(agents.length>0){prTotal=agents[0].prTotal||0;bbTotal=agents[0].bbTotal||0;if(!prTotal&&!bbTotal)displayData.forEach(a=>{if(a.team==='PR')prTotal+=a.leads;else bbTotal+=a.leads;});}}
+    let totalLeads=0,masters=0,activeReps=0;
+    document.getElementById('leaderboard').innerHTML=displayData.map((agent,i)=>{
+        const lvl=getLevel(agent.leads);totalLeads+=agent.leads;if(agent.leads>=12)masters++;if(agent.leads>0)activeReps++;
+        const badge=agent.team==='PR'?'<span style="font-size:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:1px 5px;color:#a78bfa;font-weight:900;margin-left:6px;">PROV</span>':'<span style="font-size:8px;background:rgba(192,132,252,0.15);border:1px solid rgba(192,132,252,0.3);border-radius:4px;padding:1px 5px;color:#c084fc;font-weight:900;margin-left:6px;">BERB</span>';
+        return '<div class="glass p-5 rounded-2xl flex justify-between items-center transition-all hover:bg-white/5 '+lvl.cls+' mb-3 md:mb-0 md:m-2"><div class="flex items-center gap-4"><span class="text-xl font-black italic '+(i<3?'text-white':'text-slate-700')+'">'+String(i+1).padStart(2,'0')+'</span><div><div class="font-black text-sm md:text-lg text-white uppercase flex items-center flex-wrap gap-1">'+agent.name+badge+'</div><div class="text-[9px] font-black uppercase tracking-widest '+lvl.color+'">'+lvl.title+' STATUS</div></div></div><div class="text-right"><div class="text-2xl md:text-3xl font-black text-white leading-none">'+agent.leads+'</div><div class="text-[8px] text-slate-500 uppercase font-black mt-1">Transfers</div></div></div>';
     }).join('');
-
-    document.getElementById('floor-total').innerText       = totalLeads;
-    document.getElementById('master-count').innerText      = String(masters).padStart(2,'0');
-    document.getElementById('active-reps').innerText       = activeReps;
-    document.getElementById('current-leads-sum').innerText = totalLeads+' Leads';
-    document.getElementById('pr-count').innerText          = prTotal;
-    document.getElementById('bb-count').innerText          = bbTotal;
-    const pct = Math.min((totalLeads/target)*100,100);
-    document.getElementById('progress-bar').style.width = pct+'%';
-    document.getElementById('goal-percent').innerText    = Math.floor(pct)+'%';
+    document.getElementById('floor-total').innerText=totalLeads;document.getElementById('master-count').innerText=String(masters).padStart(2,'0');document.getElementById('active-reps').innerText=activeReps;document.getElementById('current-leads-sum').innerText=totalLeads+' Leads';document.getElementById('pr-count').innerText=prTotal;document.getElementById('bb-count').innerText=bbTotal;
+    const pct=Math.min((totalLeads/target)*100,100);document.getElementById('progress-bar').style.width=pct+'%';document.getElementById('goal-percent').innerText=Math.floor(pct)+'%';
 }
-
-// ── KNOWN BAD NUMBER DATABASE ────────────────────────────────────
-const KNOWN_PRANK_NUMBERS = [
-    // 🎭 Confirmed Prank Callers
-    '9163656189','7725380078','5155382287','2524125130','3476615074','8034917478','6169472405','8303121902',
-    '7817273254','8125934420','2692084907','7347656604','9046699713','5866301595','4696646148','7274393370',
-    '7754127556','5202569909','4434637648','4026507658','7347771643','4023781266','4016627245','7208104461',
-    '6023413890','2104136710','3042885760','5749711748','8583345667','5409150496','5137086199','6142070065',
-    '4095472837','9718066475','6512474567','6162834112','4782998816','9368706243','6783726123','3472378760',
-    '7165784421','2029200305','3232748776','5595798373','5129871649','6195403929','4702182848','3107018620',
-    '7023711117','4135360569','8594093815','7274233955','9197959486','3619465172','8083040256','6087991146',
-    '5302635014','9188559954','7028901379','2188515079','5135081874','9492930673','7657174789','8149772413',
-    '6087126517','3162045097','2392097915','7142879786','3103477579','7208789184','2705855042','3024380616',
-    '3238259109','3617745483','4136687667','2148682933','5309211552','2142320070','9563795560','7035985800',
-    '5864277879','2317293085','4064597681','7042937588','5165099960','4083791440','3259980598','3194613217',
-    '5714360194','5027417606','2708737700','7192987437','5305627400','6172331045','3126361686','7072919309',
-    '3186216032','6128035158','7607376012','8703120279','5048008555','9704021036','3058047064','5033347391',
-    '4013690190','8638851134','4053206801',
-    // ✅ Newly Added — 2025
-    '7167716522','8138166105','9082103977','5715099393','9727682029',
-    '7863334920','7863827748','7867590159',
-    '34742231119','8507580946','2707991520','9152764716','5127967077',
-    '3024948733','7186073225','8603988237'
-];
-
-const KNOWN_TRUCKING_NUMBERS = [
-    '8037355052','9094384996','4073752418','9175613116','9049451857','6122136729','2282787454','4784519553',
-    '7708916065','8327711931','7734915634','9196044629','3345908864','5135182367','8646014987','9168786362',
-    '9313388267','8126218311','7123308224','9099129813','7739561628','8048220400','8133319694','3302068622',
-    '2038855026','6083061773','3252476208','8645852073','8037471102','8043249527','2765664965','8036248184',
-    '8593539222','2158506881','3203333445','6692921025','3465228286','3134925553','8636571633','3194503310',
-    '2313711551','2677675579','7869012853','9104177920','7708991115','7346120002','2244886335','6066224334',
-    '3126759631','3194718151','4069301685','9562633814','3033195765','9095182805','5164440447','3013189419',
-    '2602371073','8326128410','9518370245','6156486511','6613756862','6204086324','4697816350','3234473277',
-    '7542130413','8645209840','2024251872','7573444483','2108348944','9102319543'
-];
-
-const KNOWN_NOT_SERIOUS_NUMBERS = [
-    '8315969595','6025249999','9545531044','9545998844','6108587766','4049363703','3525526656','4403902075',
-    '2482400067','6176920021','7855500429','7074907029','7077389769','3869371667','2172425249','7153401448',
-    '8087477788','8635576929','9012192066','5415154514','5607500429','5129379494','3124793437','6265900828',
-    '9144699875','7408918422','7862185383','8325151689','9727487356','2173161719','9016128611','9157908824',
-    '8132848555','8703120279','8324413144','2103632150','7708996994','6284883332','9287654951','7732506946',
-    '3505627400','5806197420','8158146330','3478604021','4809955447','8134654567','5038870600','5083264440',
-    '6015736850','5188782513','3046737500','2162693152','8088603481','2533818589','7868283211','9096930598',
-    '3083059178','3053218180','7575742897','7012619840','8623687500','3058898191','5326247000','7039693579',
-    '8134203849','5314669271','3109087986','3105988171','6023634805','7865976907','6628008473','8054447815',
-    '6787566023','3052095548','3053365569'
-];
-
-function normalizePhone(q) { return q.replace(/\D/g,''); }
-
-function checkKnownBadNumber(q) {
-    const digits = normalizePhone(q);
-    if (digits.length < 7) return null;
-    const d10 = digits.slice(-10);
-    if (KNOWN_PRANK_NUMBERS.includes(d10))       return { type:'prank',     label:'🎭 CONFIRMED PRANK CALLER',   color:'#ef4444', msg:'This number is on the confirmed prank caller list. End the call professionally and move on.' };
-    if (KNOWN_TRUCKING_NUMBERS.includes(d10))    return { type:'trucking',  label:'🚛 CONFIRMED TRUCKING — DNQ', color:'#f97316', msg:'This number is a confirmed trucking business. They do not qualify. Do not transfer.' };
-    if (KNOWN_NOT_SERIOUS_NUMBERS.includes(d10)) return { type:'notserious',label:'⚠️ NOT A SERIOUS LEAD',       color:'#eab308', msg:'This number is flagged as not a serious lead. Proceed with extreme caution or skip.' };
-    return null;
-}
-
-function detectPrank(query) {
-    const q = query.trim().toLowerCase();
-    const reasons = [];
-    let score = 0;
-    const isPhone = /^[\d\s\-\(\)\+\.]+$/.test(query) && query.replace(/\D/g,'').length >= 7;
-    if (isPhone) {
-        const d = query.replace(/\D/g,'');
-        if (/^(\d)\1+$/.test(d))                               { score+=85; reasons.push('All same digits — clearly fake number'); }
-        if (['1234567890','0987654321','1234567'].some(s=>d.includes(s.slice(0,7)))) { score+=70; reasons.push('Sequential digits — common fake number'); }
-        if (['0000000000','1111111111','1234567890','9999999999'].includes(d))        { score+=90; reasons.push('Known placeholder/test phone number'); }
-    }
-    const fictional = ['dunder mifflin','umbrella corp','initech','globex','vandelay','acme corp','nakatomi','aperture','wayne enterprises','stark industries'];
-    if (fictional.some(f=>q.includes(f)))                     { score+=95; reasons.push('Fictional company name detected'); }
-    if (/^[a-z]{1,3}$/.test(q))                               { score+=85; reasons.push('Too short to be a real business name'); }
-    if (/(.)\1{3,}/.test(q))                                  { score+=75; reasons.push('Repeated characters — keyboard mashing'); }
-    if (/^(asdf|qwer|zxcv|test|fake|blah|lol|haha)/.test(q)) { score+=90; reasons.push('Nonsense or test input'); }
-    ['business name','company name','my business','test business','sample','placeholder'].forEach(p => { if(q.includes(p)){score+=88;reasons.push('Generic placeholder name');} });
-    ['money inc','cash cash','big bucks','easy money','get rich','bank of nigeria','free money'].forEach(j => { if(q.includes(j)){score+=80;reasons.push('Matches known scam/joke phrase');} });
-    if (/[!@#$%^&*]{2,}/.test(query))                         { score+=60; reasons.push('Excessive special characters'); }
-    const words = q.split(/\s+/).filter(Boolean);
-    if (words.length>1 && new Set(words).size===1)             { score+=75; reasons.push('All words identical — suspicious'); }
-    score = Math.min(score,100);
-    return { prankScore:score, prankReasons:reasons, prankVerdict: score>=80?'definite_prank':score>=56?'likely_prank':score>=26?'suspicious':'clean' };
-}
-
-function isPhoneNum(q) { return /^[\d\s\-\(\)\+\.]+$/.test(q) && q.replace(/\D/g,'').length >= 7; }
-
-function buildQuery(q) {
-    if (isPhoneNum(q)) return 'For the phone number '+q+', give me: the business name, the name of the owner, the address, and email if possible';
-    return 'For the business "'+q+'", give me: the business name, the name of the owner, the address, and email if possible';
-}
-
-function runLookup() {
-    const q = document.getElementById('lookup-input').value.trim();
-    if (!q) { document.getElementById('lookup-input').focus(); return; }
-
-    const knownBad = checkKnownBadNumber(q);
-    if (knownBad) {
-        showKnownBadAlert(knownBad, q);
-        const entry = { query:q, prankScore: knownBad.type==='prank'?100:knownBad.type==='trucking'?90:70, prankVerdict: knownBad.type==='prank'?'definite_prank':'suspicious', prankReasons:['Found in known bad number database: '+knownBad.label], timestamp:new Date().toISOString() };
-        lookupHistory.unshift(entry);
-        if (lookupHistory.length>15) lookupHistory=lookupHistory.slice(0,15);
-        try { localStorage.setItem('bizlookup_history',JSON.stringify(lookupHistory)); } catch(e){}
-        renderLookupHistory();
-        return;
-    }
-
-    const prank = detectPrank(q);
-    showPrankResult(prank);
-    const entry = { query:q, prankScore:prank.prankScore, prankVerdict:prank.prankVerdict, prankReasons:prank.prankReasons, timestamp:new Date().toISOString() };
-    lookupHistory.unshift(entry);
-    if (lookupHistory.length>15) lookupHistory=lookupHistory.slice(0,15);
-    try { localStorage.setItem('bizlookup_history',JSON.stringify(lookupHistory)); } catch(e){}
-    renderLookupHistory();
-    openSite('google');
-}
-
-function showKnownBadAlert(bad, q) {
-    const el = document.getElementById('lookup-prank-result');
-    const iconMap  = { prank:'fas fa-ban', trucking:'fas fa-truck', notserious:'fas fa-exclamation-triangle' };
-    const bgMap    = { prank:'linear-gradient(135deg,rgba(239,68,68,0.25),rgba(185,28,28,0.35))', trucking:'linear-gradient(135deg,rgba(249,115,22,0.2),rgba(194,65,12,0.3))', notserious:'linear-gradient(135deg,rgba(234,179,8,0.18),rgba(161,98,7,0.28))' };
-    const c = bad.color, icon = iconMap[bad.type], bg = bgMap[bad.type];
-    el.innerHTML =
-        '<div style="border-radius:18px;overflow:hidden;border:3px solid '+c+';box-shadow:0 0 40px '+c+'55;animation:fadeSlideIn 0.25s ease-out;">'
-        +'<div style="background:'+bg+';padding:20px 22px;position:relative;overflow:hidden;">'
-        +'<div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,'+c+'09 10px,'+c+'09 20px);"></div>'
-        +'<div style="position:relative;display:flex;align-items:center;gap:16px;">'
-        +'<div style="width:56px;height:56px;border-radius:50%;background:'+c+'22;border:2px solid '+c+'55;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
-        +'<i class="'+icon+'" style="color:'+c+';font-size:1.3rem;"></i></div>'
-        +'<div style="flex:1;">'
-        +'<div style="font-family:Orbitron,sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:'+c+';margin-bottom:4px;">'+bad.label+'</div>'
-        +'<div style="font-size:12px;font-weight:700;color:#e2e8f0;line-height:1.5;">'+bad.msg+'</div>'
-        +'<div style="margin-top:8px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#475569;">Number: <span style="color:'+c+';">'+escapeHtml(q)+'</span> — Found in database</div>'
-        +'</div></div></div>'
-        +'<div style="background:rgba(2,6,23,0.85);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;">'
-        +'<span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#334155;">Still want to search anyway?</span>'
-        +'<button onclick="openSite(\'google\')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:6px 14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#64748b;cursor:pointer;" onmouseover="this.style.color=\'#94a3b8\'" onmouseout="this.style.color=\'#64748b\'">Search Anyway <i class="fas fa-external-link-alt ml-1"></i></button>'
-        +'</div></div>';
-    el.classList.remove('hidden');
-    el.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-function openSite(site) {
-    const q = document.getElementById('lookup-input').value.trim();
-    if (!q) { document.getElementById('lookup-input').focus(); return; }
-    const isPhone = isPhoneNum(q);
-    const digits  = q.replace(/\D/g,'');
-    const gq      = buildQuery(q);
-    const urls = {
-        google:      'https://www.google.com/search?q='+encodeURIComponent(gq)+'&udm=50',
-        bing:        'https://www.bing.com/search?q='+encodeURIComponent(gq)+'&showconv=1',
-        yellowpages: isPhone ? 'https://www.yellowpages.com/phone-lookup?phone='+digits : 'https://www.yellowpages.com/search?search_terms='+encodeURIComponent(q)+'&geo_location_terms=United+States',
-        whitepages:  isPhone ? 'https://www.whitepages.com/phone/'+digits               : 'https://www.whitepages.com/business/'+encodeURIComponent(q),
-        yelp:        'https://www.yelp.com/search?find_desc='+encodeURIComponent(q)+'&find_loc=United+States',
-        '411':       isPhone ? 'https://www.411.com/phone/'+digits                       : 'https://www.411.com/business/search?q='+encodeURIComponent(q)
-    };
-    if (urls[site]) window.open(urls[site], '_blank');
-}
-
-function showPrankResult(prank) {
-    const el = document.getElementById('lookup-prank-result');
-    if (!prank || prank.prankScore < 26) { el.classList.add('hidden'); el.innerHTML=''; return; }
-    const s = prank.prankScore;
-    const isD=s>=80, isP=s>=56;
-    const label  = isD ? '🚨 DEFINITE PRANK — END CALL &amp; MOVE ON' : isP ? '⚠️ LIKELY PRANK — PROCEED WITH CAUTION' : '👀 SUSPICIOUS — VERIFY CAREFULLY';
-    const color  = isD ? '#ef4444' : isP ? '#f97316' : '#eab308';
-    const bg     = isD ? 'linear-gradient(135deg,rgba(239,68,68,0.22),rgba(185,28,28,0.32))' : isP ? 'linear-gradient(135deg,rgba(249,115,22,0.18),rgba(194,65,12,0.28))' : 'linear-gradient(135deg,rgba(234,179,8,0.14),rgba(161,98,7,0.24))';
-    const rHTML  = (prank.prankReasons||[]).map(r =>
-        '<div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:8px;padding:8px 12px;">'
-        +'<i class="fas fa-flag" style="color:'+color+';font-size:10px;flex-shrink:0;"></i>'
-        +'<span style="font-size:12px;color:#fca5a5;font-weight:700;">'+escapeHtml(r)+'</span></div>'
-    ).join('');
-    el.innerHTML =
-        '<div style="border-radius:18px;overflow:hidden;border:2px solid '+color+';box-shadow:0 0 30px '+color+'44;animation:fadeSlideIn 0.3s ease-out;">'
-        +'<div style="background:'+bg+';padding:18px 20px;border-bottom:1px solid '+color+'30;position:relative;overflow:hidden;">'
-        +'<div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,'+color+'08 10px,'+color+'08 20px);"></div>'
-        +'<div style="position:relative;display:flex;align-items:center;gap:14px;">'
-        +'<div style="width:58px;height:58px;border-radius:50%;background:conic-gradient('+color+' '+s+'%,rgba(255,255,255,0.04) '+s+'%);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;">'
-        +'<div style="position:absolute;inset:6px;border-radius:50%;background:#020617;"></div>'
-        +'<span style="position:relative;z-index:1;font-family:Orbitron,sans-serif;font-weight:900;font-size:0.9rem;color:'+color+';">'+s+'</span></div>'
-        +'<div><div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:'+color+';margin-bottom:3px;">'+label+'</div>'
-        +'<div style="font-size:10px;color:#94a3b8;font-weight:700;">Prank Risk Score: <span style="color:'+color+';font-weight:900;">'+s+'/100</span></div>'
-        +'</div></div></div>'
-        +(rHTML?'<div style="background:rgba(2,6,23,0.75);padding:14px;display:flex;flex-direction:column;gap:6px;">'+rHTML+'</div>':'')
-        +'</div>';
-    el.classList.remove('hidden');
-}
-
-function onLookupInput(val) {
-    const q = val.trim();
-    const digits = normalizePhone(q);
-    if (digits.length === 10) {
-        const bad = checkKnownBadNumber(q);
-        if (bad) { showKnownBadAlert(bad, q); return; }
-    }
-    if (!q) {
-        const pr = document.getElementById('lookup-prank-result');
-        if (pr) { pr.classList.add('hidden'); pr.innerHTML=''; }
-    }
-}
-
-function clearLookup() {
-    document.getElementById('lookup-input').value='';
-    const pr=document.getElementById('lookup-prank-result');
-    if(pr){pr.classList.add('hidden');pr.innerHTML='';}
-    document.getElementById('lookup-input').focus();
-}
-
-function renderLookupHistory() {
-    const sec=document.getElementById('lookup-history-section');
-    const con=document.getElementById('lookup-history');
-    if (!lookupHistory.length) { sec.classList.add('hidden'); return; }
-    sec.classList.remove('hidden');
-    con.innerHTML = lookupHistory.map((h,i) => {
-        const ago=timeAgo(new Date(h.timestamp)), s=h.prankScore||0;
-        const badge = s>=80
-            ? '<span style="font-size:9px;font-weight:900;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">🚨 PRANK</span>'
-            : s>=56 ? '<span style="font-size:9px;font-weight:900;background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">⚠️ SUSPECT</span>'
-            : s>=26 ? '<span style="font-size:9px;font-weight:900;background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">👀 CHECK</span>'
-            : '';
-        return '<div class="search-history-item" onclick="reloadHistory('+i+')">'
-            +'<div><div class="font-black text-sm text-white">'+escapeHtml(h.query)+badge+'</div>'
-            +'<div class="text-[10px] text-slate-600 font-bold mt-0.5 uppercase tracking-wide">'+ago+'</div></div>'
-            +'<i class="fas fa-chevron-right text-slate-700 text-xs"></i></div>';
-    }).join('');
-}
-
-function reloadHistory(i) {
-    const h=lookupHistory[i]; if(!h) return;
-    document.getElementById('lookup-input').value=h.query;
-    showPrankResult({prankScore:h.prankScore||0,prankReasons:h.prankReasons||[],prankVerdict:h.prankVerdict||'clean'});
-}
-function clearHistory() {
-    lookupHistory=[];
-    try{localStorage.setItem('bizlookup_history','[]');}catch(e){}
-    renderLookupHistory();
-}
-
-function timeAgo(date) {
-    const m=Math.floor((Date.now()-date.getTime())/60000);
-    if(m<1) return 'Just now';
-    if(m<60) return m+'m ago';
-    const h=Math.floor(m/60);
-    if(h<24) return h+'h ago';
-    return Math.floor(h/24)+'d ago';
-}
-function escapeHtml(s) {
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
+const KNOWN_PRANK_NUMBERS=['9163656189','7725380078','5155382287','2524125130','3476615074','8034917478','6169472405','8303121902','7817273254','8125934420','2692084907','7347656604','9046699713','5866301595','4696646148','7274393370','7754127556','5202569909','4434637648','4026507658','7347771643','4023781266','4016627245','7208104461','6023413890','2104136710','3042885760','5749711748','8583345667','5409150496','5137086199','6142070065','4095472837','9718066475','6512474567','6162834112','4782998816','9368706243','6783726123','3472378760','7165784421','2029200305','3232748776','5595798373','5129871649','6195403929','4702182848','3107018620','7023711117','4135360569','8594093815','7274233955','9197959486','3619465172','8083040256','6087991146','5302635014','9188559954','7028901379','2188515079','5135081874','9492930673','7657174789','8149772413','6087126517','3162045097','2392097915','7142879786','3103477579','7208789184','2705855042','3024380616','3238259109','3617745483','4136687667','2148682933','5309211552','2142320070','9563795560','7035985800','5864277879','2317293085','4064597681','7042937588','5165099960','4083791440','3259980598','3194613217','5714360194','5027417606','2708737700','7192987437','5305627400','6172331045','3126361686','7072919309','3186216032','6128035158','7607376012','8703120279','5048008555','9704021036','3058047064','5033347391','4013690190','8638851134','4053206801','7167716522','8138166105','9082103977','5715099393','9727682029','7863334920','7863827748','7867590159','34742231119','8507580946','2707991520','9152764716','5127967077','3024948733','7186073225','8603988237'];
+const KNOWN_TRUCKING_NUMBERS=['8037355052','9094384996','4073752418','9175613116','9049451857','6122136729','2282787454','4784519553','7708916065','8327711931','7734915634','9196044629','3345908864','5135182367','8646014987','9168786362','9313388267','8126218311','7123308224','9099129813','7739561628','8048220400','8133319694','3302068622','2038855026','6083061773','3252476208','8645852073','8037471102','8043249527','2765664965','8036248184','8593539222','2158506881','3203333445','6692921025','3465228286','3134925553','8636571633','3194503310','2313711551','2677675579','7869012853','9104177920','7708991115','7346120002','2244886335','6066224334','3126759631','3194718151','4069301685','9562633814','3033195765','9095182805','5164440447','3013189419','2602371073','8326128410','9518370245','6156486511','6613756862','6204086324','4697816350','3234473277','7542130413','8645209840','2024251872','7573444483','2108348944','9102319543'];
+const KNOWN_NOT_SERIOUS_NUMBERS=['8315969595','6025249999','9545531044','9545998844','6108587766','4049363703','3525526656','4403902075','2482400067','6176920021','7855500429','7074907029','7077389769','3869371667','2172425249','7153401448','8087477788','8635576929','9012192066','5415154514','5607500429','5129379494','3124793437','6265900828','9144699875','7408918422','7862185383','8325151689','9727487356','2173161719','9016128611','9157908824','8132848555','8703120279','8324413144','2103632150','7708996994','6284883332','9287654951','7732506946','3505627400','5806197420','8158146330','3478604021','4809955447','8134654567','5038870600','5083264440','6015736850','5188782513','3046737500','2162693152','8088603481','2533818589','7868283211','9096930598','3083059178','3053218180','7575742897','7012619840','8623687500','3058898191','5326247000','7039693579','8134203849','5314669271','3109087986','3105988171','6023634805','7865976907','6628008473','8054447815','6787566023','3052095548','3053365569'];
+function normalizePhone(q){return q.replace(/\D/g,'');}
+function checkKnownBadNumber(q){const digits=normalizePhone(q);if(digits.length<7)return null;const d10=digits.slice(-10);if(KNOWN_PRANK_NUMBERS.includes(d10))return{type:'prank',label:'🎭 CONFIRMED PRANK CALLER',color:'#ef4444',msg:'This number is on the confirmed prank caller list. End the call professionally and move on.'};if(KNOWN_TRUCKING_NUMBERS.includes(d10))return{type:'trucking',label:'🚛 CONFIRMED TRUCKING — DNQ',color:'#f97316',msg:'This number is a confirmed trucking business. They do not qualify. Do not transfer.'};if(KNOWN_NOT_SERIOUS_NUMBERS.includes(d10))return{type:'notserious',label:'⚠️ NOT A SERIOUS LEAD',color:'#eab308',msg:'This number is flagged as not a serious lead. Proceed with extreme caution or skip.'};return null;}
+function detectPrank(query){const q=query.trim().toLowerCase();const reasons=[];let score=0;const isPhone=/^[\d\s\-\(\)\+\.]+$/.test(query)&&query.replace(/\D/g,'').length>=7;if(isPhone){const d=query.replace(/\D/g,'');if(/^(\d)\1+$/.test(d)){score+=85;reasons.push('All same digits — clearly fake number');}if(['1234567890','0987654321','1234567'].some(s=>d.includes(s.slice(0,7)))){score+=70;reasons.push('Sequential digits — common fake number');}if(['0000000000','1111111111','1234567890','9999999999'].includes(d)){score+=90;reasons.push('Known placeholder/test phone number');}}const fictional=['dunder mifflin','umbrella corp','initech','globex','vandelay','acme corp','nakatomi','aperture','wayne enterprises','stark industries'];if(fictional.some(f=>q.includes(f))){score+=95;reasons.push('Fictional company name detected');}if(/^[a-z]{1,3}$/.test(q)){score+=85;reasons.push('Too short to be a real business name');}if(/(.)\1{3,}/.test(q)){score+=75;reasons.push('Repeated characters — keyboard mashing');}if(/^(asdf|qwer|zxcv|test|fake|blah|lol|haha)/.test(q)){score+=90;reasons.push('Nonsense or test input');}['business name','company name','my business','test business','sample','placeholder'].forEach(p=>{if(q.includes(p)){score+=88;reasons.push('Generic placeholder name');}});['money inc','cash cash','big bucks','easy money','get rich','bank of nigeria','free money'].forEach(j=>{if(q.includes(j)){score+=80;reasons.push('Matches known scam/joke phrase');}});if(/[!@#$%^&*]{2,}/.test(query)){score+=60;reasons.push('Excessive special characters');}const words=q.split(/\s+/).filter(Boolean);if(words.length>1&&new Set(words).size===1){score+=75;reasons.push('All words identical — suspicious');}score=Math.min(score,100);return{prankScore:score,prankReasons:reasons,prankVerdict:score>=80?'definite_prank':score>=56?'likely_prank':score>=26?'suspicious':'clean'};}
+function isPhoneNum(q){return /^[\d\s\-\(\)\+\.]+$/.test(q)&&q.replace(/\D/g,'').length>=7;}
+function buildQuery(q){if(isPhoneNum(q))return 'For the phone number '+q+', give me: the business name, the name of the owner, the address, and email if possible';return 'For the business "'+q+'", give me: the business name, the name of the owner, the address, and email if possible';}
+function runLookup(){const q=document.getElementById('lookup-input').value.trim();if(!q){document.getElementById('lookup-input').focus();return;}const knownBad=checkKnownBadNumber(q);if(knownBad){showKnownBadAlert(knownBad,q);const entry={query:q,prankScore:knownBad.type==='prank'?100:knownBad.type==='trucking'?90:70,prankVerdict:knownBad.type==='prank'?'definite_prank':'suspicious',prankReasons:['Found in known bad number database: '+knownBad.label],timestamp:new Date().toISOString()};lookupHistory.unshift(entry);if(lookupHistory.length>15)lookupHistory=lookupHistory.slice(0,15);try{localStorage.setItem('bizlookup_history',JSON.stringify(lookupHistory));}catch(e){}renderLookupHistory();return;}const prank=detectPrank(q);showPrankResult(prank);const entry={query:q,prankScore:prank.prankScore,prankVerdict:prank.prankVerdict,prankReasons:prank.prankReasons,timestamp:new Date().toISOString()};lookupHistory.unshift(entry);if(lookupHistory.length>15)lookupHistory=lookupHistory.slice(0,15);try{localStorage.setItem('bizlookup_history',JSON.stringify(lookupHistory));}catch(e){}renderLookupHistory();openSite('google');}
+function showKnownBadAlert(bad,q){const el=document.getElementById('lookup-prank-result');const iconMap={prank:'fas fa-ban',trucking:'fas fa-truck',notserious:'fas fa-exclamation-triangle'};const bgMap={prank:'linear-gradient(135deg,rgba(239,68,68,0.25),rgba(185,28,28,0.35))',trucking:'linear-gradient(135deg,rgba(249,115,22,0.2),rgba(194,65,12,0.3))',notserious:'linear-gradient(135deg,rgba(234,179,8,0.18),rgba(161,98,7,0.28))'};const c=bad.color,icon=iconMap[bad.type],bg=bgMap[bad.type];el.innerHTML='<div style="border-radius:18px;overflow:hidden;border:3px solid '+c+';box-shadow:0 0 40px '+c+'55;animation:fadeSlideIn 0.25s ease-out;"><div style="background:'+bg+';padding:20px 22px;position:relative;overflow:hidden;"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,'+c+'09 10px,'+c+'09 20px);"></div><div style="position:relative;display:flex;align-items:center;gap:16px;"><div style="width:56px;height:56px;border-radius:50%;background:'+c+'22;border:2px solid '+c+'55;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="'+icon+'" style="color:'+c+';font-size:1.3rem;"></i></div><div style="flex:1;"><div style="font-family:Orbitron,sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:'+c+';margin-bottom:4px;">'+bad.label+'</div><div style="font-size:12px;font-weight:700;color:#e2e8f0;line-height:1.5;">'+bad.msg+'</div><div style="margin-top:8px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#475569;">Number: <span style="color:'+c+';">'+escapeHtml(q)+'</span> — Found in database</div></div></div></div><div style="background:rgba(2,6,23,0.85);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;"><span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#334155;">Still want to search anyway?</span><button onclick="openSite(\'google\')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:6px 14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#64748b;cursor:pointer;" onmouseover="this.style.color=\'#94a3b8\'" onmouseout="this.style.color=\'#64748b\'">Search Anyway <i class="fas fa-external-link-alt ml-1"></i></button></div></div>';el.classList.remove('hidden');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function openSite(site){const q=document.getElementById('lookup-input').value.trim();if(!q){document.getElementById('lookup-input').focus();return;}const isPhone=isPhoneNum(q),digits=q.replace(/\D/g,''),gq=buildQuery(q);const urls={google:'https://www.google.com/search?q='+encodeURIComponent(gq)+'&udm=50',bing:'https://www.bing.com/search?q='+encodeURIComponent(gq)+'&showconv=1',yellowpages:isPhone?'https://www.yellowpages.com/phone-lookup?phone='+digits:'https://www.yellowpages.com/search?search_terms='+encodeURIComponent(q)+'&geo_location_terms=United+States',whitepages:isPhone?'https://www.whitepages.com/phone/'+digits:'https://www.whitepages.com/business/'+encodeURIComponent(q),yelp:'https://www.yelp.com/search?find_desc='+encodeURIComponent(q)+'&find_loc=United+States','411':isPhone?'https://www.411.com/phone/'+digits:'https://www.411.com/business/search?q='+encodeURIComponent(q)};if(urls[site])window.open(urls[site],'_blank');}
+function showPrankResult(prank){const el=document.getElementById('lookup-prank-result');if(!prank||prank.prankScore<26){el.classList.add('hidden');el.innerHTML='';return;}const s=prank.prankScore,isD=s>=80,isP=s>=56,label=isD?'🚨 DEFINITE PRANK — END CALL &amp; MOVE ON':isP?'⚠️ LIKELY PRANK — PROCEED WITH CAUTION':'👀 SUSPICIOUS — VERIFY CAREFULLY',color=isD?'#ef4444':isP?'#f97316':'#eab308',bg=isD?'linear-gradient(135deg,rgba(239,68,68,0.22),rgba(185,28,28,0.32))':isP?'linear-gradient(135deg,rgba(249,115,22,0.18),rgba(194,65,12,0.28))':'linear-gradient(135deg,rgba(234,179,8,0.14),rgba(161,98,7,0.24))';const rHTML=(prank.prankReasons||[]).map(r=>'<div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:8px;padding:8px 12px;"><i class="fas fa-flag" style="color:'+color+';font-size:10px;flex-shrink:0;"></i><span style="font-size:12px;color:#fca5a5;font-weight:700;">'+escapeHtml(r)+'</span></div>').join('');el.innerHTML='<div style="border-radius:18px;overflow:hidden;border:2px solid '+color+';box-shadow:0 0 30px '+color+'44;animation:fadeSlideIn 0.3s ease-out;"><div style="background:'+bg+';padding:18px 20px;border-bottom:1px solid '+color+'30;position:relative;overflow:hidden;"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,'+color+'08 10px,'+color+'08 20px);"></div><div style="position:relative;display:flex;align-items:center;gap:14px;"><div style="width:58px;height:58px;border-radius:50%;background:conic-gradient('+color+' '+s+'%,rgba(255,255,255,0.04) '+s+'%);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;"><div style="position:absolute;inset:6px;border-radius:50%;background:#020617;"></div><span style="position:relative;z-index:1;font-family:Orbitron,sans-serif;font-weight:900;font-size:0.9rem;color:'+color+';">'+s+'</span></div><div><div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:'+color+';margin-bottom:3px;">'+label+'</div><div style="font-size:10px;color:#94a3b8;font-weight:700;">Prank Risk Score: <span style="color:'+color+';font-weight:900;">'+s+'/100</span></div></div></div></div>'+(rHTML?'<div style="background:rgba(2,6,23,0.75);padding:14px;display:flex;flex-direction:column;gap:6px;">'+rHTML+'</div>':'')+'</div>';el.classList.remove('hidden');}
+function onLookupInput(val){const q=val.trim(),digits=normalizePhone(q);if(digits.length===10){const bad=checkKnownBadNumber(q);if(bad){showKnownBadAlert(bad,q);return;}}if(!q){const pr=document.getElementById('lookup-prank-result');if(pr){pr.classList.add('hidden');pr.innerHTML='';}}}
+function clearLookup(){document.getElementById('lookup-input').value='';const pr=document.getElementById('lookup-prank-result');if(pr){pr.classList.add('hidden');pr.innerHTML='';}document.getElementById('lookup-input').focus();}
+function renderLookupHistory(){const sec=document.getElementById('lookup-history-section'),con=document.getElementById('lookup-history');if(!lookupHistory.length){sec.classList.add('hidden');return;}sec.classList.remove('hidden');con.innerHTML=lookupHistory.map((h,i)=>{const ago=timeAgo(new Date(h.timestamp)),s=h.prankScore||0;const badge=s>=80?'<span style="font-size:9px;font-weight:900;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">🚨 PRANK</span>':s>=56?'<span style="font-size:9px;font-weight:900;background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">⚠️ SUSPECT</span>':s>=26?'<span style="font-size:9px;font-weight:900;background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">👀 CHECK</span>':'';return'<div class="search-history-item" onclick="reloadHistory('+i+')"><div><div class="font-black text-sm text-white">'+escapeHtml(h.query)+badge+'</div><div class="text-[10px] text-slate-600 font-bold mt-0.5 uppercase tracking-wide">'+ago+'</div></div><i class="fas fa-chevron-right text-slate-700 text-xs"></i></div>';}).join('');}
+function reloadHistory(i){const h=lookupHistory[i];if(!h)return;document.getElementById('lookup-input').value=h.query;showPrankResult({prankScore:h.prankScore||0,prankReasons:h.prankReasons||[],prankVerdict:h.prankVerdict||'clean'});}
+function clearHistory(){lookupHistory=[];try{localStorage.setItem('bizlookup_history','[]');}catch(e){}renderLookupHistory();}
+function timeAgo(date){const m=Math.floor((Date.now()-date.getTime())/60000);if(m<1)return'Just now';if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
+function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 updateDashboard();
-setInterval(updateDashboard, 30000);
+setInterval(updateDashboard,30000);
 </script>
 </body>
 </html>
