@@ -113,10 +113,10 @@
         <h1 class="header-font text-4xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic leading-tight uppercase">BIZ Level Up Dashboard</h1>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;padding:0 8px;max-width:42rem;margin-left:auto;margin-right:auto;">
-        <button onclick="switchTab('daily')"    id="tab-daily"    class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all tab-active">Daily</button>
-        <button onclick="switchTab('lookup')"   id="tab-lookup"   class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500"><i class="fas fa-search text-[9px] mr-1 opacity-60"></i>Lookup</button>
-        <button onclick="switchTab('playbook')" id="tab-playbook" class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;padding:0 8px;max-width:42rem;margin-left:auto;margin-right:auto;">
+        <button onclick="switchTab('daily')"     id="tab-daily"     class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all tab-active">Daily</button>
+        <button onclick="switchTab('lookup')"    id="tab-lookup"    class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500"><i class="fas fa-search text-[9px] mr-1 opacity-60"></i>Lookup</button>
+        <button onclick="switchTab('playbook')"  id="tab-playbook"  class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
         <button onclick="switchTab('rebuttals')" id="tab-rebuttals" class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#14b8a6;border-color:rgba(20,184,166,0.3);">💬 Rebuttals</button>
         <button onclick="switchTab('prank')"     id="tab-prank"     class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#a855f7;">🚨 Prank</button>
         <button onclick="requestWeekly()"        id="tab-weekly"    class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500"><i class="fas fa-lock text-[9px] mr-1 opacity-60"></i>Weekly</button>
@@ -667,7 +667,7 @@
                             <div style="width:22px;height:22px;border-radius:50%;background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:10px;font-weight:900;color:#818cf8;">1</div>
                             <div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.18);border-radius:10px;padding:10px 14px;flex:1;">
                                 <div style="font-size:9px;font-weight:900;text-transform:uppercase;color:#818cf8;letter-spacing:0.08em;margin-bottom:5px;">First Response</div>
-                                <p style="font-size:13px;font-weight:700;color:white;font-style:italic;line-height:1.6;">"We are the Business Loan Division. We work with multiple financial lenders and match you with the right one based on your specific situation."</p>
+                                <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.65;">"We are the Business Loan Division. We work with multiple financial lenders and match you with the right one based on your specific situation."</p>
                             </div>
                         </div>
 
@@ -683,7 +683,7 @@
                             <div style="width:22px;height:22px;border-radius:50%;background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:10px;font-weight:900;color:#818cf8;">2</div>
                             <div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.18);border-radius:10px;padding:10px 14px;flex:1;">
                                 <div style="font-size:9px;font-weight:900;text-transform:uppercase;color:#818cf8;letter-spacing:0.08em;margin-bottom:5px;">Hold Firm — Stay Calm</div>
-                                <p style="font-size:13px;font-weight:700;color:white;font-style:italic;line-height:1.6;">"Like I said, Sir/Ma'am, we are the Business Loan Division. When I connect you with the senior advisor, they will go over exactly who we represent — but before I do that, I just need to ask you a few simple questions, if that's okay."</p>
+                                <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.65;">"Like I said, Sir/Ma'am, we are the Business Loan Division. When I connect you with the senior advisor, they will go over exactly who we represent — but before I do that, I just need to ask you a few simple questions, if that's okay."</p>
                             </div>
                         </div>
 
@@ -699,31 +699,31 @@
                         <!-- Extra scripts for 5 situations -->
                         <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:2px;">
                             <div style="font-size:9px;font-weight:900;text-transform:uppercase;color:#64748b;letter-spacing:0.1em;margin-bottom:10px;">5 Ways They Might Ask This — & How to Handle Each</div>
-                            <div style="display:flex;flex-direction:column;gap:8px;">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
 
                                 <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:10px 13px;">
                                     <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;"><span style="background:rgba(99,102,241,0.2);color:#a5b4fc;font-size:9px;font-weight:900;border-radius:20px;padding:2px 8px;">SITUATION 1</span><span style="font-size:11px;font-weight:700;color:#94a3b8;font-style:italic;">"What's the name of the company you're from?"</span></div>
-                                    <p style="font-size:12px;font-weight:700;color:white;line-height:1.55;font-style:italic;">"We're the Business Loan Division — we're the verification team that connects you with the right lender. The advisor you'll speak with will introduce themselves fully."</p>
+                                    <p style="font-size:14px;font-weight:700;color:white;line-height:1.6;font-style:italic;">"We're the Business Loan Division — we're the verification team that connects you with the right lender. The advisor you'll speak with will introduce themselves fully."</p>
                                 </div>
 
                                 <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:10px 13px;">
                                     <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;"><span style="background:rgba(99,102,241,0.2);color:#a5b4fc;font-size:9px;font-weight:900;border-radius:20px;padding:2px 8px;">SITUATION 2</span><span style="font-size:11px;font-weight:700;color:#94a3b8;font-style:italic;">"Are you calling from a bank? Which one?"</span></div>
-                                    <p style="font-size:12px;font-weight:700;color:white;line-height:1.55;font-style:italic;">"We're not a bank — we're the Business Loan Division. We work across multiple lenders and match you to the best fit. That's exactly why we verify first."</p>
+                                    <p style="font-size:14px;font-weight:700;color:white;line-height:1.6;font-style:italic;">"We're not a bank — we're the Business Loan Division. We work across multiple lenders and match you to the best fit. That's exactly why we verify first."</p>
                                 </div>
 
                                 <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:10px 13px;">
                                     <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;"><span style="background:rgba(99,102,241,0.2);color:#a5b4fc;font-size:9px;font-weight:900;border-radius:20px;padding:2px 8px;">SITUATION 3</span><span style="font-size:11px;font-weight:700;color:#94a3b8;font-style:italic;">"I need a company name before I answer anything."</span></div>
-                                    <p style="font-size:12px;font-weight:700;color:white;line-height:1.55;font-style:italic;">"Absolutely — the Business Loan Division. And once I get you to the senior advisor, they'll provide full company details. I just need 2 minutes to verify you qualify first."</p>
+                                    <p style="font-size:14px;font-weight:700;color:white;line-height:1.6;font-style:italic;">"Absolutely — the Business Loan Division. And once I get you to the senior advisor, they'll provide full company details. I just need 2 minutes to verify you qualify first."</p>
                                 </div>
 
                                 <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:10px 13px;">
                                     <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;"><span style="background:rgba(99,102,241,0.2);color:#a5b4fc;font-size:9px;font-weight:900;border-radius:20px;padding:2px 8px;">SITUATION 4</span><span style="font-size:11px;font-weight:700;color:#94a3b8;font-style:italic;">"Can you send me your company website or email?"</span></div>
-                                    <p style="font-size:12px;font-weight:700;color:white;line-height:1.55;font-style:italic;">"The senior advisor can absolutely send that over once you're connected. Right now I just need to confirm a few details to make sure we can actually help you."</p>
+                                    <p style="font-size:14px;font-weight:700;color:white;line-height:1.6;font-style:italic;">"The senior advisor can absolutely send that over once you're connected. Right now I just need to confirm a few details to make sure we can actually help you."</p>
                                 </div>
 
-                                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:10px 13px;">
+                                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:10px 13px;grid-column:1/-1;">
                                     <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;"><span style="background:rgba(99,102,241,0.2);color:#a5b4fc;font-size:9px;font-weight:900;border-radius:20px;padding:2px 8px;">SITUATION 5</span><span style="font-size:11px;font-weight:700;color:#94a3b8;font-style:italic;">"I've never heard of you — how do I know you're legit?"</span></div>
-                                    <p style="font-size:12px;font-weight:700;color:white;line-height:1.55;font-style:italic;">"That's a fair point. We're the Business Loan Division — a licensed verification team based in California. We don't ask for money, we don't charge fees. We simply verify and connect. Your advisor will confirm everything."</p>
+                                    <p style="font-size:14px;font-weight:700;color:white;line-height:1.6;font-style:italic;">"That's a fair point. We're the Business Loan Division — a licensed verification team based in California. We don't ask for money, we don't charge fees. We simply verify and connect. Your advisor will confirm everything."</p>
                                 </div>
 
                             </div>
