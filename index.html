@@ -1182,6 +1182,18 @@ const WEEKLY_PASSWORD = 'bizlevelup2025';
 const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 let agents = [], dayHistory = [];
+
+// ── CLIENT-SIDE GUYANA DAY DETECTION (UTC-4, no DST) ──
+// Used to override/validate the todayName returned by the API.
+function getGuyanaToday() {
+  const now = new Date();
+  // Guyana is UTC-4 year-round (no DST)
+  const guyanaMs = now.getTime() + (-4 * 60 * 60 * 1000);
+  const guyanaDate = new Date(guyanaMs);
+  const rawDay = guyanaDate.getUTCDay(); // 0=Sun,1=Mon,...,6=Sat
+  // DAY_FULL index: 0=Mon,...,5=Sat  |  Sunday → fallback 'Monday' (office closed)
+  return DAY_FULL[rawDay === 0 ? 0 : rawDay - 1] || 'Monday';
+}
 let currentTab = 'daily', currentDayView = 'today', weeklyUnlocked = false;
 let lookupHistory = [];
 try { lookupHistory = JSON.parse(localStorage.getItem('bizlookup_history') || '[]'); } catch(e) {}
@@ -1218,6 +1230,8 @@ async function updateDashboard() {
     try {
         const res=await fetch(API_URL);agents=await res.json();
         agents.forEach(a=>{if(!a.team)a.team=getTeam(a.name);});
+        // ALWAYS use client-side Guyana day — overrides any API timezone bug
+        if(agents.length>0) agents[0].todayName=getGuyanaToday();
         if(agents.length>0){if(agents[0].dayHistory)dayHistory=agents[0].dayHistory;dayHistory.forEach(d=>{d.agents.forEach(a=>{if(!a.team)a.team=getTeam(a.name);});});}
         if(agents.length>0&&!agents[0].prTotal&&!agents[0].bbTotal){let pr=0,bb=0;agents.forEach(a=>{if(a.team==='PR')pr+=(a.dailyLeads||0);else bb+=(a.dailyLeads||0);});agents[0].prTotal=pr;agents[0].bbTotal=bb;}
         if(agents.length>0&&agents[0].prankNumbers&&agents[0].prankNumbers.length>0){agents[0].prankNumbers.forEach(n=>{if(n&&!KNOWN_PRANK_NUMBERS.includes(n))KNOWN_PRANK_NUMBERS.push(n);});}
