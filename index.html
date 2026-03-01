@@ -256,9 +256,13 @@
                 <button onclick="runLookup()" class="lookup-btn">
                     <i class="fab fa-google mr-2"></i>Open Google AI — Search Now
                 </button>
+                <button onclick="logPrankCall()" id="log-prank-btn" style="width:100%;padding:16px;border-radius:14px;font-family:'Orbitron',sans-serif;font-weight:900;font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;background:linear-gradient(90deg,#7c1d1d,#991b1b,#b91c1c);color:white;border:2px solid rgba(239,68,68,0.5);cursor:pointer;transition:opacity 0.2s,transform 0.1s;box-shadow:0 0 20px rgba(239,68,68,0.25);display:flex;align-items:center;justify-content:center;gap:8px;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'">
+                    <i class="fas fa-ban"></i>Log Prank Call &#8594; Sheet
+                </button>
                 <button onclick="clearLookup()" style="width:100%;background:none;border:none;color:#334155;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;padding:4px;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#334155'">
                     <i class="fas fa-times" style="margin-right:4px;"></i>Clear
                 </button>
+                <div id="prank-log-status" style="display:none;border-radius:10px;padding:10px 14px;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;text-align:center;"></div>
             </div>
         </div>
         <div id="lookup-prank-result" class="hidden"></div>
@@ -1260,7 +1264,7 @@
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbxCABhfOcEDnhpS0sZU5Al13L1JRN4aYFSu9vbIwv2GgMXSV_SiaueOtPCZ3JsKCK9XNA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbx2OYomxnbLWC5Uu8XRCfnPaYeXK-M8hWptH_3hHAZYS4vUVPf_vM5fWd39w7GgbgXFCg/exec';
 const WEEKLY_PASSWORD = 'bizlevelup2025';
 const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -1406,6 +1410,47 @@ function showKnownBadAlert(bad,q){const el=document.getElementById('lookup-prank
 function openSite(site){const q=document.getElementById('lookup-input').value.trim();if(!q){document.getElementById('lookup-input').focus();return;}const isPhone=isPhoneNum(q),digits=q.replace(/\D/g,''),gq=buildQuery(q);const urls={google:'https://www.google.com/search?q='+encodeURIComponent(gq)+'&udm=50',bing:'https://www.bing.com/search?q='+encodeURIComponent(gq)+'&showconv=1',yellowpages:isPhone?'https://www.yellowpages.com/phone-lookup?phone='+digits:'https://www.yellowpages.com/search?search_terms='+encodeURIComponent(q)+'&geo_location_terms=United+States',whitepages:isPhone?'https://www.whitepages.com/phone/'+digits:'https://www.whitepages.com/business/'+encodeURIComponent(q),yelp:'https://www.yelp.com/search?find_desc='+encodeURIComponent(q)+'&find_loc=United+States','411':isPhone?'https://www.411.com/phone/'+digits:'https://www.411.com/business/search?q='+encodeURIComponent(q)};if(urls[site])window.open(urls[site],'_blank');}
 function showPrankResult(prank){const el=document.getElementById('lookup-prank-result');if(!prank||prank.prankScore<26){el.classList.add('hidden');el.innerHTML='';return;}const s=prank.prankScore,isD=s>=80,isP=s>=56,label=isD?'🚨 DEFINITE PRANK — END CALL &amp; MOVE ON':isP?'⚠️ LIKELY PRANK — PROCEED WITH CAUTION':'👀 SUSPICIOUS — VERIFY CAREFULLY',color=isD?'#ef4444':isP?'#f97316':'#eab308',bg=isD?'linear-gradient(135deg,rgba(239,68,68,0.22),rgba(185,28,28,0.32))':isP?'linear-gradient(135deg,rgba(249,115,22,0.18),rgba(194,65,12,0.28))':'linear-gradient(135deg,rgba(234,179,8,0.14),rgba(161,98,7,0.24))';const rHTML=(prank.prankReasons||[]).map(r=>'<div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:8px;padding:8px 12px;"><i class="fas fa-flag" style="color:'+color+';font-size:10px;flex-shrink:0;"></i><span style="font-size:12px;color:#fca5a5;font-weight:700;">'+escapeHtml(r)+'</span></div>').join('');el.innerHTML='<div style="border-radius:18px;overflow:hidden;border:2px solid '+color+';box-shadow:0 0 30px '+color+'44;animation:fadeSlideIn 0.3s ease-out;"><div style="background:'+bg+';padding:18px 20px;border-bottom:1px solid '+color+'30;position:relative;overflow:hidden;"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,'+color+'08 10px,'+color+'08 20px);"></div><div style="position:relative;display:flex;align-items:center;gap:14px;"><div style="width:58px;height:58px;border-radius:50%;background:conic-gradient('+color+' '+s+'%,rgba(255,255,255,0.04) '+s+'%);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;"><div style="position:absolute;inset:6px;border-radius:50%;background:#020617;"></div><span style="position:relative;z-index:1;font-family:Orbitron,sans-serif;font-weight:900;font-size:0.9rem;color:'+color+';">'+s+'</span></div><div><div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:'+color+';margin-bottom:3px;">'+label+'</div><div style="font-size:10px;color:#94a3b8;font-weight:700;">Prank Risk Score: <span style="color:'+color+';font-weight:900;">'+s+'/100</span></div></div></div></div>'+(rHTML?'<div style="background:rgba(2,6,23,0.75);padding:14px;display:flex;flex-direction:column;gap:6px;">'+rHTML+'</div>':'')+'</div>';el.classList.remove('hidden');}
 function onLookupInput(val){const q=val.trim(),digits=normalizePhone(q);if(digits.length===10){const bad=checkKnownBadNumber(q);if(bad){showKnownBadAlert(bad,q);return;}}if(!q){const pr=document.getElementById('lookup-prank-result');if(pr){pr.classList.add('hidden');pr.innerHTML='';}}}
+async function logPrankCall(){
+  const q=document.getElementById('lookup-input').value.trim();
+  const statusEl=document.getElementById('prank-log-status');
+  if(!q){
+    document.getElementById('lookup-input').focus();
+    statusEl.style.display='block';
+    statusEl.style.background='rgba(234,179,8,0.12)';
+    statusEl.style.border='1px solid rgba(234,179,8,0.35)';
+    statusEl.style.color='#eab308';
+    statusEl.textContent='⚠️ Paste the prank number first';
+    setTimeout(()=>{statusEl.style.display='none';},3000);
+    return;
+  }
+  const btn=document.getElementById('log-prank-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>&nbsp;Logging...';
+  statusEl.style.display='block';
+  statusEl.style.background='rgba(59,130,246,0.1)';
+  statusEl.style.border='1px solid rgba(59,130,246,0.3)';
+  statusEl.style.color='#60a5fa';
+  statusEl.textContent='Sending to sheet...';
+  try{
+    const body=JSON.stringify({action:'logPrank',number:q,timestamp:new Date().toISOString(),loggedBy:'rep'});
+    await fetch(API_URL,{method:'POST',body:body});
+    statusEl.style.background='rgba(34,197,94,0.12)';
+    statusEl.style.border='1px solid rgba(34,197,94,0.35)';
+    statusEl.style.color='#4ade80';
+    statusEl.textContent='✅ Prank number logged to sheet!';
+    document.getElementById('lookup-input').value='';
+    setTimeout(()=>{statusEl.style.display='none';},4000);
+  }catch(e){
+    statusEl.style.background='rgba(239,68,68,0.12)';
+    statusEl.style.border='1px solid rgba(239,68,68,0.35)';
+    statusEl.style.color='#f87171';
+    statusEl.textContent='❌ Failed to log — check connection';
+    setTimeout(()=>{statusEl.style.display='none';},4000);
+  }
+  btn.disabled=false;
+  btn.innerHTML='<i class="fas fa-ban"></i>&nbsp;Log Prank Call &#8594; Sheet';
+}
+
 function clearLookup(){document.getElementById('lookup-input').value='';const pr=document.getElementById('lookup-prank-result');if(pr){pr.classList.add('hidden');pr.innerHTML='';}document.getElementById('lookup-input').focus();}
 function renderLookupHistory(){const sec=document.getElementById('lookup-history-section'),con=document.getElementById('lookup-history');if(!lookupHistory.length){sec.classList.add('hidden');return;}sec.classList.remove('hidden');con.innerHTML=lookupHistory.map((h,i)=>{const ago=timeAgo(new Date(h.timestamp)),s=h.prankScore||0;const badge=s>=80?'<span style="font-size:9px;font-weight:900;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">🚨 PRANK</span>':s>=56?'<span style="font-size:9px;font-weight:900;background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">⚠️ SUSPECT</span>':s>=26?'<span style="font-size:9px;font-weight:900;background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">👀 CHECK</span>':'';return'<div class="search-history-item" onclick="reloadHistory('+i+')"><div><div class="font-black text-sm text-white">'+escapeHtml(h.query)+badge+'</div><div class="text-[10px] text-slate-600 font-bold mt-0.5 uppercase tracking-wide">'+ago+'</div></div><i class="fas fa-chevron-right text-slate-700 text-xs"></i></div>';}).join('');}
 function reloadHistory(i){const h=lookupHistory[i];if(!h)return;document.getElementById('lookup-input').value=h.query;showPrankResult({prankScore:h.prankScore||0,prankReasons:h.prankReasons||[],prankVerdict:h.prankVerdict||'clean'});}
