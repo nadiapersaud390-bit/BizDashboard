@@ -453,6 +453,87 @@
                         <div class="verdict-no"><i class="fas fa-times-circle" style="color:#ef4444;flex-shrink:0;"></i><div><p style="font-size:11px;font-weight:900;text-transform:uppercase;color:#ef4444;">Lawyer or Attorney — Cannot Work. Period.</p><p style="font-size:11px;color:#fca5a5;margin-top:2px;">Even if they also own a separate business — automatic disqualifier. Do not transfer under any circumstances.</p></div></div>
                     </div></div>
                 </div>
+                <!-- TRANSPORTATION -->
+                <div class="industry-card" style="border-color:rgba(6,182,212,0.25);">
+                    <div class="industry-header" onclick="toggleIndustry(this)" style="background:linear-gradient(90deg,rgba(6,182,212,0.08),transparent);">
+                        <div class="flex items-center gap-3"><span style="font-size:1.3rem;">🚌</span><div><div class="font-black text-white text-sm uppercase tracking-wide">Transportation</div><div style="font-size:10px;font-weight:700;color:#06b6d4;text-transform:uppercase;letter-spacing:0.08em;">Depends on transport type</div></div></div>
+                        <div class="flex items-center gap-2"><span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#06b6d4;background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.25);border-radius:20px;padding:2px 8px;">Ask First</span><i class="fas fa-chevron-down industry-arrow"></i></div>
+                    </div>
+                    <div class="industry-body"><div class="industry-body-inner">
+                        <!-- Intro question -->
+                        <div style="background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.18);border-radius:10px;padding:10px 14px;margin-bottom:14px;">
+                            <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#06b6d4;letter-spacing:0.08em;margin-bottom:4px;">Key Question to Ask</p>
+                            <p style="font-size:13px;font-weight:700;color:white;font-style:italic;">"What type of transportation does your business operate?"</p>
+                        </div>
+                        <!-- Transport types grid -->
+                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#64748b;letter-spacing:0.08em;margin-bottom:10px;">Transportation Types — Select What Applies:</p>
+                        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+                            <!-- Detachable Tractor -->
+                            <div class="cannot-work" style="border-radius:10px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="font-size:1.1rem;flex-shrink:0;margin-top:1px;">🚛</span>
+                                <div style="flex:1;">
+                                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;">
+                                        <span style="font-size:12px;font-weight:900;color:white;text-transform:uppercase;">Detachable Tractor (Semi / 18-Wheeler)</span>
+                                        <span style="background:rgba(239,68,68,0.25);color:#f87171;font-size:10px;font-weight:900;border-radius:20px;padding:2px 8px;letter-spacing:0.07em;">✗ CANNOT WORK</span>
+                                    </div>
+                                    <p style="font-size:11px;color:#fca5a5;line-height:1.5;">Classified as trucking — falls under the No Trucking rule. End and move on.</p>
+                                </div>
+                            </div>
+                            <!-- Truck -->
+                            <div class="cannot-work" style="border-radius:10px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="font-size:1.1rem;flex-shrink:0;margin-top:1px;">🚚</span>
+                                <div style="flex:1;">
+                                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;">
+                                        <span style="font-size:12px;font-weight:900;color:white;text-transform:uppercase;">Truck</span>
+                                        <span style="background:rgba(239,68,68,0.25);color:#f87171;font-size:10px;font-weight:900;border-radius:20px;padding:2px 8px;letter-spacing:0.07em;">✗ CANNOT WORK</span>
+                                    </div>
+                                    <p style="font-size:11px;color:#fca5a5;line-height:1.5;">Trucking business — does not qualify. Do not transfer.</p>
+                                </div>
+                            </div>
+                            <!-- Van -->
+                            <div class="cannot-work" style="border-radius:10px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="font-size:1.1rem;flex-shrink:0;margin-top:1px;">🚐</span>
+                                <div style="flex:1;">
+                                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;">
+                                        <span style="font-size:12px;font-weight:900;color:white;text-transform:uppercase;">Van</span>
+                                        <span style="background:rgba(239,68,68,0.25);color:#f87171;font-size:10px;font-weight:900;border-radius:20px;padding:2px 8px;letter-spacing:0.07em;">✗ CANNOT WORK</span>
+                                    </div>
+                                    <p style="font-size:11px;color:#fca5a5;line-height:1.5;">Delivery or cargo van operations fall under the trucking restriction. Cannot proceed.</p>
+                                </div>
+                            </div>
+                            <!-- Freight Carrier -->
+                            <div class="cannot-work" style="border-radius:10px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="font-size:1.1rem;flex-shrink:0;margin-top:1px;">📦</span>
+                                <div style="flex:1;">
+                                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;">
+                                        <span style="font-size:12px;font-weight:900;color:white;text-transform:uppercase;">Freight Carrier</span>
+                                        <span style="background:rgba(239,68,68,0.25);color:#f87171;font-size:10px;font-weight:900;border-radius:20px;padding:2px 8px;letter-spacing:0.07em;">✗ CANNOT WORK</span>
+                                    </div>
+                                    <p style="font-size:11px;color:#fca5a5;line-height:1.5;">Freight and cargo carriers are classified under trucking/transport restrictions. Do not transfer.</p>
+                                </div>
+                            </div>
+                            <!-- Other transport types that CAN qualify -->
+                            <div class="can-work" style="border-radius:10px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="font-size:1.1rem;flex-shrink:0;margin-top:1px;">🚌</span>
+                                <div style="flex:1;">
+                                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;">
+                                        <span style="font-size:12px;font-weight:900;color:white;text-transform:uppercase;">Bus / Coach / Shuttle / Taxi / Rideshare</span>
+                                        <span style="background:rgba(34,197,94,0.25);color:#4ade80;font-size:10px;font-weight:900;border-radius:20px;padding:2px 8px;letter-spacing:0.07em;">✓ CAN WORK</span>
+                                    </div>
+                                    <p style="font-size:11px;color:#86efac;line-height:1.5;">Passenger transport (buses, shuttles, taxis, rideshare fleets) are not under the trucking restriction — proceed to qualify.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Bottom warning -->
+                        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:10px 14px;display:flex;align-items:flex-start;gap:8px;">
+                            <i class="fas fa-exclamation-circle" style="color:#ef4444;flex-shrink:0;margin-top:2px;font-size:13px;"></i>
+                            <div>
+                                <p style="font-size:10px;font-weight:900;text-transform:uppercase;color:#ef4444;letter-spacing:0.08em;margin-bottom:3px;">Bottom Line</p>
+                                <p style="font-size:12px;font-weight:700;color:#fca5a5;line-height:1.55;">If they operate a <strong style="color:white;">detachable tractor, truck, van, or freight carrier</strong> — do not transfer. These all fall under the trucking restriction regardless of how the customer describes their business.</p>
+                            </div>
+                        </div>
+                    </div></div>
+                </div>
                 <div style="border-radius:12px;border:1px dashed rgba(255,255,255,0.08);padding:14px 18px;text-align:center;"><p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#334155;">More industries can be added here</p></div>
             </div>
         </div>
