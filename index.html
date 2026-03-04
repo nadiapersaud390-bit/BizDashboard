@@ -1563,7 +1563,7 @@ const TRIVIA_BANK=[
   {type:'mcq',category:'Playbook',question:'What is the minimum annual revenue required for a business to qualify?',options:['$50,000','$100,000','$150,000','$200,000'],correct:3,explanation:'The minimum annual revenue threshold is $200,000.'},
   {type:'truefalse',category:'Playbook',question:'You can proceed with a transfer if the prospect only knows their 2024 revenue and not their 2025 revenue.',options:['True','False'],correct:1,explanation:'You need the actual 2025 number — never accept a prior year estimate. Schedule a callback instead.'},
   {type:'mcq',category:'Playbook',question:'If a prospect says "It should be around the same as last year," what should you do?',options:['Accept it and proceed','Push for the actual 2025 figure','Transfer them anyway','End the call immediately'],correct:1,explanation:'Never accept assumptions. Ask for the actual current year revenue or a monthly estimate to calculate annual.'},
-  {type:'truefalse',category:'Playbook',question:'A monthly revenue of $15,000 would qualify a business for a transfer.',options:['True','False'],correct:0,explanation:'$15,000/month = $180,000/year, which is below the $200,000 annual minimum. They do NOT qualify on revenue.'},
+  {type:'truefalse',category:'Playbook',question:'A monthly revenue of $15,000 would qualify a business for a transfer.',options:['True','False'],correct:1,explanation:'$15,000/month x 12 = $180,000/year, which is below the $200,000 annual minimum. They do NOT qualify on revenue.'},
   {type:'mcq',category:'Playbook',question:'What do you multiply a prospect\'s monthly revenue by to estimate their annual revenue?',options:['6','10','12','52'],correct:2,explanation:'Multiply monthly revenue by 12 to get the annual estimate.'},
   {type:'truefalse',category:'Playbook',question:'A business open for only 8 months qualifies for a transfer.',options:['True','False'],correct:1,explanation:'Businesses must be operating for at least 12 months — 8 months does not qualify.'},
   // REBUTTALS
@@ -1593,7 +1593,7 @@ const TRIVIA_BANK=[
   {type:'mcq',category:'Qualifying',question:'In what order should you ask qualifying questions?',options:['Revenue first, then time in business','Time in business first, then revenue','Industry first, then everything else','Credit score first, then revenue'],correct:1,explanation:'Always confirm time in business first, then revenue. If they don\'t meet time requirements, there\'s no need to ask about revenue.'},
   {type:'truefalse',category:'Qualifying',question:'A business with $12,000 monthly revenue qualifies based on revenue requirements.',options:['True','False'],correct:1,explanation:'$12,000/month × 12 = $144,000/year, which is below the $200,000 annual minimum. They do NOT qualify on revenue.'},
   {type:'mcq',category:'Qualifying',question:'A prospect hesitates to give their revenue. What should you do?',options:['End the call immediately','Accept their hesitation and move to transfer','Acknowledge the concern and explain why you need it to find the right program','Skip the question and come back to it'],correct:2,explanation:'Explain that the revenue figure is needed to match them with the right lending program — it\'s for their benefit.'},
-  {type:'mcq',category:'Qualifying',question:'What does "12+ Proof" mean on the dashboard?',options:['12+ years in business','12 or more transfers made that day','Revenue above $12,000','12+ months in business — fully qualified on time requirement'],correct:3,explanation:'12+ Proof means the agent has confirmed the business has been operating for 12 or more months — the minimum time-in-business requirement.'},
+  {type:'mcq',category:'Qualifying',question:'What does the "12+ Proof" stat on the dashboard represent?',options:['How many months the business has been open','The number of qualifying transfers a rep needs per week to stay off the blacklist','Revenue above $12,000 per month','Total calls made in a day'],correct:1,explanation:'12+ Proof is the weekly transfer target reps must hit to stay safe and avoid being put on the blacklist.'},
   {type:'truefalse',category:'Qualifying',question:'You can transfer a prospect who only tells you their 2024 annual revenue.',options:['True','False'],correct:1,explanation:'You must have the 2025 actual revenue. If they only have 2024, schedule a callback for when they have the current number.'},
 ];
 
@@ -1617,6 +1617,17 @@ async function generateAIQuestions(n=5){
 ---KNOWLEDGE BASE---
 ${knowledge}
 ---END KNOWLEDGE BASE---
+
+CRITICAL DEFINITIONS (never get these wrong):
+- 12+ Proof on the dashboard = the number of qualifying transfers a rep needs per week to stay safe and NOT be on the blacklist. It is a weekly performance target, NOT a reference to months in business.
+- The minimum annual revenue to qualify is $200,000
+
+CRITICAL REVENUE RULE (never get this wrong):
+- The minimum annual revenue to qualify is $200,000
+- $15,000/month = $180,000/year = DOES NOT QUALIFY (below $200k)
+- $17,000/month = $204,000/year = QUALIFIES (above $200k)
+- Any monthly figure x 12 that is under $200,000 = DOES NOT QUALIFY
+- Never say $15,000/month qualifies — it does not
 
 STRICT RULES:
 - Questions must be based strictly on specific facts in the knowledge base above
