@@ -1532,7 +1532,7 @@
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbx2OYomxnbLWC5Uu8XRCfnPaYeXK-M8hWptH_3hHAZYS4vUVPf_vM5fWd39w7GgbgXFCg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbz--0JRzg5cn-m5fG3SK8-WxMyGoI1ZiaX2jKMgTnLazYsYAs2tsc5bxqwyl3QZoTT6CA/exec';
 const WEEKLY_PASSWORD = 'bizlevelup2025';
 const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -2189,24 +2189,25 @@ function getFirstName(fullName) {
 function checkLeadAlerts(newAgents) {
   if (!newAgents || !newAgents.length) return;
 
-  // On first load, just store counts silently — don't alert
+  // Pull the berbiceTracker snapshot from the first agent's metadata
+  const tracker = newAgents[0].berbiceTracker || {};
+  if (!Object.keys(tracker).length) return;
+
+  // On first load, store counts silently — don't alert
   if (!leadAlertInitialized) {
-    newAgents.forEach(a => {
-      if (a.name) prevLeadCounts[a.name] = a.dailyLeads || 0;
+    Object.entries(tracker).forEach(([name, count]) => {
+      prevLeadCounts[name] = count;
     });
     leadAlertInitialized = true;
     return;
   }
 
-  newAgents.forEach(a => {
-    if (!a.name) return;
-    const prev = prevLeadCounts[a.name] ?? 0;
-    const curr = a.dailyLeads || 0;
-    if (curr > prev) {
-      const diff = curr - prev;
-      alertQueue.push({ name: a.name, newCount: curr, diff });
+  Object.entries(tracker).forEach(([name, count]) => {
+    const prev = prevLeadCounts[name] ?? 0;
+    if (count > prev) {
+      alertQueue.push({ name, newCount: count });
     }
-    prevLeadCounts[a.name] = curr;
+    prevLeadCounts[name] = count;
   });
 
   if (alertQueue.length && !alertShowing) processAlertQueue();
