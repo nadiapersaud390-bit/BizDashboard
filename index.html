@@ -2165,113 +2165,57 @@ const LEAD_ALERT_MESSAGES = [
 ];
 
 let prevLeadCounts = {};
-let alertQueue = [];
-let alertShowing = false;
 let leadAlertInitialized = false;
 
 function getFirstName(fullName) {
   if (!fullName) return 'Rep';
-  const cleaned = fullName.trim();
-  const parts = cleaned.split(/\s+/);
-  // Skip short all-caps prefixes like GTM, GYB, GYP
-  if (parts.length > 1 && parts[0].length <= 3 && /^[A-Z]+$/.test(parts[0])) {
-    return parts[1];
-  }
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length > 1 && parts[0].length <= 3 && /^[A-Z]+$/.test(parts[0])) return parts[1];
   return parts[0];
 }
 
 function checkLeadAlerts(newAgents) {
   if (!newAgents || !newAgents.length) return;
 
-  // Build the snapshot to compare against:
-  // PRIORITY: berbiceTracker (from Leads from Tracker tab) — most accurate
-  // FALLBACK: BB team agents' dailyLeads — if Apps Script doesn't send berbiceTracker
-  const tracker = newAgents[0].berbiceTracker || {};
-  const hasTrackerData = Object.keys(tracker).length > 0;
-
-  let snapshot = {};
-
-  // Use berbiceTracker (from Form Responses via Apps Script)
-  snapshot = hasTrackerData ? tracker : {};
-
-  // Fallback: watch BB team dailyLeads if tracker is empty
+  // Use berbiceTracker if available, else fall back to BB dailyLeads
+  const tracker = (newAgents[0] && newAgents[0].berbiceTracker) || {};
+  let snapshot = Object.keys(tracker).length ? tracker : {};
   if (!Object.keys(snapshot).length) {
     newAgents.forEach(a => {
       if ((a.team || getTeam(a.name)) === 'BB') snapshot[a.name] = a.dailyLeads || 0;
     });
   }
-
   if (!Object.keys(snapshot).length) return;
 
-  // First load — record current counts silently, no alerts
+  // First load — store silently, no alerts
   if (!leadAlertInitialized) {
-    Object.entries(snapshot).forEach(([name, count]) => { prevLeadCounts[name] = count; });
+    Object.entries(snapshot).forEach(([n, c]) => { prevLeadCounts[n] = c; });
     leadAlertInitialized = true;
     return;
   }
 
-  // Find everyone who got a NEW lead since last poll
-  const newLeadReps = []; // { name, newCount }
+  // Find reps with new leads
+  const newReps = [];
   Object.entries(snapshot).forEach(([name, count]) => {
     const prev = prevLeadCounts[name] ?? 0;
-    if (count > prev) {
-      // Push one entry per new lead (handles +2 at once)
-      for (let i = 0; i < (count - prev); i++) {
-        newLeadReps.push({ name, newCount: count });
-      }
-    }
+    if (count > prev) newReps.push({ name, count });
     prevLeadCounts[name] = count;
   });
+  if (!newReps.length) return;
 
-  if (!newLeadReps.length) return;
-
-  // If multiple different reps got leads at same time → group them in one alert
-  const uniqueReps = [...new Map(newLeadReps.map(r => [r.name, r])).values()];
-  if (uniqueReps.length > 1) {
-    // Multiple people — show one combined alert
-    alertQueue.push({ multi: true, reps: uniqueReps });
+  // Always show immediately — replaces any existing banner
+  if (newReps.length === 1) {
+    const firstName = getFirstName(newReps[0].name);
+    const msg   = LEAD_ALERT_MESSAGES[Math.floor(Math.random() * LEAD_ALERT_MESSAGES.length)];
+    const quote = LEAD_ALERT_QUOTES[Math.floor(Math.random() * LEAD_ALERT_QUOTES.length)];
+    _renderAlert({ icon: '🔥', name: 'Good Job, ' + firstName + '!', msg, quote });
   } else {
-    // Single rep — one alert per lead
-    newLeadReps.forEach(r => alertQueue.push({ multi: false, name: r.name, newCount: r.newCount }));
+    const names = newReps.map(r => getFirstName(r.name));
+    const nameStr = names.length === 2 ? names[0] + ' & ' + names[1]
+      : names.slice(0,-1).join(', ') + ' & ' + names[names.length-1];
+    const quote = LEAD_ALERT_QUOTES[Math.floor(Math.random() * LEAD_ALERT_QUOTES.length)];
+    _renderAlert({ icon: '⚡', name: nameStr + '!', msg: "Look at the team go! Everyone's putting up numbers! 💪", quote });
   }
-
-  if (alertQueue.length && !alertShowing) processAlertQueue();
-}
-
-function processAlertQueue() {
-  // Just show the latest item — always replaces whatever is showing
-  if (!alertQueue.length) { alertShowing = false; return; }
-  alertShowing = true;
-  const item = alertQueue[alertQueue.length - 1]; // take newest
-  alertQueue = [];
-  if (item.multi) {
-    showMultiLeadAlert(item.reps);
-  } else {
-    showLeadAlert(item.name, item.newCount);
-  }
-}
-
-function showLeadAlert(fullName, count) {
-  const firstName = getFirstName(fullName);
-  const msg   = LEAD_ALERT_MESSAGES[Math.floor(Math.random() * LEAD_ALERT_MESSAGES.length)];
-  const quote = LEAD_ALERT_QUOTES[Math.floor(Math.random() * LEAD_ALERT_QUOTES.length)];
-  _renderAlert({ icon: '🔥', name: 'Good Job, ' + firstName + '!', msg: msg, quote: quote });
-}
-
-function showMultiLeadAlert(reps) {
-  const names = reps.map(r => getFirstName(r.name));
-  const nameStr = names.length === 2
-    ? names[0] + ' & ' + names[1]
-    : names.slice(0, -1).join(', ') + ' & ' + names[names.length - 1];
-  const quote = LEAD_ALERT_QUOTES[Math.floor(Math.random() * LEAD_ALERT_QUOTES.length)];
-  _renderAlert({
-    icon: '⚡',
-    name: nameStr + '!',
-    msg:  "Look at the team go! Everyone's putting up numbers! 💪",
-    quote: quote,
-    countNum: reps.length,
-    countLabel: 'new leads'
-  });
 }
 
 function _renderAlert({icon, name, msg, quote}) {
@@ -2292,10 +2236,7 @@ function _renderAlert({icon, name, msg, quote}) {
 
 function dismissLeadAlert() {
   document.getElementById('lead-alert-banner').classList.remove('show');
-  if (_tabBlinkInterval) { clearInterval(_tabBlinkInterval); _tabBlinkInterval = null; }
-  document.title = _originalTitle;
-  alertShowing = false;
-  alertQueue = [];
+  stopTabBlink();
 }
 
 updateDashboard();
