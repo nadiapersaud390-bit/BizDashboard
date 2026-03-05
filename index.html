@@ -1532,7 +1532,7 @@
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbz--0JRzg5cn-m5fG3SK8-WxMyGoI1ZiaX2jKMgTnLazYsYAs2tsc5bxqwyl3QZoTT6CA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycby3xpXiC8RAO5aZhGxjHO5XhnkzrwYv8quohxZSLpAkWSqc1JOizkMfVCS9txooz_uCTA/exec';
 const WEEKLY_PASSWORD = 'bizlevelup2025';
 const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -2177,10 +2177,10 @@ let leadAlertInitialized = false;
 
 function getFirstName(fullName) {
   if (!fullName) return 'Rep';
-  // Names often have prefix like "GTM", "GYB", "GYP" — skip those
-  const parts = fullName.trim().split(/\s+/);
-  // If first part is all caps and short (prefix), take second part
-  if (parts.length > 1 && parts[0].length <= 3 && parts[0] === parts[0].toUpperCase()) {
+  const cleaned = fullName.trim();
+  const parts = cleaned.split(/\s+/);
+  // Skip short all-caps prefixes like GTM, GYB, GYP
+  if (parts.length > 1 && parts[0].length <= 3 && /^[A-Z]+$/.test(parts[0])) {
     return parts[1];
   }
   return parts[0];
@@ -2189,26 +2189,57 @@ function getFirstName(fullName) {
 function checkLeadAlerts(newAgents) {
   if (!newAgents || !newAgents.length) return;
 
-  // Pull the berbiceTracker snapshot from the first agent's metadata
+  // Build the snapshot to compare against:
+  // PRIORITY: berbiceTracker (from Leads from Tracker tab) — most accurate
+  // FALLBACK: BB team agents' dailyLeads — if Apps Script doesn't send berbiceTracker
   const tracker = newAgents[0].berbiceTracker || {};
-  if (!Object.keys(tracker).length) return;
+  const hasTrackerData = Object.keys(tracker).length > 0;
 
-  // On first load, store counts silently — don't alert
-  if (!leadAlertInitialized) {
-    Object.entries(tracker).forEach(([name, count]) => {
-      prevLeadCounts[name] = count;
+  let snapshot = {};
+
+  // Use berbiceTracker (from Form Responses via Apps Script)
+  snapshot = hasTrackerData ? tracker : {};
+
+  // Fallback: watch BB team dailyLeads if tracker is empty
+  if (!Object.keys(snapshot).length) {
+    newAgents.forEach(a => {
+      if ((a.team || getTeam(a.name)) === 'BB') snapshot[a.name] = a.dailyLeads || 0;
     });
+  }
+
+  if (!Object.keys(snapshot).length) return;
+
+  // First load — record current counts silently, no alerts
+  if (!leadAlertInitialized) {
+    Object.entries(snapshot).forEach(([name, count]) => { prevLeadCounts[name] = count; });
     leadAlertInitialized = true;
     return;
   }
 
-  Object.entries(tracker).forEach(([name, count]) => {
+  // Find everyone who got a NEW lead since last poll
+  const newLeadReps = []; // { name, newCount }
+  Object.entries(snapshot).forEach(([name, count]) => {
     const prev = prevLeadCounts[name] ?? 0;
     if (count > prev) {
-      alertQueue.push({ name, newCount: count });
+      // Push one entry per new lead (handles +2 at once)
+      for (let i = 0; i < (count - prev); i++) {
+        newLeadReps.push({ name, newCount: count });
+      }
     }
     prevLeadCounts[name] = count;
   });
+
+  if (!newLeadReps.length) return;
+
+  // If multiple different reps got leads at same time → group them in one alert
+  const uniqueReps = [...new Map(newLeadReps.map(r => [r.name, r])).values()];
+  if (uniqueReps.length > 1) {
+    // Multiple people — show one combined alert
+    alertQueue.push({ multi: true, reps: uniqueReps });
+  } else {
+    // Single rep — one alert per lead
+    newLeadReps.forEach(r => alertQueue.push({ multi: false, name: r.name, newCount: r.newCount }));
+  }
 
   if (alertQueue.length && !alertShowing) processAlertQueue();
 }
@@ -2217,13 +2248,16 @@ function processAlertQueue() {
   if (!alertQueue.length) { alertShowing = false; return; }
   alertShowing = true;
   const item = alertQueue.shift();
-  showLeadAlert(item.name, item.newCount);
-  // If more in queue, next shows after this one is manually closed
+  if (item.multi) {
+    showMultiLeadAlert(item.reps);
+  } else {
+    showLeadAlert(item.name, item.newCount);
+  }
 }
 
 function showLeadAlert(fullName, count) {
   const firstName = getFirstName(fullName);
-  const msg = LEAD_ALERT_MESSAGES[Math.floor(Math.random() * LEAD_ALERT_MESSAGES.length)];
+  const msg   = LEAD_ALERT_MESSAGES[Math.floor(Math.random() * LEAD_ALERT_MESSAGES.length)];
   const quote = LEAD_ALERT_QUOTES[Math.floor(Math.random() * LEAD_ALERT_QUOTES.length)];
   const overlay = document.getElementById('lead-alert-overlay');
 
@@ -2234,7 +2268,7 @@ function showLeadAlert(fullName, count) {
     <div class="lead-alert-particles" id="lap-${Date.now()}"></div>
     <div class="lead-alert-top">
       <div class="lead-alert-badge">⚡ Lead Sent</div>
-      <div class="lead-alert-name">Good Job, ${escapeHtml(firstName)}!</div>
+      <div class="lead-alert-name">Good Job, ${escapeHtml(firstName)}! 🔥</div>
       <div class="lead-alert-msg">${escapeHtml(msg)}</div>
     </div>
     <div class="lead-alert-bottom">
@@ -2248,16 +2282,44 @@ function showLeadAlert(fullName, count) {
       </div>
     </div>
   `;
-
   overlay.appendChild(card);
-
-  // Spawn particles
   spawnAlertParticles(card.querySelector('.lead-alert-particles'));
+  card._onDismissed = () => { setTimeout(processAlertQueue, 300); };
+}
 
-  // After dismiss, process next in queue
-  card._onDismissed = () => {
-    setTimeout(processAlertQueue, 300);
-  };
+function showMultiLeadAlert(reps) {
+  // reps = [{ name, newCount }, ...]
+  const names = reps.map(r => getFirstName(r.name));
+  const nameStr = names.length === 2
+    ? names[0] + ' & ' + names[1]
+    : names.slice(0, -1).join(', ') + ' & ' + names[names.length - 1];
+  const quote = LEAD_ALERT_QUOTES[Math.floor(Math.random() * LEAD_ALERT_QUOTES.length)];
+  const overlay = document.getElementById('lead-alert-overlay');
+
+  const card = document.createElement('div');
+  card.className = 'lead-alert-card';
+  card.innerHTML = `
+    <div class="lead-alert-shimmer"></div>
+    <div class="lead-alert-particles" id="lap-${Date.now()}"></div>
+    <div class="lead-alert-top">
+      <div class="lead-alert-badge">⚡ Multiple Leads!</div>
+      <div class="lead-alert-name" style="font-size:1.1rem">🔥 ${escapeHtml(nameStr)}!</div>
+      <div class="lead-alert-msg">Look at the team go! Everyone's putting up numbers! 💪</div>
+    </div>
+    <div class="lead-alert-bottom">
+      <div class="lead-alert-quote">${escapeHtml(quote)}</div>
+      <div class="lead-alert-footer">
+        <div class="lead-alert-count">
+          <div class="lead-alert-count-num">${reps.length}</div>
+          <div class="lead-alert-count-label">New<br>Leads</div>
+        </div>
+        <button class="lead-alert-close" onclick="dismissLeadAlert(this.closest('.lead-alert-card'))">✕</button>
+      </div>
+    </div>
+  `;
+  overlay.appendChild(card);
+  spawnAlertParticles(card.querySelector('.lead-alert-particles'));
+  card._onDismissed = () => { setTimeout(processAlertQueue, 300); };
 }
 
 function spawnAlertParticles(container) {
