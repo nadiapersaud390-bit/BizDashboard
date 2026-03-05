@@ -245,7 +245,7 @@
   </div>
 </div>
 
-<!-- ===== LEAD ALERT: TOP BANNER ===== -->
+<!-- ===== LEAD ALERT BANNER ===== -->
 <div id="lead-alert-banner">
   <div class="lab-inner">
     <span class="lab-icon">🔥</span>
@@ -2147,21 +2147,42 @@ const LEAD_ALERT_QUOTES = [
 ];
 
 const LEAD_ALERT_MESSAGES = [
+  "You just changed someone's life! Keep that energy! 🔥",
+  "That's how it's done! Transfer locked in! 🎯",
   "You're on fire! That transfer just hit the board! 🔥",
-  "That's what we're talking about! Keep the energy up! ⚡",
-  "Another one! You're making it look easy! 💪",
-  "Locked in and getting results! That's the spirit! 🎯",
-  "The leaderboard just noticed you. Keep climbing! 🚀",
-  "That's a transfer! You're proving why you belong here! 🏆",
-  "Yes! The hustle is paying off! Don't slow down! 💥",
-  "Look at you go! Another lead sent — beast mode activated! 🦁",
-  "Transfer confirmed! You're in the zone right now! ⚡",
+  "Locked and loaded! Another one in the books! 💪",
+  "That's what we came here to do! Push harder! 🚀",
+  "Numbers don't lie — you're killing it! 💯",
+  "One more transfer, one step closer to the top! 👑",
   "That's your name on the board! Own it! 🌟",
-  "One more and the floor is taking notes! Keep pushing! 🔥",
+  "One more and the floor is taking notes! 🔥",
   "Dialed in and delivering! That's how it's done! 💎",
-  "You just set the pace! Now let's keep it! 🏃",
+  "You just set the pace! Keep pushing! 🏃",
   "Built different! Another transfer, another step to the top! 👑",
-  "That lead is on its way! You're unstoppable right now! 🚀"
+  "That lead is on its way! You're unstoppable! 🚀"
+];
+
+const LEAD_ALERT_QUOTES = [
+  "Success is not final, failure is not fatal — it is the courage to continue that counts.",
+  "The harder you work, the luckier you get.",
+  "Don't watch the clock; do what it does. Keep going.",
+  "Push yourself, because no one else is going to do it for you.",
+  "Great things never come from comfort zones.",
+  "Dream it. Wish it. Do it.",
+  "Stay focused, go after your dreams and keep moving toward your goals.",
+  "The key to success is to focus on goals, not obstacles.",
+  "It always seems impossible until it's done.",
+  "Work hard in silence, let success be your noise.",
+  "Believe you can and you're halfway there.",
+  "You didn't come this far to only come this far.",
+  "Every champion was once a contender that refused to give up.",
+  "Make each day your masterpiece.",
+  "Small steps in the right direction beat giant leaps in the wrong one.",
+  "Hustle until your haters ask if you're hiring.",
+  "You are capable of amazing things.",
+  "Rise up, start fresh, see the bright opportunity in each new day.",
+  "It's not about how hard you hit — it's about how hard you can get hit and keep moving.",
+  "Do something today that your future self will thank you for."
 ];
 
 let prevLeadCounts = {};
@@ -2177,7 +2198,7 @@ function getFirstName(fullName) {
 function checkLeadAlerts(newAgents) {
   if (!newAgents || !newAgents.length) return;
 
-  // Use berbiceTracker if available, else fall back to BB dailyLeads
+  // Use berbiceTracker from Apps Script, fall back to BB dailyLeads
   const tracker = (newAgents[0] && newAgents[0].berbiceTracker) || {};
   let snapshot = Object.keys(tracker).length ? tracker : {};
   if (!Object.keys(snapshot).length) {
@@ -2194,7 +2215,7 @@ function checkLeadAlerts(newAgents) {
     return;
   }
 
-  // Find reps with new leads
+  // Find reps with new leads since last poll
   const newReps = [];
   Object.entries(snapshot).forEach(([name, count]) => {
     const prev = prevLeadCounts[name] ?? 0;
@@ -2230,12 +2251,13 @@ function _renderAlert({icon, name, msg, quote}) {
     inner.style.opacity = '1';
   }, 120);
   banner.classList.add('show');
-  // Blink tab — stops when user clicks the tab (they saw it)
-  startTabBlink(icon + ' ' + name + ' — New Lead!', true);
+  document.body.style.paddingTop = '72px'; // push content below banner
+  startTabBlink(icon + ' ' + name + ' — New Lead!');
 }
 
 function dismissLeadAlert() {
   document.getElementById('lead-alert-banner').classList.remove('show');
+  document.body.style.paddingTop = ''; // restore
   stopTabBlink();
 }
 
@@ -2366,17 +2388,15 @@ function dismissBroadcast(){
 let _tabBlinkInterval = null;
 const _originalTitle = document.title;
 
-function startTabBlink(alertTitle, stopOnFocus = true) {
-  stopTabBlink();
+function startTabBlink(alertTitle) {
+  stopTabBlink(); // clear any existing
   let toggle = true;
   _tabBlinkInterval = setInterval(() => {
     document.title = toggle ? alertTitle : _originalTitle;
     toggle = !toggle;
   }, 900);
-  // Only stop on focus for broadcast/trivia — NOT for lead alerts
-  if (stopOnFocus) {
-    window.addEventListener('focus', stopTabBlink, { once: true });
-  }
+  // Stop blinking when user focuses the tab
+  window.addEventListener('focus', stopTabBlink, { once: true });
 }
 
 function stopTabBlink() {
