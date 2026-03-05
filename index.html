@@ -115,6 +115,27 @@
         @keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100px) rotate(720deg);opacity:0}}
         .trivia-lb-row{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid rgba(255,255,255,0.04);}
 
+        /* ===== TOP PERFORMER POPUP ===== */
+        #top-performer-modal{position:fixed;inset:0;background:rgba(2,6,23,0.88);backdrop-filter:blur(16px);z-index:99990;display:flex;align-items:center;justify-content:center;padding:16px;}
+        #top-performer-modal.hidden{display:none;}
+        .tp-box{background:linear-gradient(145deg,#0d0d1f,#0a0520);border:2px solid rgba(255,215,0,0.4);border-radius:28px;width:100%;max-width:420px;overflow:hidden;position:relative;box-shadow:0 0 60px rgba(255,215,0,0.2);}
+        .tp-header{background:linear-gradient(135deg,rgba(255,215,0,0.18),rgba(255,140,0,0.22));padding:24px 24px 18px;text-align:center;position:relative;border-bottom:1px solid rgba(255,215,0,0.2);}
+        .tp-crown{font-size:48px;display:block;margin-bottom:6px;animation:tpCrownBounce 0.8s ease infinite alternate;}
+        @keyframes tpCrownBounce{from{transform:translateY(0) scale(1);}to{transform:translateY(-6px) scale(1.1);}}
+        .tp-title{font-family:'Orbitron',sans-serif;font-size:clamp(13px,4vw,18px);font-weight:900;text-transform:uppercase;letter-spacing:0.1em;background:linear-gradient(90deg,#FFD700,#FFA500,#FFD700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .tp-subtitle{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#64748b;margin-top:4px;}
+        .tp-list{padding:16px 20px;display:flex;flex-direction:column;gap:10px;max-height:55vh;overflow-y:auto;}
+        .tp-row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:16px;animation:tpRowIn 0.4s ease both;}
+        @keyframes tpRowIn{from{opacity:0;transform:translateX(-20px);}to{opacity:1;transform:translateX(0);}}
+        .tp-rank{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+        .tp-name{flex:1;font-family:'Orbitron',sans-serif;font-size:clamp(11px,3vw,14px);font-weight:900;color:white;text-transform:uppercase;letter-spacing:0.05em;}
+        .tp-score{font-family:'Lilita One',cursive;font-size:clamp(20px,5vw,28px);font-weight:900;}
+        .tp-label{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#475569;text-align:right;}
+        .tp-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:10px;}
+        .tp-close-btn{flex:1;padding:13px;border-radius:14px;font-family:'Orbitron',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;cursor:pointer;transition:all 0.2s;}
+        .tp-close-btn:hover{background:rgba(255,255,255,0.1);color:white;}
+        #tp-confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:99989;}
+
         /* ===== BROADCAST ALERT BAR ===== */
         #broadcast-bar{position:fixed;top:0;left:0;right:0;z-index:99999;transform:translateY(-100%);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);}
         #broadcast-bar.show{transform:translateY(0);}
@@ -172,6 +193,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const broadcastRef = ref(db, 'broadcast');
+  const triviaRef = ref(db, 'trivia_scores');
 
   // Listen for broadcast messages in real-time
   onValue(broadcastRef, (snapshot) => {
@@ -183,12 +205,23 @@
     }
   });
 
+  // Listen for trivia scores in real-time — updates leaderboard for everyone
+  onValue(triviaRef, (snapshot) => {
+    const data = snapshot.val();
+    window._triviaFirebaseScores = data || {};
+    renderTriviaLeaderboard();
+  });
+
   // Expose send/clear functions to global scope
   window._fbSendBroadcast = async (msg) => {
     await set(broadcastRef, { message: msg, active: true, ts: Date.now() });
   };
   window._fbClearBroadcast = async () => {
     await remove(broadcastRef);
+  };
+  window._fbSaveTriviaScore = async (roundKey, entry) => {
+    const entryRef = ref(db, `trivia_scores/${roundKey}/${Date.now()}_${Math.random().toString(36).slice(2,7)}`);
+    await set(entryRef, entry);
   };
 </script>
 
@@ -223,6 +256,22 @@
     <div id="bc-pw-error" class="error-msg"></div>
     <button class="pw-btn" onclick="checkBcPassword()"><i class="fas fa-broadcast-tower mr-2"></i>Unlock</button><br>
     <button class="pw-cancel" onclick="document.getElementById('bc-login-modal').classList.add('hidden')">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== TOP PERFORMER POPUP ===== -->
+<canvas id="tp-confetti-canvas"></canvas>
+<div id="top-performer-modal" class="hidden">
+  <div class="tp-box">
+    <div class="tp-header">
+      <span class="tp-crown">👑</span>
+      <div class="tp-title">Top Performers</div>
+      <div class="tp-subtitle" id="tp-time-label">Last 2 Hours</div>
+    </div>
+    <div class="tp-list" id="tp-list"></div>
+    <div class="tp-footer">
+      <button class="tp-close-btn" onclick="closeTopPerformer()">✕ Close</button>
+    </div>
   </div>
 </div>
 
@@ -1383,7 +1432,10 @@
         </div>
         <!-- Leaderboard -->
         <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
-          <div style="font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#FFE500;margin-bottom:12px;">🏆 Round Leaderboard — <span id="trivia-lb-round">Today</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#FFE500;">🏆 All Players — <span id="trivia-lb-round">Today</span></div>
+            <div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#475569;" id="trivia-lb-count"></div>
+          </div>
           <div id="trivia-leaderboard"></div>
         </div>
       </div>
@@ -1523,7 +1575,16 @@ function renderDaySubTabs() {
     container.innerHTML=html;wrapper.classList.remove('hidden');
 }
 
-function switchDayView(key){currentDayView=key;renderDaySubTabs();render();}
+function switchDayView(key){
+  currentDayView=key;
+  renderDaySubTabs();
+  render();
+  // Show top 5 popup when clicking a previous day
+  if(key !== 'today'){
+    const snap = dayHistory.find(d => d.day === key);
+    if(snap) showTopPerformerPopup(true, snap);
+  }
+}
 
 function requestWeekly(){if(weeklyUnlocked){currentTab='weekly';updateTabUI();render();renderDaySubTabs();return;}document.getElementById('pw-modal').classList.remove('hidden');document.getElementById('pw-input').value='';document.getElementById('pw-error').innerText='';document.getElementById('pw-input').classList.remove('error');setTimeout(()=>document.getElementById('pw-input').focus(),100);}
 function checkPassword(){if(document.getElementById('pw-input').value===WEEKLY_PASSWORD){weeklyUnlocked=true;document.getElementById('pw-modal').classList.add('hidden');document.getElementById('tab-weekly').innerHTML='Weekly';currentTab='weekly';currentDayView='today';updateTabUI();render();renderDaySubTabs();}else{const inp=document.getElementById('pw-input');inp.classList.add('error');document.getElementById('pw-error').innerText='Incorrect access code. Try again.';inp.value='';setTimeout(()=>inp.classList.remove('error'),500);setTimeout(()=>inp.focus(),100);}}
@@ -1974,11 +2035,16 @@ function finishTrivia(){
 }
 
 function saveTriviaScore(name,score,total){
-  const key=triviaState.roundKey;let board=[];
+  const key=triviaState.roundKey;
+  const entry={name,score,total,time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})};
+  // Save to Firebase so everyone can see it
+  if(window._fbSaveTriviaScore){
+    window._fbSaveTriviaScore(key, entry).catch(()=>{});
+  }
+  // Also save locally as fallback
+  let board=[];
   try{board=JSON.parse(localStorage.getItem(key)||'[]');}catch(e){}
-  board.push({name,score,total,time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})});
-  board.sort((a,b)=>b.score-a.score);
-  board=board.slice(0,10);
+  board.push(entry);board.sort((a,b)=>b.score-a.score);board=board.slice(0,50);
   try{localStorage.setItem(key,JSON.stringify(board));}catch(e){}
 }
 
@@ -1986,12 +2052,51 @@ function renderTriviaLeaderboard(){
   const key=getRoundKey(),r=getCurrentRound();
   const lbRound=document.getElementById('trivia-lb-round');
   if(lbRound)lbRound.textContent=r?r.label:'Today';
-  let board=[];try{board=JSON.parse(localStorage.getItem(key)||'[]');}catch(e){}
   const lb=document.getElementById('trivia-leaderboard');
   if(!lb)return;
+
+  // Merge Firebase scores + local fallback
+  let board=[];
+  // From Firebase
+  const fbData=window._triviaFirebaseScores;
+  if(fbData&&fbData[key]){
+    const entries=Object.values(fbData[key]);
+    board=[...entries];
+  }
+  // Fallback: local storage
+  if(!board.length){
+    try{board=JSON.parse(localStorage.getItem(key)||'[]');}catch(e){}
+  }
+
+  board.sort((a,b)=>b.score-a.score||a.time.localeCompare(b.time));
+
+  const countEl=document.getElementById('trivia-lb-count');
+  if(countEl)countEl.textContent=board.length?board.length+' player'+(board.length!==1?'s':''):'';
+
   if(!board.length){lb.innerHTML='<div style="text-align:center;font-family:\'Boogaloo\',cursive;font-size:14px;color:#334155;padding:18px 0;">No scores yet this round — be the first! 🎯</div>';return;}
+
   const medals=['🥇','🥈','🥉'];
-  lb.innerHTML=board.map((e,i)=>'<div class="trivia-lb-row"><span style="font-size:18px;width:28px;text-align:center;">'+(medals[i]||'#'+(i+1))+'</span><div style="flex:1;"><div style="font-family:\'Boogaloo\',cursive;font-size:15px;color:white;">'+escapeHtml(e.name)+'</div><div style="font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;">'+e.time+'</div></div><div style="font-family:\'Lilita One\',cursive;font-size:18px;color:'+(e.score===e.total?'var(--neon-yellow)':'#64748b')+' ;">'+e.score+'/'+e.total+'</div></div>').join('');
+  lb.innerHTML=board.map((e,i)=>{
+    const isPerfect=e.score===e.total;
+    const pct=Math.round(e.score/e.total*100);
+    const barColor=pct===100?'#FFE500':pct>=80?'#39FF14':pct>=60?'#3b82f6':'#ef4444';
+    return `<div class="trivia-lb-row" style="flex-wrap:wrap;gap:6px;padding:12px 8px;border-radius:12px;margin-bottom:4px;background:${isPerfect?'rgba(255,229,0,0.05)':'rgba(255,255,255,0.02)'};border:1px solid ${isPerfect?'rgba(255,229,0,0.15)':'rgba(255,255,255,0.04)'};">
+      <span style="font-size:18px;width:28px;text-align:center;flex-shrink:0;">${medals[i]||'<span style="font-family:Orbitron,sans-serif;font-size:11px;font-weight:900;color:#475569;">#'+(i+1)+'</span>'}</span>
+      <div style="flex:1;min-width:100px;">
+        <div style="font-family:'Boogaloo',cursive;font-size:15px;color:white;">${escapeHtml(e.name)}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
+          <div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06);">
+            <div style="height:100%;border-radius:2px;background:${barColor};width:${pct}%;transition:width 0.5s;"></div>
+          </div>
+          <span style="font-size:10px;font-weight:900;color:#475569;">${pct}%</span>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-family:'Lilita One',cursive;font-size:20px;color:${isPerfect?'var(--neon-yellow)':'#64748b'};">${e.score}/${e.total}</div>
+        <div style="font-size:9px;font-weight:700;color:#334155;text-transform:uppercase;">${e.time||''}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function resetTrivia(){
@@ -2111,6 +2216,149 @@ function hideBroadcastBar(){
 function dismissBroadcast(){
   hideBroadcastBar();
   bcDismissedTs = Date.now();
+}
+
+// ===== TOP PERFORMER AUTO-POPUP SYSTEM =====
+let tpConfettiParticles = [];
+let tpConfettiFrame = null;
+let tpLastShownHour = -1;
+
+function getGuyanaHour() {
+  return parseInt(new Date().toLocaleString('en-US', { timeZone: 'America/Guyana', hour: 'numeric', hour12: false }));
+}
+function getGuyanaMinute() {
+  return parseInt(new Date().toLocaleString('en-US', { timeZone: 'America/Guyana', minute: 'numeric' }));
+}
+
+function checkTopPerformerSchedule() {
+  const hour = getGuyanaHour();
+  const min = getGuyanaMinute();
+  // Fire every 2 hours from 12pm to 8pm: 12, 14, 16, 18, 20
+  const triggerHours = [12, 14, 16, 18, 20];
+  if (triggerHours.includes(hour) && min === 0 && tpLastShownHour !== hour) {
+    tpLastShownHour = hour;
+    showTopPerformerPopup();
+  }
+}
+
+function showTopPerformerPopup(manualTrigger = false, daySnap = null) {
+  let sorted, titleLabel;
+
+  if (daySnap) {
+    // Previous day mode — top 5 only
+    sorted = [...(daySnap.agents || [])]
+      .filter(a => a.name && (a.leads || 0) > 0)
+      .sort((a, b) => (b.leads || 0) - (a.leads || 0))
+      .slice(0, 5);
+    titleLabel = `🏆 ${daySnap.dayName || 'Previous Day'} — Top 5`;
+  } else {
+    // Live daily mode
+    sorted = [...agents]
+      .filter(a => a.name && (a.dailyLeads || 0) > 0)
+      .sort((a, b) => (b.dailyLeads || 0) - (a.dailyLeads || 0));
+    if (!sorted.length && !manualTrigger) return;
+    const hour = getGuyanaHour();
+    const period = hour < 12 ? 'Morning' : hour < 16 ? 'Afternoon' : 'Evening';
+    titleLabel = `🔥 ${period} Standings`;
+  }
+
+  document.getElementById('tp-time-label').textContent = titleLabel;
+
+  const medals = ['🥇','🥈','🥉'];
+  const rowColors = [
+    'background:linear-gradient(90deg,rgba(255,215,0,0.12),rgba(255,140,0,0.08));border:1px solid rgba(255,215,0,0.25);',
+    'background:linear-gradient(90deg,rgba(192,192,192,0.1),rgba(192,192,192,0.04));border:1px solid rgba(192,192,192,0.2);',
+    'background:linear-gradient(90deg,rgba(205,127,50,0.1),rgba(205,127,50,0.04));border:1px solid rgba(205,127,50,0.2);',
+  ];
+  const scoreColors = ['#FFD700','#C0C0C0','#CD7F32'];
+
+  const list = document.getElementById('tp-list');
+  const display = daySnap ? sorted : sorted.slice(0, 10);
+
+  if (!display.length) {
+    list.innerHTML = '<div style="text-align:center;padding:30px;font-family:\'Boogaloo\',cursive;font-size:16px;color:#475569;">No leads recorded yet — keep pushing! 💪</div>';
+  } else {
+    list.innerHTML = display.map((a, i) => {
+      const style = rowColors[i] || 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);';
+      const color = scoreColors[i] || '#64748b';
+      const medal = medals[i] || `<span style="font-family:Orbitron,sans-serif;font-size:12px;font-weight:900;color:#475569;">#${i+1}</span>`;
+      const leads = daySnap ? (a.leads || 0) : (a.dailyLeads || 0);
+      return `<div class="tp-row" style="${style}animation-delay:${i*0.08}s;">
+        <div class="tp-rank">${medal}</div>
+        <div class="tp-name">${escapeHtml(a.name)}</div>
+        <div style="text-align:right;">
+          <div class="tp-score" style="color:${color};">${leads}</div>
+          <div class="tp-label">leads</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('top-performer-modal').classList.remove('hidden');
+  startTpConfetti();
+}
+
+function closeTopPerformer() {
+  document.getElementById('top-performer-modal').classList.add('hidden');
+  stopTpConfetti();
+}
+
+function startTpConfetti() {
+  const canvas = document.getElementById('tp-confetti-canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const colors = ['#FFD700','#FFA500','#FF6B00','#FF2D78','#00F5FF','#39FF14','#a855f7','#3b82f6'];
+  tpConfettiParticles = Array.from({length:120},()=>({
+    x:Math.random()*canvas.width, y:Math.random()*canvas.height - canvas.height,
+    r:Math.random()*7+3, color:colors[Math.floor(Math.random()*colors.length)],
+    tiltAngle:0, tiltSpeed:Math.random()*0.1+0.05,
+    speed:Math.random()*3+1.5, opacity:Math.random()*0.6+0.4,
+    shape:Math.random()>0.5?'rect':'circle'
+  }));
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    tpConfettiParticles.forEach(p=>{
+      ctx.save();ctx.globalAlpha=p.opacity;ctx.fillStyle=p.color;
+      ctx.translate(p.x,p.y);ctx.rotate(p.tiltAngle);
+      if(p.shape==='rect'){ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*2);}
+      else{ctx.beginPath();ctx.arc(0,0,p.r,0,Math.PI*2);ctx.fill();}
+      ctx.restore();
+      p.y+=p.speed;p.tiltAngle+=p.tiltSpeed;p.x+=Math.sin(p.tiltAngle)*1.5;
+      if(p.y>canvas.height){p.y=-10;p.x=Math.random()*canvas.width;}
+    });
+    tpConfettiFrame=requestAnimationFrame(draw);
+  }
+  draw();
+  setTimeout(stopTpConfetti,8000);
+}
+
+function stopTpConfetti(){
+  if(tpConfettiFrame){cancelAnimationFrame(tpConfettiFrame);tpConfettiFrame=null;}
+  const canvas=document.getElementById('tp-confetti-canvas');
+  canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+}
+
+// Check every minute
+setInterval(checkTopPerformerSchedule, 60000);
+
+// Add manual trigger to admin broadcast panel after unlock
+const _origCheckBcPw = checkBcPassword;
+function checkBcPassword(){
+  const val = document.getElementById('bc-pw-input').value;
+  if(val === BC_ADMIN_PASSWORD){
+    // Add preview button to panel if not already there
+    if(!document.getElementById('bc-tp-preview-btn')){
+      const btn = document.createElement('button');
+      btn.id='bc-tp-preview-btn';
+      btn.className='bc-clear-btn';
+      btn.style.cssText='margin-top:6px;color:#FFD700;border-color:rgba(255,215,0,0.25);';
+      btn.innerHTML='👑 Preview Top Performers';
+      btn.onclick=()=>showTopPerformerPopup(true);
+      document.getElementById('bc-panel').appendChild(btn);
+    }
+  }
+  _origCheckBcPw();
 }
 </script>
 </body>
