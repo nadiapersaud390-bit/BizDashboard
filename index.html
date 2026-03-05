@@ -127,8 +127,7 @@
         .bc-close:hover{background:rgba(0,0,0,0.5);}
 
         /* ===== ADMIN BROADCAST PANEL ===== */
-        #bc-admin-btn{position:fixed;bottom:80px;right:16px;z-index:9998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#991b1b,#ef4444);border:2px solid rgba(239,68,68,0.5);color:white;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(239,68,68,0.4);transition:all 0.2s;}
-        #bc-admin-btn:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(239,68,68,0.6);}
+        #bc-admin-btn{display:none!important;}
         #bc-panel{position:fixed;bottom:136px;right:16px;z-index:9998;width:min(320px,calc(100vw - 32px));background:rgba(10,2,2,0.97);border:1px solid rgba(239,68,68,0.4);border-radius:20px;padding:20px;box-shadow:0 8px 40px rgba(239,68,68,0.3);display:none;}
         #bc-panel.show{display:block;animation:fadeSlideIn 0.25s ease;}
         .bc-panel-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#ef4444;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
@@ -2021,7 +2020,8 @@ function handleTitleTap(){
     titleTapCount = 0;
     clearTimeout(titleTapTimer);
     if(bcAdminUnlocked){
-      toggleBcPanel();
+      const panel = document.getElementById('bc-panel');
+      panel.classList.contains('show') ? panel.classList.remove('show') : panel.classList.add('show');
     } else {
       document.getElementById('bc-login-modal').classList.remove('hidden');
       setTimeout(()=>document.getElementById('bc-pw-input').focus(),100);
@@ -2035,10 +2035,12 @@ function checkBcPassword(){
   if(val === BC_ADMIN_PASSWORD){
     bcAdminUnlocked = true;
     document.getElementById('bc-login-modal').classList.add('hidden');
-    document.getElementById('bc-admin-btn').classList.remove('hidden');
     document.getElementById('bc-pw-input').value = '';
     errEl.textContent = '';
-    toggleBcPanel();
+    // Open panel directly — button stays hidden forever
+    const panel = document.getElementById('bc-panel');
+    panel.classList.add('show');
+    setTimeout(()=>document.getElementById('bc-input').focus(),100);
   } else {
     errEl.textContent = 'Incorrect password.';
     const inp = document.getElementById('bc-pw-input');
