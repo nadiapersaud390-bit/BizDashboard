@@ -2207,16 +2207,38 @@ function showBroadcastBar(msg){
   document.getElementById('bc-message-text').textContent = msg;
   bar.classList.add('show');
   document.body.style.paddingTop = (parseInt(getComputedStyle(document.body).paddingTop)||16) + 'px';
+  startTabBlink('📢 New Message!');
 }
 
 function hideBroadcastBar(){
   const bar = document.getElementById('broadcast-bar');
   bar.classList.remove('show');
+  stopTabBlink();
 }
 
 function dismissBroadcast(){
   hideBroadcastBar();
   bcDismissedTs = Date.now();
+}
+
+// ===== TAB BLINK SYSTEM =====
+let _tabBlinkInterval = null;
+const _originalTitle = document.title;
+
+function startTabBlink(alertTitle) {
+  stopTabBlink(); // clear any existing
+  let toggle = true;
+  _tabBlinkInterval = setInterval(() => {
+    document.title = toggle ? alertTitle : _originalTitle;
+    toggle = !toggle;
+  }, 900);
+  // Stop blinking when user focuses the tab
+  window.addEventListener('focus', stopTabBlink, { once: true });
+}
+
+function stopTabBlink() {
+  if (_tabBlinkInterval) { clearInterval(_tabBlinkInterval); _tabBlinkInterval = null; }
+  document.title = _originalTitle;
 }
 
 // ===== TOP PERFORMER AUTO-POPUP SYSTEM =====
@@ -2297,11 +2319,13 @@ function showTopPerformerPopup(manualTrigger = false, daySnap = null) {
 
   document.getElementById('top-performer-modal').classList.remove('hidden');
   startTpConfetti();
+  startTabBlink('👑 Top Performers!');
 }
 
 function closeTopPerformer() {
   document.getElementById('top-performer-modal').classList.add('hidden');
   stopTpConfetti();
+  stopTabBlink();
 }
 
 function startTpConfetti() {
