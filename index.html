@@ -114,9 +114,118 @@
         .confetti-dot{position:absolute;width:8px;height:8px;border-radius:2px;animation:confettiFall 1.2s ease-in forwards;pointer-events:none;}
         @keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100px) rotate(720deg);opacity:0}}
         .trivia-lb-row{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid rgba(255,255,255,0.04);}
+
+        /* ===== BROADCAST ALERT BAR ===== */
+        #broadcast-bar{position:fixed;top:0;left:0;right:0;z-index:99999;transform:translateY(-100%);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+        #broadcast-bar.show{transform:translateY(0);}
+        .bc-inner{display:flex;align-items:center;justify-content:space-between;padding:0 16px;min-height:52px;gap:12px;background:linear-gradient(90deg,#7c1010,#b91c1c,#ef4444,#b91c1c,#7c1010);background-size:300% 100%;animation:bcFlash 1.4s ease-in-out infinite;}
+        @keyframes bcFlash{0%,100%{background-position:0% 50%;box-shadow:0 2px 20px rgba(239,68,68,0.6);}50%{background-position:100% 50%;box-shadow:0 2px 40px rgba(239,68,68,1);}}
+        .bc-icon{font-size:18px;flex-shrink:0;animation:bcIconPulse 0.7s ease-in-out infinite alternate;}
+        @keyframes bcIconPulse{from{transform:scale(1);}to{transform:scale(1.3);}}
+        .bc-text{flex:1;font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(10px,3vw,14px);color:white;text-transform:uppercase;letter-spacing:0.08em;text-shadow:0 0 10px rgba(255,255,255,0.5);text-align:center;line-height:1.3;}
+        .bc-close{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:white;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0;transition:background 0.2s;}
+        .bc-close:hover{background:rgba(0,0,0,0.5);}
+
+        /* ===== ADMIN BROADCAST PANEL ===== */
+        #bc-admin-btn{position:fixed;bottom:80px;right:16px;z-index:9998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#991b1b,#ef4444);border:2px solid rgba(239,68,68,0.5);color:white;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(239,68,68,0.4);transition:all 0.2s;}
+        #bc-admin-btn:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(239,68,68,0.6);}
+        #bc-panel{position:fixed;bottom:136px;right:16px;z-index:9998;width:min(320px,calc(100vw - 32px));background:rgba(10,2,2,0.97);border:1px solid rgba(239,68,68,0.4);border-radius:20px;padding:20px;box-shadow:0 8px 40px rgba(239,68,68,0.3);display:none;}
+        #bc-panel.show{display:block;animation:fadeSlideIn 0.25s ease;}
+        .bc-panel-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#ef4444;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+        .bc-msg-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(239,68,68,0.3);border-radius:12px;color:white;font-size:13px;padding:12px 14px;outline:none;font-family:'Inter',sans-serif;resize:none;transition:border-color 0.2s;box-sizing:border-box;}
+        .bc-msg-input:focus{border-color:#ef4444;}
+        .bc-msg-input::placeholder{color:#475569;}
+        .bc-send-btn{width:100%;padding:12px;border-radius:12px;font-family:'Orbitron',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;background:linear-gradient(90deg,#991b1b,#ef4444);color:white;border:none;cursor:pointer;margin-top:10px;transition:opacity 0.2s,transform 0.1s;}
+        .bc-send-btn:hover{opacity:0.9;}.bc-send-btn:active{transform:scale(0.97);}
+        .bc-clear-btn{width:100%;padding:10px;border-radius:12px;font-family:'Orbitron',sans-serif;font-weight:900;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;cursor:pointer;margin-top:6px;transition:all 0.2s;}
+        .bc-clear-btn:hover{color:#94a3b8;background:rgba(255,255,255,0.08);}
+        .bc-status{font-size:10px;color:#64748b;text-align:center;margin-top:8px;min-height:14px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;}
+        .bc-status.ok{color:#22c55e;}.bc-status.err{color:#ef4444;}
+
+        /* ===== ADMIN LOGIN FOR BROADCAST ===== */
+        #bc-login-modal{position:fixed;inset:0;background:rgba(2,6,23,0.92);backdrop-filter:blur(12px);z-index:99998;display:flex;align-items:center;justify-content:center;}
+        #bc-login-modal.hidden{display:none;}
     </style>
 </head>
 <body class="p-4 pb-20">
+
+<!-- ===== FIREBASE SDK ===== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  // ⚠️ SETUP INSTRUCTIONS:
+  // 1. Go to https://console.firebase.google.com
+  // 2. Create a free project → Add a Web App → Copy your config below
+  // 3. In the left panel → Build → Realtime Database → Create database (start in test mode)
+  // Replace the placeholder config below with YOUR Firebase config:
+  const firebaseConfig = {
+    apiKey: "AIzaSyA5u7B8UJQOFG8yhE0YKWCiWCHQgaNu1mY",
+    authDomain: "biz-dashboard-4396c.firebaseapp.com",
+    databaseURL: "https://biz-dashboard-4396c-default-rtdb.firebaseio.com",
+    projectId: "biz-dashboard-4396c",
+    storageBucket: "biz-dashboard-4396c.firebasestorage.app",
+    messagingSenderId: "394155720592",
+    appId: "1:394155720592:web:b85a142cf8c885726b3d15",
+    measurementId: "G-VMMZWCMLBR"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const broadcastRef = ref(db, 'broadcast');
+
+  // Listen for broadcast messages in real-time
+  onValue(broadcastRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data && data.message && data.active) {
+      showBroadcastBar(data.message);
+    } else {
+      hideBroadcastBar();
+    }
+  });
+
+  // Expose send/clear functions to global scope
+  window._fbSendBroadcast = async (msg) => {
+    await set(broadcastRef, { message: msg, active: true, ts: Date.now() });
+  };
+  window._fbClearBroadcast = async () => {
+    await remove(broadcastRef);
+  };
+</script>
+
+<!-- ===== BROADCAST ALERT BAR ===== -->
+<div id="broadcast-bar">
+  <div class="bc-inner">
+    <span class="bc-icon">📢</span>
+    <div class="bc-text" id="bc-message-text">Admin message here</div>
+    <button class="bc-close" onclick="dismissBroadcast()" title="Close">✕</button>
+  </div>
+</div>
+
+<!-- ===== ADMIN BROADCAST BUTTON (hidden until unlocked) ===== -->
+<button id="bc-admin-btn" class="hidden" onclick="toggleBcPanel()" title="Broadcast Admin">📣</button>
+
+<!-- ===== ADMIN BROADCAST PANEL ===== -->
+<div id="bc-panel">
+  <div class="bc-panel-title"><span>📢</span> Admin Broadcast</div>
+  <textarea id="bc-input" class="bc-msg-input" rows="3" placeholder="Type your message to everyone..."></textarea>
+  <button class="bc-send-btn" onclick="sendBroadcast()">⚡ Send to Everyone</button>
+  <button class="bc-clear-btn" onclick="clearBroadcast()">🗑 Clear Message</button>
+  <div id="bc-status" class="bc-status"></div>
+</div>
+
+<!-- ===== ADMIN LOGIN MODAL FOR BROADCAST ===== -->
+<div id="bc-login-modal" class="hidden">
+  <div class="modal-box">
+    <div class="header-font text-xs text-red-500 tracking-widest uppercase mb-2 italic">📢 Admin Access</div>
+    <div class="header-font text-2xl font-black text-white uppercase italic tracking-tight">Broadcast</div>
+    <p class="text-slate-400 text-sm mt-3">Enter admin password to send broadcasts.</p>
+    <input id="bc-pw-input" type="password" class="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkBcPassword()" autocomplete="off"/>
+    <div id="bc-pw-error" class="error-msg"></div>
+    <button class="pw-btn" onclick="checkBcPassword()"><i class="fas fa-broadcast-tower mr-2"></i>Unlock</button><br>
+    <button class="pw-cancel" onclick="document.getElementById('bc-login-modal').classList.add('hidden')">Cancel</button>
+  </div>
+</div>
 
 <div id="pw-modal" class="modal-overlay hidden">
     <div class="modal-box">
@@ -146,7 +255,7 @@
     </div>
 
     <div class="text-center mb-10">
-        <h1 class="header-font text-4xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic leading-tight uppercase">BIZ Level Up Dashboard</h1>
+        <h1 class="header-font text-4xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent italic leading-tight uppercase" id="main-title" onclick="handleTitleTap()" style="cursor:default;user-select:none;">BIZ Level Up Dashboard</h1>
         <div style="display:flex;justify-content:center;gap:16px;margin-top:12px;flex-wrap:wrap;">
             <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:8px 18px;display:flex;align-items:center;gap:10px;">
                 <span style="font-size:1.2rem;">🇬🇾</span>
@@ -1896,6 +2005,111 @@ function resetTrivia(){
 
 updateDashboard();
 setInterval(updateDashboard,30000);
+
+// ===== BROADCAST SYSTEM =====
+const BC_ADMIN_PASSWORD = 'bizadmin2025'; // 🔑 Change this to your secret password
+let bcAdminUnlocked = false;
+let bcDismissedTs = 0;
+let titleTapCount = 0;
+let titleTapTimer = null;
+
+function handleTitleTap(){
+  titleTapCount++;
+  clearTimeout(titleTapTimer);
+  titleTapTimer = setTimeout(()=>{ titleTapCount=0; }, 800);
+  if(titleTapCount >= 5){
+    titleTapCount = 0;
+    clearTimeout(titleTapTimer);
+    if(bcAdminUnlocked){
+      toggleBcPanel();
+    } else {
+      document.getElementById('bc-login-modal').classList.remove('hidden');
+      setTimeout(()=>document.getElementById('bc-pw-input').focus(),100);
+    }
+  }
+}
+
+function checkBcPassword(){
+  const val = document.getElementById('bc-pw-input').value;
+  const errEl = document.getElementById('bc-pw-error');
+  if(val === BC_ADMIN_PASSWORD){
+    bcAdminUnlocked = true;
+    document.getElementById('bc-login-modal').classList.add('hidden');
+    document.getElementById('bc-admin-btn').classList.remove('hidden');
+    document.getElementById('bc-pw-input').value = '';
+    errEl.textContent = '';
+    toggleBcPanel();
+  } else {
+    errEl.textContent = 'Incorrect password.';
+    const inp = document.getElementById('bc-pw-input');
+    inp.classList.add('error');
+    setTimeout(()=>inp.classList.remove('error'), 500);
+    setTimeout(()=>{ errEl.textContent=''; }, 2000);
+  }
+}
+
+function toggleBcPanel(){
+  const panel = document.getElementById('bc-panel');
+  if(panel.classList.contains('show')){
+    panel.classList.remove('show');
+  } else {
+    panel.classList.add('show');
+    setTimeout(()=>document.getElementById('bc-input').focus(),100);
+  }
+}
+
+async function sendBroadcast(){
+  const msg = document.getElementById('bc-input').value.trim();
+  const statusEl = document.getElementById('bc-status');
+  if(!msg){ statusEl.textContent='Enter a message first!'; statusEl.className='bc-status err'; return; }
+  if(!window._fbSendBroadcast){
+    statusEl.textContent='Firebase not configured yet!';
+    statusEl.className='bc-status err';
+    // Fallback: show locally for testing
+    showBroadcastBar(msg);
+    return;
+  }
+  try {
+    statusEl.textContent='Sending...'; statusEl.className='bc-status';
+    await window._fbSendBroadcast(msg);
+    statusEl.textContent='✓ Sent to everyone!'; statusEl.className='bc-status ok';
+    setTimeout(()=>{ statusEl.textContent=''; statusEl.className='bc-status'; }, 3000);
+  } catch(e){
+    statusEl.textContent='Error: '+e.message; statusEl.className='bc-status err';
+  }
+}
+
+async function clearBroadcast(){
+  const statusEl = document.getElementById('bc-status');
+  if(!window._fbClearBroadcast){
+    hideBroadcastBar();
+    return;
+  }
+  try {
+    await window._fbClearBroadcast();
+    statusEl.textContent='✓ Message cleared!'; statusEl.className='bc-status ok';
+    setTimeout(()=>{ statusEl.textContent=''; statusEl.className='bc-status'; }, 2000);
+  } catch(e){
+    statusEl.textContent='Error: '+e.message; statusEl.className='bc-status err';
+  }
+}
+
+function showBroadcastBar(msg){
+  const bar = document.getElementById('broadcast-bar');
+  document.getElementById('bc-message-text').textContent = msg;
+  bar.classList.add('show');
+  document.body.style.paddingTop = (parseInt(getComputedStyle(document.body).paddingTop)||16) + 'px';
+}
+
+function hideBroadcastBar(){
+  const bar = document.getElementById('broadcast-bar');
+  bar.classList.remove('show');
+}
+
+function dismissBroadcast(){
+  hideBroadcastBar();
+  bcDismissedTs = Date.now();
+}
 </script>
 </body>
 </html>
