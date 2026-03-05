@@ -2277,7 +2277,6 @@ function showMultiLeadAlert(reps) {
 function _renderAlert({icon, name, msg, quote}) {
   const banner = document.getElementById('lead-alert-banner');
   const inner  = banner.querySelector('.lab-inner');
-  // Flash animation to signal replacement
   inner.style.transition = 'opacity 0.12s';
   inner.style.opacity = '0';
   setTimeout(() => {
@@ -2287,14 +2286,8 @@ function _renderAlert({icon, name, msg, quote}) {
     inner.style.opacity = '1';
   }, 120);
   banner.classList.add('show');
-  // Blink tab title — keep blinking until dismissed (not stopped by focus)
-  if (_tabBlinkInterval) clearInterval(_tabBlinkInterval);
-  let tog = true;
-  const alertTitle = icon + ' ' + name + ' — New Lead!';
-  _tabBlinkInterval = setInterval(() => {
-    document.title = tog ? alertTitle : _originalTitle;
-    tog = !tog;
-  }, 800);
+  // Blink tab — stops when user clicks the tab (they saw it)
+  startTabBlink(icon + ' ' + name + ' — New Lead!', true);
 }
 
 function dismissLeadAlert() {
@@ -2432,15 +2425,17 @@ function dismissBroadcast(){
 let _tabBlinkInterval = null;
 const _originalTitle = document.title;
 
-function startTabBlink(alertTitle) {
-  stopTabBlink(); // clear any existing
+function startTabBlink(alertTitle, stopOnFocus = true) {
+  stopTabBlink();
   let toggle = true;
   _tabBlinkInterval = setInterval(() => {
     document.title = toggle ? alertTitle : _originalTitle;
     toggle = !toggle;
   }, 900);
-  // Stop blinking when user focuses the tab
-  window.addEventListener('focus', stopTabBlink, { once: true });
+  // Only stop on focus for broadcast/trivia — NOT for lead alerts
+  if (stopOnFocus) {
+    window.addEventListener('focus', stopTabBlink, { once: true });
+  }
 }
 
 function stopTabBlink() {
