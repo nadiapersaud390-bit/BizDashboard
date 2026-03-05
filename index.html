@@ -1575,16 +1575,7 @@ function renderDaySubTabs() {
     container.innerHTML=html;wrapper.classList.remove('hidden');
 }
 
-function switchDayView(key){
-  currentDayView=key;
-  renderDaySubTabs();
-  render();
-  // Show top 5 popup when clicking a previous day
-  if(key !== 'today'){
-    const snap = dayHistory.find(d => d.day === key);
-    if(snap) showTopPerformerPopup(true, snap);
-  }
-}
+function switchDayView(key){currentDayView=key;renderDaySubTabs();render();}
 
 function requestWeekly(){if(weeklyUnlocked){currentTab='weekly';updateTabUI();render();renderDaySubTabs();return;}document.getElementById('pw-modal').classList.remove('hidden');document.getElementById('pw-input').value='';document.getElementById('pw-error').innerText='';document.getElementById('pw-input').classList.remove('error');setTimeout(()=>document.getElementById('pw-input').focus(),100);}
 function checkPassword(){if(document.getElementById('pw-input').value===WEEKLY_PASSWORD){weeklyUnlocked=true;document.getElementById('pw-modal').classList.add('hidden');document.getElementById('tab-weekly').innerHTML='Weekly';currentTab='weekly';currentDayView='today';updateTabUI();render();renderDaySubTabs();}else{const inp=document.getElementById('pw-input');inp.classList.add('error');document.getElementById('pw-error').innerText='Incorrect access code. Try again.';inp.value='';setTimeout(()=>inp.classList.remove('error'),500);setTimeout(()=>inp.focus(),100);}}
