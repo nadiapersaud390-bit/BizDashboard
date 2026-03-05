@@ -2239,9 +2239,11 @@ function checkLeadAlerts(newAgents) {
 }
 
 function processAlertQueue() {
+  // Just show the latest item — always replaces whatever is showing
   if (!alertQueue.length) { alertShowing = false; return; }
   alertShowing = true;
-  const item = alertQueue.shift();
+  const item = alertQueue[alertQueue.length - 1]; // take newest
+  alertQueue = [];
   if (item.multi) {
     showMultiLeadAlert(item.reps);
   } else {
@@ -2274,18 +2276,33 @@ function showMultiLeadAlert(reps) {
 
 function _renderAlert({icon, name, msg, quote}) {
   const banner = document.getElementById('lead-alert-banner');
-  document.querySelector('.lab-icon').textContent = icon;
-  document.getElementById('lab-text').innerHTML =
-    escapeHtml(name) + '<span>' + escapeHtml(msg) + ' — ❭' + escapeHtml(quote) + '❮</span>';
+  const inner  = banner.querySelector('.lab-inner');
+  // Flash animation to signal replacement
+  inner.style.transition = 'opacity 0.12s';
+  inner.style.opacity = '0';
+  setTimeout(() => {
+    document.querySelector('.lab-icon').textContent = icon;
+    document.getElementById('lab-text').innerHTML =
+      escapeHtml(name) + '<span>' + escapeHtml(msg) + ' — ❭' + escapeHtml(quote) + '❮</span>';
+    inner.style.opacity = '1';
+  }, 120);
   banner.classList.add('show');
-  startTabBlink('🔥 ' + name);
+  // Blink tab title — keep blinking until dismissed (not stopped by focus)
+  if (_tabBlinkInterval) clearInterval(_tabBlinkInterval);
+  let tog = true;
+  const alertTitle = icon + ' ' + name + ' — New Lead!';
+  _tabBlinkInterval = setInterval(() => {
+    document.title = tog ? alertTitle : _originalTitle;
+    tog = !tog;
+  }, 800);
 }
 
 function dismissLeadAlert() {
   document.getElementById('lead-alert-banner').classList.remove('show');
-  stopTabBlink();
+  if (_tabBlinkInterval) { clearInterval(_tabBlinkInterval); _tabBlinkInterval = null; }
+  document.title = _originalTitle;
   alertShowing = false;
-  setTimeout(processAlertQueue, 300);
+  alertQueue = [];
 }
 
 updateDashboard();
