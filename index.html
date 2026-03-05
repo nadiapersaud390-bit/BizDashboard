@@ -2133,10 +2133,20 @@ function checkBcPassword(){
     document.getElementById('bc-login-modal').classList.add('hidden');
     document.getElementById('bc-pw-input').value = '';
     errEl.textContent = '';
-    // Open panel directly — button stays hidden forever
+    // Open panel directly
     const panel = document.getElementById('bc-panel');
     panel.classList.add('show');
     setTimeout(()=>document.getElementById('bc-input').focus(),100);
+    // Add preview button if not already there
+    if(!document.getElementById('bc-tp-preview-btn')){
+      const btn = document.createElement('button');
+      btn.id='bc-tp-preview-btn';
+      btn.className='bc-clear-btn';
+      btn.style.cssText='margin-top:6px;color:#FFD700;border-color:rgba(255,215,0,0.25);';
+      btn.innerHTML='👑 Preview Top Performers';
+      btn.onclick=()=>showTopPerformerPopup(true);
+      panel.appendChild(btn);
+    }
   } else {
     errEl.textContent = 'Incorrect password.';
     const inp = document.getElementById('bc-pw-input');
@@ -2332,25 +2342,6 @@ function stopTpConfetti(){
 
 // Check every minute
 setInterval(checkTopPerformerSchedule, 60000);
-
-// Add manual trigger to admin broadcast panel after unlock
-const _origCheckBcPw = checkBcPassword;
-function checkBcPassword(){
-  const val = document.getElementById('bc-pw-input').value;
-  if(val === BC_ADMIN_PASSWORD){
-    // Add preview button to panel if not already there
-    if(!document.getElementById('bc-tp-preview-btn')){
-      const btn = document.createElement('button');
-      btn.id='bc-tp-preview-btn';
-      btn.className='bc-clear-btn';
-      btn.style.cssText='margin-top:6px;color:#FFD700;border-color:rgba(255,215,0,0.25);';
-      btn.innerHTML='👑 Preview Top Performers';
-      btn.onclick=()=>showTopPerformerPopup(true);
-      document.getElementById('bc-panel').appendChild(btn);
-    }
-  }
-  _origCheckBcPw();
-}
 </script>
 </body>
 </html>
