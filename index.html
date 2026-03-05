@@ -165,6 +165,30 @@
         /* ===== ADMIN LOGIN FOR BROADCAST ===== */
         #bc-login-modal{position:fixed;inset:0;background:rgba(2,6,23,0.92);backdrop-filter:blur(12px);z-index:99998;display:flex;align-items:center;justify-content:center;}
         #bc-login-modal.hidden{display:none;}
+
+        /* ===== LEAD ALERT POPUP ===== */
+        #lead-alert-overlay{position:fixed;inset:0;z-index:999999;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:32px;gap:14px;}
+        .lead-alert-card{pointer-events:all;width:min(420px,calc(100vw - 32px));background:linear-gradient(145deg,#0d0020,#050018);border:2px solid rgba(168,85,247,0.5);border-radius:24px;overflow:hidden;box-shadow:0 0 60px rgba(168,85,247,0.35),0 20px 60px rgba(0,0,0,0.7);animation:leadAlertIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;position:relative;}
+        @keyframes leadAlertIn{from{opacity:0;transform:translateY(60px) scale(0.88);}to{opacity:1;transform:translateY(0) scale(1);}}
+        @keyframes leadAlertOut{from{opacity:1;transform:translateY(0) scale(1);}to{opacity:0;transform:translateY(40px) scale(0.9);}}
+        .lead-alert-card.dismissing{animation:leadAlertOut 0.35s ease forwards;}
+        .lead-alert-shimmer{position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent);animation:shimmer 2.5s ease-in-out infinite;}
+        @keyframes shimmer{0%{left:-100%;}60%,100%{left:200%;}}
+        .lead-alert-top{background:linear-gradient(135deg,rgba(168,85,247,0.25),rgba(139,92,246,0.15),rgba(236,72,153,0.1));padding:18px 20px 14px;border-bottom:1px solid rgba(168,85,247,0.2);}
+        .lead-alert-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.35);border-radius:20px;padding:3px 10px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#c084fc;margin-bottom:10px;}
+        .lead-alert-name{font-family:'Orbitron',sans-serif;font-size:clamp(20px,6vw,28px);font-weight:900;background:linear-gradient(90deg,#e879f9,#a855f7,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:4px;}
+        .lead-alert-msg{font-family:'Boogaloo',cursive;font-size:clamp(15px,4vw,18px);color:#e2e8f0;line-height:1.4;}
+        .lead-alert-bottom{padding:14px 20px 16px;}
+        .lead-alert-quote{font-family:'Boogaloo',cursive;font-size:clamp(13px,3.5vw,15px);color:#94a3b8;line-height:1.55;font-style:italic;border-left:3px solid rgba(168,85,247,0.4);padding-left:12px;margin-bottom:12px;}
+        .lead-alert-footer{display:flex;align-items:center;justify-content:space-between;}
+        .lead-alert-count{display:flex;align-items:center;gap:6px;}
+        .lead-alert-count-num{font-family:'Lilita One',cursive;font-size:28px;color:#a855f7;line-height:1;}
+        .lead-alert-count-label{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#475569;line-height:1.3;}
+        .lead-alert-close{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#475569;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all 0.2s;flex-shrink:0;}
+        .lead-alert-close:hover{background:rgba(255,255,255,0.1);color:#94a3b8;}
+        .lead-alert-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+        .lap{position:absolute;border-radius:50%;animation:lapFloat linear forwards;}
+        @keyframes lapFloat{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-80px) scale(0.3);}}
     </style>
 </head>
 <body class="p-4 pb-20">
@@ -233,6 +257,9 @@
     <button class="bc-close" onclick="dismissBroadcast()" title="Close">✕</button>
   </div>
 </div>
+
+<!-- ===== LEAD ALERT OVERLAY ===== -->
+<div id="lead-alert-overlay"></div>
 
 <!-- ===== ADMIN BROADCAST BUTTON (hidden until unlocked) ===== -->
 <button id="bc-admin-btn" class="hidden" onclick="toggleBcPanel()" title="Broadcast Admin">📣</button>
@@ -1560,6 +1587,7 @@ async function updateDashboard() {
         if(agents.length>0){if(agents[0].dayHistory)dayHistory=agents[0].dayHistory;dayHistory.forEach(d=>{d.agents.forEach(a=>{if(!a.team)a.team=getTeam(a.name);});});}
         if(agents.length>0&&!agents[0].prTotal&&!agents[0].bbTotal){let pr=0,bb=0;agents.forEach(a=>{if(a.team==='PR')pr+=(a.dailyLeads||0);else bb+=(a.dailyLeads||0);});agents[0].prTotal=pr;agents[0].bbTotal=bb;}
         if(agents.length>0&&agents[0].prankNumbers&&agents[0].prankNumbers.length>0){agents[0].prankNumbers.forEach(n=>{if(n&&!KNOWN_PRANK_NUMBERS.includes(n))KNOWN_PRANK_NUMBERS.push(n);});}
+        checkLeadAlerts(agents);
         render();renderDaySubTabs();
         document.getElementById('timestamp').innerText='Live: '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
     } catch(e){document.getElementById('timestamp').innerText='System Offline';}
@@ -2096,6 +2124,170 @@ function resetTrivia(){
   document.getElementById('trivia-question-screen').classList.add('hidden');
   document.getElementById('trivia-name-screen').classList.remove('hidden');
   document.getElementById('trivia-progress').style.width='0%';
+}
+
+// ============================================================
+// LEAD ALERT SYSTEM
+// ============================================================
+const LEAD_ALERT_QUOTES = [
+  "Success is not final, failure is not fatal — it is the courage to continue that counts.",
+  "The harder you work for something, the greater you'll feel when you achieve it.",
+  "Don't watch the clock; do what it does. Keep going.",
+  "Every transfer is proof you belong here. Keep pushing.",
+  "Champions aren't made in the gym — they're made from the stuff they have inside them.",
+  "You didn't come this far to only come this far.",
+  "Small steps every day lead to big results. You're proving it right now.",
+  "Your attitude determines your direction. Stay locked in.",
+  "The top of the leaderboard has your name on it.",
+  "Consistency is the secret weapon. You've got it.",
+  "Momentum is everything — you just started yours.",
+  "Winners find a way. You just proved you're one of them.",
+  "One transfer closer to the goal. Don't stop now.",
+  "The grind is real, and so is the reward. Keep dialing.",
+  "Energy is contagious — you just raised the whole floor.",
+  "Every call is a new opportunity. You just seized one.",
+  "The best reps don't wait for motivation — they create it.",
+  "You're not just sending leads, you're building your legacy.",
+  "Results speak louder than words. Yours just did.",
+  "Stay hungry. Stay focused. The board is watching."
+];
+
+const LEAD_ALERT_MESSAGES = [
+  "You're on fire! That transfer just hit the board! 🔥",
+  "That's what we're talking about! Keep the energy up! ⚡",
+  "Another one! You're making it look easy! 💪",
+  "Locked in and getting results! That's the spirit! 🎯",
+  "The leaderboard just noticed you. Keep climbing! 🚀",
+  "That's a transfer! You're proving why you belong here! 🏆",
+  "Yes! The hustle is paying off! Don't slow down! 💥",
+  "Look at you go! Another lead sent — beast mode activated! 🦁",
+  "Transfer confirmed! You're in the zone right now! ⚡",
+  "That's your name on the board! Own it! 🌟",
+  "One more and the floor is taking notes! Keep pushing! 🔥",
+  "Dialed in and delivering! That's how it's done! 💎",
+  "You just set the pace! Now let's keep it! 🏃",
+  "Built different! Another transfer, another step to the top! 👑",
+  "That lead is on its way! You're unstoppable right now! 🚀"
+];
+
+let prevLeadCounts = {};
+let alertQueue = [];
+let alertShowing = false;
+let leadAlertInitialized = false;
+
+function getFirstName(fullName) {
+  if (!fullName) return 'Rep';
+  // Names often have prefix like "GTM", "GYB", "GYP" — skip those
+  const parts = fullName.trim().split(/\s+/);
+  // If first part is all caps and short (prefix), take second part
+  if (parts.length > 1 && parts[0].length <= 3 && parts[0] === parts[0].toUpperCase()) {
+    return parts[1];
+  }
+  return parts[0];
+}
+
+function checkLeadAlerts(newAgents) {
+  if (!newAgents || !newAgents.length) return;
+
+  // On first load, just store counts silently — don't alert
+  if (!leadAlertInitialized) {
+    newAgents.forEach(a => {
+      if (a.name) prevLeadCounts[a.name] = a.dailyLeads || 0;
+    });
+    leadAlertInitialized = true;
+    return;
+  }
+
+  newAgents.forEach(a => {
+    if (!a.name) return;
+    const prev = prevLeadCounts[a.name] ?? 0;
+    const curr = a.dailyLeads || 0;
+    if (curr > prev) {
+      const diff = curr - prev;
+      alertQueue.push({ name: a.name, newCount: curr, diff });
+    }
+    prevLeadCounts[a.name] = curr;
+  });
+
+  if (alertQueue.length && !alertShowing) processAlertQueue();
+}
+
+function processAlertQueue() {
+  if (!alertQueue.length) { alertShowing = false; return; }
+  alertShowing = true;
+  const item = alertQueue.shift();
+  showLeadAlert(item.name, item.newCount);
+  // If more in queue, next shows after this one is manually closed
+}
+
+function showLeadAlert(fullName, count) {
+  const firstName = getFirstName(fullName);
+  const msg = LEAD_ALERT_MESSAGES[Math.floor(Math.random() * LEAD_ALERT_MESSAGES.length)];
+  const quote = LEAD_ALERT_QUOTES[Math.floor(Math.random() * LEAD_ALERT_QUOTES.length)];
+  const overlay = document.getElementById('lead-alert-overlay');
+
+  const card = document.createElement('div');
+  card.className = 'lead-alert-card';
+  card.innerHTML = `
+    <div class="lead-alert-shimmer"></div>
+    <div class="lead-alert-particles" id="lap-${Date.now()}"></div>
+    <div class="lead-alert-top">
+      <div class="lead-alert-badge">⚡ Lead Sent</div>
+      <div class="lead-alert-name">Good Job, ${escapeHtml(firstName)}!</div>
+      <div class="lead-alert-msg">${escapeHtml(msg)}</div>
+    </div>
+    <div class="lead-alert-bottom">
+      <div class="lead-alert-quote">${escapeHtml(quote)}</div>
+      <div class="lead-alert-footer">
+        <div class="lead-alert-count">
+          <div class="lead-alert-count-num">${count}</div>
+          <div class="lead-alert-count-label">Total<br>Today</div>
+        </div>
+        <button class="lead-alert-close" onclick="dismissLeadAlert(this.closest('.lead-alert-card'))">✕</button>
+      </div>
+    </div>
+  `;
+
+  overlay.appendChild(card);
+
+  // Spawn particles
+  spawnAlertParticles(card.querySelector('.lead-alert-particles'));
+
+  // After dismiss, process next in queue
+  card._onDismissed = () => {
+    setTimeout(processAlertQueue, 300);
+  };
+}
+
+function spawnAlertParticles(container) {
+  if (!container) return;
+  const colors = ['#a855f7','#e879f9','#818cf8','#ec4899','#facc15','#38bdf8'];
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'lap';
+    const size = Math.random() * 8 + 4;
+    p.style.cssText = `
+      width:${size}px;height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%;
+      bottom:${Math.random()*30}px;
+      animation-duration:${0.8+Math.random()*1.4}s;
+      animation-delay:${Math.random()*0.6}s;
+      opacity:0.7;
+    `;
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 2500);
+  }
+}
+
+function dismissLeadAlert(card) {
+  if (!card || card._dismissed) return;
+  card._dismissed = true;
+  card.classList.add('dismissing');
+  setTimeout(() => {
+    card.remove();
+    if (card._onDismissed) card._onDismissed();
+  }, 350);
 }
 
 updateDashboard();
