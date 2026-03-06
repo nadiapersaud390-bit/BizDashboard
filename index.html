@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1593,7 +1594,6 @@ async function updateDashboard() {
         if(agents.length>0&&!agents[0].prTotal&&!agents[0].bbTotal){let pr=0,bb=0;agents.forEach(a=>{if(a.team==='PR')pr+=(a.dailyLeads||0);else bb+=(a.dailyLeads||0);});agents[0].prTotal=pr;agents[0].bbTotal=bb;}
         if(agents.length>0&&agents[0].prankNumbers&&agents[0].prankNumbers.length>0){agents[0].prankNumbers.forEach(n=>{if(n&&!KNOWN_PRANK_NUMBERS.includes(n))KNOWN_PRANK_NUMBERS.push(n);});}
         checkLeadAlerts(agents);
-        checkTopPerformerSchedule();
         render();renderDaySubTabs();
         document.getElementById('timestamp').innerText='Live: '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
     } catch(e){document.getElementById('timestamp').innerText='System Offline';}
@@ -2306,19 +2306,13 @@ function checkLeadAlerts(newAgents) {
 
   // Use berbiceTracker if available, else fall back to BB dailyLeads
   const tracker = (newAgents[0] && newAgents[0].berbiceTracker) || {};
-  let rawSnapshot = Object.keys(tracker).length ? tracker : {};
-  if (!Object.keys(rawSnapshot).length) {
+  let snapshot = Object.keys(tracker).length ? tracker : {};
+  if (!Object.keys(snapshot).length) {
     newAgents.forEach(a => {
-      if ((a.team || getTeam(a.name)) === 'BB') rawSnapshot[a.name] = a.dailyLeads || 0;
+      if ((a.team || getTeam(a.name)) === 'BB') snapshot[a.name] = a.dailyLeads || 0;
     });
   }
-  if (!Object.keys(rawSnapshot).length) return;
-
-  // Normalize: tracker values may be objects or numbers
-  const snapshot = {};
-  Object.entries(rawSnapshot).forEach(([n, v]) => {
-    snapshot[n] = typeof v === 'object' && v !== null ? (v.count || v.leads || v.total || 0) : (parseInt(v) || 0);
-  });
+  if (!Object.keys(snapshot).length) return;
 
   // First load — store silently, no alerts
   if (!leadAlertInitialized) {
@@ -2327,11 +2321,10 @@ function checkLeadAlerts(newAgents) {
     return;
   }
 
-  // Find reps with new leads — skip new agents silently (no baseline yet)
+  // Find reps with new leads — track if it's their first of the day
   const newReps = [];
   Object.entries(snapshot).forEach(([name, count]) => {
-    if (!(name in prevLeadCounts)) { prevLeadCounts[name] = count; return; }
-    const prev = prevLeadCounts[name];
+    const prev = prevLeadCounts[name] ?? 0;
     if (count > prev) newReps.push({ name, count, isFirst: prev === 0 });
     prevLeadCounts[name] = count;
   });
@@ -2562,9 +2555,8 @@ function checkTopPerformerSchedule() {
   const hour = getGuyanaHour();
   const min = getGuyanaMinute();
   // Fire every 2 hours from 12pm to 8pm: 12, 14, 16, 18, 20
-  // Allow a 2-minute window (min 0 or 1) so a late page load doesn't miss it
   const triggerHours = [12, 14, 16, 18, 20];
-  if (triggerHours.includes(hour) && min <= 1 && tpLastShownHour !== hour) {
+  if (triggerHours.includes(hour) && min === 0 && tpLastShownHour !== hour) {
     tpLastShownHour = hour;
     showTopPerformerPopup();
   }
