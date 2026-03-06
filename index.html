@@ -149,8 +149,12 @@
 
         /* ===== ADMIN BROADCAST PANEL ===== */
         #bc-admin-btn{display:none!important;}
-        #bc-panel{position:fixed;bottom:136px;right:16px;z-index:9998;width:min(320px,calc(100vw - 32px));background:rgba(10,2,2,0.97);border:1px solid rgba(239,68,68,0.4);border-radius:20px;padding:20px;box-shadow:0 8px 40px rgba(239,68,68,0.3);display:none;}
+        #bc-float-btn{display:none;position:fixed;bottom:24px;right:20px;z-index:10000;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#991b1b,#ef4444);border:2px solid rgba(255,100,100,0.4);box-shadow:0 4px 24px rgba(239,68,68,0.55);cursor:pointer;align-items:center;justify-content:center;font-size:22px;transition:transform 0.2s,box-shadow 0.2s;}
+        #bc-float-btn:hover{transform:scale(1.1);box-shadow:0 6px 32px rgba(239,68,68,0.8);}
+        #bc-float-btn.unlocked{display:flex;}
+        #bc-panel{position:fixed;bottom:90px;right:16px;z-index:9998;width:min(320px,calc(100vw - 32px));background:rgba(10,2,2,0.97);border:1px solid rgba(239,68,68,0.4);border-radius:20px;padding:20px;box-shadow:0 8px 40px rgba(239,68,68,0.3);display:none;}
         #bc-panel.show{display:block;animation:fadeSlideIn 0.25s ease;}
+        @keyframes bcBtnAppear{from{transform:scale(0) rotate(-180deg);opacity:0;}to{transform:scale(1) rotate(0deg);opacity:1;}}
         .bc-panel-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.15em;color:#ef4444;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
         .bc-msg-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(239,68,68,0.3);border-radius:12px;color:white;font-size:13px;padding:12px 14px;outline:none;font-family:'Inter',sans-serif;resize:none;transition:border-color 0.2s;box-sizing:border-box;}
         .bc-msg-input:focus{border-color:#ef4444;}
@@ -170,9 +174,12 @@
         #lead-alert-banner{position:fixed;top:0;left:0;right:0;z-index:999998;transform:translateY(-100%);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);}
         #lead-alert-banner.show{transform:translateY(0);}
         .lab-inner{display:flex;align-items:center;justify-content:space-between;padding:0 16px;min-height:56px;gap:12px;background:linear-gradient(90deg,#1a003a,#3b0080,#a855f7,#3b0080,#1a003a);background-size:300% 100%;animation:labFlash 1.6s ease-in-out infinite;}
+        .lab-inner.first-lead{background:linear-gradient(90deg,#422006,#92400e,#f59e0b,#ca8a04,#f59e0b,#92400e,#422006);background-size:300% 100%;animation:labFlashGold 1.4s ease-in-out infinite;box-shadow:0 2px 30px rgba(245,158,11,0.7);}
         @keyframes labFlash{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+        @keyframes labFlashGold{0%,100%{background-position:0% 50%;box-shadow:0 2px 20px rgba(245,158,11,0.5);}50%{background-position:100% 50%;box-shadow:0 2px 50px rgba(245,158,11,1);}}
         .lab-icon{font-size:20px;flex-shrink:0;}
         .lab-text{flex:1;font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(10px,3vw,13px);color:white;text-transform:uppercase;letter-spacing:0.08em;text-shadow:0 0 12px rgba(232,121,249,0.7);text-align:center;line-height:1.4;}
+        .lab-inner.first-lead .lab-text{text-shadow:0 0 14px rgba(255,220,50,0.9);}
         .lab-text span{display:block;font-family:'Boogaloo',cursive;font-size:clamp(11px,3.2vw,14px);font-weight:400;text-transform:none;letter-spacing:0.02em;color:rgba(255,255,255,0.8);text-shadow:none;margin-top:1px;}
         .lab-close{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:white;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0;transition:background 0.2s;}
         .lab-close:hover{background:rgba(0,0,0,0.5);}
@@ -257,6 +264,9 @@
 <!-- ===== ADMIN BROADCAST BUTTON (hidden until unlocked) ===== -->
 <button id="bc-admin-btn" class="hidden" onclick="toggleBcPanel()" title="Broadcast Admin">📣</button>
 
+<!-- ===== FLOATING ADMIN CHAT BUBBLE ===== -->
+<button id="bc-float-btn" onclick="toggleBcPanel()" title="Admin Panel">📣</button>
+
 <!-- ===== ADMIN BROADCAST PANEL ===== -->
 <div id="bc-panel">
   <div class="bc-panel-title"><span>📢</span> Admin Broadcast</div>
@@ -264,7 +274,7 @@
   <button class="bc-send-btn" onclick="sendBroadcast()">⚡ Send to Everyone</button>
   <button class="bc-clear-btn" onclick="clearBroadcast()">🗑 Clear Message</button>
   <button class="bc-clear-btn" onclick="dismissLeadAlert()" style="margin-top:4px;color:#c084fc;border-color:rgba(168,85,247,0.3);">🔥 Clear Lead Alert</button>
-  <button class="bc-clear-btn" onclick="_renderAlert({icon:'🔥',name:'Good Job, Test!',msg:'This is a test alert — banner is working!',quote:'Keep pushing, the top is closer than you think.'})" style="margin-top:4px;color:#22c55e;border-color:rgba(34,197,94,0.3);">✅ Test Lead Alert</button>
+
   <div id="bc-status" class="bc-status"></div>
 </div>
 
@@ -2125,6 +2135,7 @@ function resetTrivia(){
 // LEAD ALERT SYSTEM
 // ============================================================
 const LEAD_ALERT_QUOTES = [
+  // Original 20
   "Success is not final, failure is not fatal — it is the courage to continue that counts.",
   "The harder you work for something, the greater you'll feel when you achieve it.",
   "Don't watch the clock; do what it does. Keep going.",
@@ -2144,10 +2155,42 @@ const LEAD_ALERT_QUOTES = [
   "The best reps don't wait for motivation — they create it.",
   "You're not just sending leads, you're building your legacy.",
   "Results speak louder than words. Yours just did.",
-  "Stay hungry. Stay focused. The board is watching."
+  "Stay hungry. Stay focused. The board is watching.",
+  // 30 Famous Quotes
+  "The secret of getting ahead is getting started. — Mark Twain",
+  "It always seems impossible until it's done. — Nelson Mandela",
+  "Don't count the days, make the days count. — Muhammad Ali",
+  "Hard work beats talent when talent doesn't work hard. — Tim Notke",
+  "The only way to do great work is to love what you do. — Steve Jobs",
+  "I find that the harder I work, the more luck I seem to have. — Thomas Jefferson",
+  "You miss 100% of the shots you don't take. — Wayne Gretzky",
+  "Whether you think you can or you think you can't, you're right. — Henry Ford",
+  "The difference between ordinary and extraordinary is that little extra. — Jimmy Johnson",
+  "Success usually comes to those who are too busy to be looking for it. — Henry David Thoreau",
+  "Opportunities don't happen. You create them. — Chris Grosser",
+  "Don't wish it were easier. Wish you were better. — Jim Rohn",
+  "The only place where success comes before work is in the dictionary. — Vidal Sassoon",
+  "If you are not willing to risk the usual, you will have to settle for the ordinary. — Jim Rohn",
+  "The man who moves a mountain begins by carrying away small stones. — Confucius",
+  "It's not whether you get knocked down, it's whether you get up. — Vince Lombardi",
+  "Do what you can, with what you have, where you are. — Theodore Roosevelt",
+  "Winning isn't everything, but wanting to win is. — Vince Lombardi",
+  "The more I practice, the luckier I get. — Gary Player",
+  "I've failed over and over — and that is why I succeed. — Michael Jordan",
+  "Great things are done by a series of small things brought together. — Vincent Van Gogh",
+  "Success is walking from failure to failure with no loss of enthusiasm. — Winston Churchill",
+  "You don't have to be great to start, but you have to start to be great. — Zig Ziglar",
+  "Believe you can and you're halfway there. — Theodore Roosevelt",
+  "The future belongs to those who believe in the beauty of their dreams. — Eleanor Roosevelt",
+  "Go as far as you can see; when you get there, you'll be able to see further. — Thomas Carlyle",
+  "I never dreamed about success. I worked for it. — Estée Lauder",
+  "The only limit to our realization of tomorrow is our doubts of today. — Franklin D. Roosevelt",
+  "Excellence is not a destination but a continuous journey that never ends. — Brian Tracy",
+  "Your time is limited, so don't waste it living someone else's life. — Steve Jobs"
 ];
 
 const LEAD_ALERT_MESSAGES = [
+  // Original 15
   "You're on fire! That transfer just hit the board! 🔥",
   "That's what we're talking about! Keep the energy up! ⚡",
   "Another one! You're making it look easy! 💪",
@@ -2162,7 +2205,89 @@ const LEAD_ALERT_MESSAGES = [
   "Dialed in and delivering! That's how it's done! 💎",
   "You just set the pace! Now let's keep it! 🏃",
   "Built different! Another transfer, another step to the top! 👑",
-  "That lead is on its way! You're unstoppable right now! 🚀"
+  "That lead is on its way! You're unstoppable right now! 🚀",
+  // 50 New Messages
+  "Another transfer locked in — you make this look too easy! 😤",
+  "The grind never stops and neither do you! Keep going! 🔄",
+  "Stack it up! Every lead is money in the bank! 💰",
+  "You just moved up the board — keep that energy! 📈",
+  "That's a certified banger! Another lead secured! 🎯",
+  "Nobody on the floor right now harder than you! 👊",
+  "Transfer after transfer — this is your day! ☀️",
+  "You're not stopping and neither is that leaderboard! 🏆",
+  "Ice cold under pressure and still delivering! 🧊",
+  "Straight up locked in! That's elite performance right there! 🔐",
+  "Another one bites the dust — lead confirmed! 😎",
+  "You just made it look effortless — transfer on the board! ✨",
+  "The floor is watching and you're giving them a show! 🎭",
+  "Don't stop now — the board has your back! 📋",
+  "You just raised the bar for everyone on the floor! 📊",
+  "Transfer sent — now go get the next one! 🔁",
+  "Nothing but results — that's your brand today! 💼",
+  "You're running this shift right now! Pure dominance! 👑",
+  "Another one down — you're in full control! 🎮",
+  "That transfer just elevated your whole day! Keep stacking! 🏗️",
+  "Focused, fearless, and delivering — that's you right now! 💡",
+  "The phones don't scare you and the board shows it! 📞",
+  "Drop after drop — you're flooding the board! 🌊",
+  "That's elite rep behavior! Transfer confirmed! 🦅",
+  "Built for this moment — and you just proved it! 💪",
+  "Every dial is a door and you just walked through another one! 🚪",
+  "You're not chasing results — you're creating them! 🛠️",
+  "That's the stuff legends are made of! Keep dialing! 📖",
+  "One more notch on the belt — transfer secured! 🥊",
+  "You just turned a call into cash — that's the skill! 💸",
+  "Relentless. Consistent. You. Keep it rolling! ⚙️",
+  "Another lead hits — the floor is feeling your energy! ⚡",
+  "That's called professionalism — transfer on the board! 🎩",
+  "You make it look easy but we know the work behind it! 🙌",
+  "Locked, loaded, and delivering — that's your vibe today! 🎯",
+  "The hustle is louder than words — board update proves it! 📣",
+  "You just added to your legacy — lead confirmed! 🏛️",
+  "Not slowing down, not looking back — lead secured! 🏎️",
+  "The clock is ticking and you're making every second count! ⏱️",
+  "Rep of the day energy right here — keep pushing! 🌟",
+  "You just made the leaderboard sweat — great work! 😤",
+  "That call had your name written all over it! 🖊️",
+  "Clutch when it counts — another transfer in! 🎯",
+  "Zero hesitation, full execution — that's a transfer! ✅",
+  "Another proof point that you belong at the top! 🔝",
+  "You're not on a roll — you ARE the roll! 🎲",
+  "Smooth operator — that transfer landed perfectly! 🎶",
+  "The scoreboard agrees: you're having a great day! 🗓️"
+];
+
+const FIRST_LEAD_MESSAGES = [
+  "First one on the board today — let's gooo! 🏆",
+  "Day one, lead one — the grind has officially started! 🔥",
+  "First blood of the day! Who's next?! 🩸",
+  "Opening the scoreboard! That's how you start a shift! 🎯",
+  "First transfer of the day is always the sweetest! 💛",
+  "Zero to one — the hardest step done! Keep stacking! 🚀",
+  "First one in the bag! Now don't stop there! 💪",
+  "The board just woke up! First lead of the day secured! ⚡",
+  "Day started RIGHT! First transfer is on the books! 📖",
+  "First lead of the day — the momentum is yours now! 🌟",
+  "Off zero! That's all it takes to get going! 🏃",
+  "First one hits different! Now build on it! 💥",
+  "Up and running! First lead locked in — don't look back! 👑",
+  "One on the day! The rest of the floor just got put on notice! 👀",
+  "First transfer secured! You just set the tone for today! 🎶",
+  "Day started! First lead in — now chase the next one! 🦁",
+  "Zero to hero — first lead of the day belongs to you! 🌠",
+  "First one of the day! The grind is already paying off! 💎",
+  "Early lead on the board — you're already ahead of yesterday! 📈",
+  "First one down, let's see how many more you can stack today! 🃏",
+  "The scoreboard is alive! First transfer of the shift is yours! ⚡",
+  "First lead secured — you just told the day who's boss! 😤",
+  "Off to the races! First one in the books! 🏁",
+  "First transfer of the day — the energy is set, now match it! 🔋",
+  "Day one lead secured! You didn't come here to sit still! 🚀",
+  "First of many today — that's the mindset, keep it locked! 🔒",
+  "Board is open! First lead just dropped — who's adding theirs?! 🙌",
+  "One on the day! Small start, big finish — let's go! 🌅",
+  "First lead = first step to the top today. Keep climbing! 🧗",
+  "You broke the ice! First transfer is done — now flood the board! 🌊"
 ];
 
 let prevLeadCounts = {};
@@ -2195,39 +2320,53 @@ function checkLeadAlerts(newAgents) {
     return;
   }
 
-  // Find reps with new leads
+  // Find reps with new leads — track if it's their first of the day
   const newReps = [];
   Object.entries(snapshot).forEach(([name, count]) => {
     const prev = prevLeadCounts[name] ?? 0;
-    if (count > prev) newReps.push({ name, count });
+    if (count > prev) newReps.push({ name, count, isFirst: prev === 0 });
     prevLeadCounts[name] = count;
   });
   if (!newReps.length) return;
 
   // Always show immediately — replaces any existing banner
   if (newReps.length === 1) {
-    const firstName = getFirstName(newReps[0].name);
-    const msg   = LEAD_ALERT_MESSAGES[Math.floor(Math.random() * LEAD_ALERT_MESSAGES.length)];
+    const { name, isFirst } = newReps[0];
+    const firstName = getFirstName(name);
     const quote = LEAD_ALERT_QUOTES[Math.floor(Math.random() * LEAD_ALERT_QUOTES.length)];
-    _renderAlert({ icon: '🔥', name: 'Good Job, ' + firstName + '!', msg, quote });
+    if (isFirst) {
+      const msg = FIRST_LEAD_MESSAGES[Math.floor(Math.random() * FIRST_LEAD_MESSAGES.length)];
+      _renderAlert({ icon: '🥇', name: firstName + ' is on the board!', msg, quote, firstLead: true });
+    } else {
+      const msg = LEAD_ALERT_MESSAGES[Math.floor(Math.random() * LEAD_ALERT_MESSAGES.length)];
+      _renderAlert({ icon: '🔥', name: 'Good Job, ' + firstName + '!', msg, quote, firstLead: false });
+    }
   } else {
+    const hasFirstLeads = newReps.some(r => r.isFirst);
     const names = newReps.map(r => getFirstName(r.name));
     const nameStr = names.length === 2 ? names[0] + ' & ' + names[1]
       : names.slice(0,-1).join(', ') + ' & ' + names[names.length-1];
     const quote = LEAD_ALERT_QUOTES[Math.floor(Math.random() * LEAD_ALERT_QUOTES.length)];
-    _renderAlert({ icon: '⚡', name: nameStr + '!', msg: "Look at the team go! Everyone's putting up numbers! 💪", quote });
+    if (hasFirstLeads) {
+      _renderAlert({ icon: '🥇', name: nameStr + ' hit the board!', msg: "Multiple reps getting their first lead of the day — the floor is heating up! 🔥", quote, firstLead: true });
+    } else {
+      _renderAlert({ icon: '⚡', name: nameStr + '!', msg: "Look at the team go! Everyone's putting up numbers! 💪", quote, firstLead: false });
+    }
   }
 }
 
-function _renderAlert({icon, name, msg, quote}) {
+function _renderAlert({icon, name, msg, quote, firstLead=false}) {
   const banner = document.getElementById('lead-alert-banner');
+  const inner = banner.querySelector('.lab-inner');
+  // Swap gold style for first lead, purple for regular
+  if (firstLead) { inner.classList.add('first-lead'); } else { inner.classList.remove('first-lead'); }
   // Update content first, then show
   document.querySelector('.lab-icon').textContent = icon;
   document.getElementById('lab-text').innerHTML =
     escapeHtml(name) + '<span>' + escapeHtml(msg) + ' — ❭' + escapeHtml(quote) + '❮</span>';
   banner.classList.add('show');
   document.body.style.paddingTop = '72px';
-  startTabBlink(icon + ' ' + name + ' — New Lead!');
+  startTabBlink(icon + ' ' + name + (firstLead ? ' — First Lead Today!' : ' — New Lead!'));
 }
 
 function dismissLeadAlert() {
@@ -2253,13 +2392,25 @@ function handleTitleTap(){
   if(titleTapCount >= 5){
     titleTapCount = 0;
     clearTimeout(titleTapTimer);
-    if(bcAdminUnlocked){
+    // Unlock admin silently — no password needed
+    if(!bcAdminUnlocked){
+      bcAdminUnlocked = true;
+      const floatBtn = document.getElementById('bc-float-btn');
+      floatBtn.classList.add('unlocked');
+      floatBtn.style.animation = 'bcBtnAppear 0.4s cubic-bezier(0.34,1.56,0.64,1) both';
+      // Add preview button if not already there
       const panel = document.getElementById('bc-panel');
-      panel.classList.contains('show') ? panel.classList.remove('show') : panel.classList.add('show');
-    } else {
-      document.getElementById('bc-login-modal').classList.remove('hidden');
-      setTimeout(()=>document.getElementById('bc-pw-input').focus(),100);
+      if(!document.getElementById('bc-tp-preview-btn')){
+        const btn = document.createElement('button');
+        btn.id='bc-tp-preview-btn';
+        btn.className='bc-clear-btn';
+        btn.style.cssText='margin-top:6px;color:#FFD700;border-color:rgba(255,215,0,0.25);';
+        btn.innerHTML='👑 Preview Top Performers';
+        btn.onclick=()=>showTopPerformerPopup(true);
+        panel.appendChild(btn);
+      }
     }
+    toggleBcPanel();
   }
 }
 
@@ -2271,11 +2422,13 @@ function checkBcPassword(){
     document.getElementById('bc-login-modal').classList.add('hidden');
     document.getElementById('bc-pw-input').value = '';
     errEl.textContent = '';
-    // Open panel directly
+    const floatBtn = document.getElementById('bc-float-btn');
+    floatBtn.classList.add('unlocked');
+    floatBtn.style.animation = 'bcBtnAppear 0.4s cubic-bezier(0.34,1.56,0.64,1) both';
     const panel = document.getElementById('bc-panel');
     panel.classList.add('show');
+    floatBtn.textContent = '✕';
     setTimeout(()=>document.getElementById('bc-input').focus(),100);
-    // Add preview button if not already there
     if(!document.getElementById('bc-tp-preview-btn')){
       const btn = document.createElement('button');
       btn.id='bc-tp-preview-btn';
@@ -2296,10 +2449,14 @@ function checkBcPassword(){
 
 function toggleBcPanel(){
   const panel = document.getElementById('bc-panel');
+  const floatBtn = document.getElementById('bc-float-btn');
   if(panel.classList.contains('show')){
     panel.classList.remove('show');
+    floatBtn.textContent = '📣';
+    floatBtn.style.transform = '';
   } else {
     panel.classList.add('show');
+    floatBtn.textContent = '✕';
     setTimeout(()=>document.getElementById('bc-input').focus(),100);
   }
 }
