@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -742,120 +741,141 @@
         </div>
     </div>
 
-    <!-- REBUTTALS TAB -->
+        <!-- REBUTTALS TAB -->
     <div id="rebuttals-view" class="hidden space-y-4 px-2 pb-20">
+
+        <!-- Header -->
         <div style="border-radius:20px;overflow:hidden;border:2px solid rgba(20,184,166,0.4);box-shadow:0 0 30px rgba(20,184,166,0.1);">
-            <div style="background:linear-gradient(135deg,rgba(20,184,166,0.12),rgba(15,118,110,0.22));padding:20px 24px;position:relative;overflow:hidden;">
+            <div style="background:linear-gradient(135deg,rgba(20,184,166,0.12),rgba(15,118,110,0.22));padding:18px 24px;position:relative;overflow:hidden;">
                 <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(20,184,166,0.04) 10px,rgba(20,184,166,0.04) 20px);"></div>
                 <div style="position:relative;display:flex;align-items:center;gap:14px;">
-                    <div style="width:48px;height:48px;border-radius:14px;background:rgba(20,184,166,0.15);border:1px solid rgba(20,184,166,0.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-comments" style="color:#14b8a6;font-size:1.2rem;"></i></div>
+                    <div style="width:44px;height:44px;border-radius:14px;background:rgba(20,184,166,0.15);border:1px solid rgba(20,184,166,0.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-comments" style="color:#14b8a6;font-size:1.1rem;"></i></div>
                     <div>
-                        <div style="font-family:Orbitron,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.14em;color:#14b8a6;margin-bottom:4px;">Quick Reference</div>
-                        <div style="font-family:Orbitron,sans-serif;font-size:18px;font-weight:900;text-transform:uppercase;color:white;line-height:1.1;">Rebuttals</div>
-                        <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-top:3px;">Tap any objection to reveal your response</div>
+                        <div style="font-family:Orbitron,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.14em;color:#14b8a6;margin-bottom:3px;">Quick Reference</div>
+                        <div style="font-family:Orbitron,sans-serif;font-size:17px;font-weight:900;text-transform:uppercase;color:white;line-height:1.1;">Rebuttals</div>
+                        <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-top:2px;">Select an objection above to see your response</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <!-- Search Box -->
+        <div style="position:relative;">
+            <i class="fas fa-search" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#14b8a6;font-size:13px;pointer-events:none;"></i>
+            <input id="rebuttal-search" type="text" placeholder="Search objections..."
+                oninput="filterRebuttalSearch(this.value)"
+                style="width:100%;background:rgba(20,184,166,0.06);border:1.5px solid rgba(20,184,166,0.3);border-radius:14px;color:white;font-size:13px;font-weight:600;padding:13px 16px 13px 44px;outline:none;font-family:'Inter',sans-serif;box-sizing:border-box;transition:border-color 0.2s,box-shadow 0.2s;"
+                onfocus="this.style.borderColor='#14b8a6';this.style.boxShadow='0 0 0 3px rgba(20,184,166,0.15)'"
+                onblur="this.style.borderColor='rgba(20,184,166,0.3)';this.style.boxShadow='none'"/>
+        </div>
 
-            <!-- 1 -->
-            <div class="rebuttal-card" style="border-left:4px solid #14b8a6;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(20,184,166,0.2);border:1px solid rgba(20,184,166,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#14b8a6;font-family:Orbitron,sans-serif;">1</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(20,184,166,0.1);border:1px solid rgba(20,184,166,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-building" style="color:#14b8a6;font-size:12px;"></i></div>
-                        <div><div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"Which company do you represent?"</div><div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Identity / Legitimacy</div></div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(20,184,166,0.05);border:1px solid rgba(20,184,166,0.18);border-radius:12px;padding:14px 16px;">
+        <!-- Objection Buttons -->
+        <div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#475569;margin-bottom:-4px;">Select Objection</div>
+        <div id="rb-btn-row" style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="rb-btn-0" onclick="showRebuttal(0)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;background:rgba(20,184,166,0.2);border-color:#14b8a6;color:#2dd4bf;">Which Company?</button>
+<button id="rb-btn-1" onclick="showRebuttal(1)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Is This a Scam?</button>
+<button id="rb-btn-2" onclick="showRebuttal(2)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Email Me First</button>
+<button id="rb-btn-3" onclick="showRebuttal(3)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Why Calling?</button>
+<button id="rb-btn-4" onclick="showRebuttal(4)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Are You a Bank?</button>
+<button id="rb-btn-5" onclick="showRebuttal(5)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Bad Credit</button>
+<button id="rb-btn-6" onclick="showRebuttal(6)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Don't Need Loan</button>
+<button id="rb-btn-7" onclick="showRebuttal(7)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Why No Info?</button>
+<button id="rb-btn-8" onclick="showRebuttal(8)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Interest Rate?</button>
+<button id="rb-btn-9" onclick="showRebuttal(9)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Cheaper Option</button>
+<button id="rb-btn-10" onclick="showRebuttal(10)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">How'd You Get My Info?</button>
+<button id="rb-btn-11" onclick="showRebuttal(11)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Company Name?</button>
+<button id="rb-btn-12" onclick="showRebuttal(12)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Type of Loan?</button>
+<button id="rb-btn-13" onclick="showRebuttal(13)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Pre-Qualified?</button>
+<button id="rb-btn-14" onclick="showRebuttal(14)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Didn't Apply</button>
+<button id="rb-btn-15" onclick="showRebuttal(15)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Already Approved?</button>
+<button id="rb-btn-16" onclick="showRebuttal(16)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Where Located?</button>
+<button id="rb-btn-17" onclick="showRebuttal(17)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Business Name?</button>
+<button id="rb-btn-18" onclick="showRebuttal(18)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Don't Know Biz Name</button>
+
+        </div>
+
+        <!-- No results -->
+        <div id="rebuttal-no-results" style="display:none;text-align:center;padding:20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;">
+            <div style="font-size:1.3rem;margin-bottom:6px;">🤔</div>
+            <div style="font-size:12px;font-weight:900;color:#475569;text-transform:uppercase;letter-spacing:0.08em;">No rebuttal found — try different keywords</div>
+        </div>
+
+        <!-- Rebuttal Response Panel -->
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:18px;">
+            <div id="rb-panel-0" style="display:block;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#14b8a6;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#14b8a6;flex-shrink:0;"></div>
+            Identity / Legitimacy
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"Which company do you represent?"</div>
+        </div>
+        <div style="background:rgba(20,184,166,0.05);border:1px solid rgba(20,184,166,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#14b8a6;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"We're the Business Loan Division. We help connect business owners to the right lending programs through our partner network."</p>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 2 -->
-            <div class="rebuttal-card" style="border-left:4px solid #ef4444;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#ef4444;font-family:Orbitron,sans-serif;">2</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-shield-alt" style="color:#ef4444;font-size:12px;"></i></div>
-                        <div><div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"Is this a scam?"</div><div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Trust / Skepticism</div></div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-1" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#ef4444;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#ef4444;flex-shrink:0;"></div>
+            Trust / Skepticism
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"Is this a scam?"</div>
+        </div>
+        <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#ef4444;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"I understand the concern. This is a legitimate outreach from the Business Loan Division in California. We work only with licensed financial institutions."</p>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 3 -->
-            <div class="rebuttal-card" style="border-left:4px solid #f97316;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(249,115,22,0.2);border:1px solid rgba(249,115,22,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#f97316;font-family:Orbitron,sans-serif;">3</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-envelope" style="color:#f97316;font-size:12px;"></i></div>
-                        <div><div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"Can you email me something first?"</div><div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Delay Tactic</div></div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(249,115,22,0.05);border:1px solid rgba(249,115,22,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-2" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#f97316;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#f97316;flex-shrink:0;"></div>
+            Delay Tactic
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"Can you email me something first?"</div>
+        </div>
+        <div style="background:rgba(249,115,22,0.05);border:1px solid rgba(249,115,22,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#f97316;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"Once I connect you with the senior advisor, they can send you all the information directly. I just need to confirm your business details first."</p>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 4 -->
-            <div class="rebuttal-card" style="border-left:4px solid #eab308;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(234,179,8,0.2);border:1px solid rgba(234,179,8,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#eab308;font-family:Orbitron,sans-serif;">4</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-phone-slash" style="color:#eab308;font-size:12px;"></i></div>
-                        <div><div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"Why are you calling and not emailing?"</div><div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Channel Objection</div></div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(234,179,8,0.05);border:1px solid rgba(234,179,8,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-3" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#eab308;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#eab308;flex-shrink:0;"></div>
+            Channel Objection
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"Why are you calling and not emailing?"</div>
+        </div>
+        <div style="background:rgba(234,179,8,0.05);border:1px solid rgba(234,179,8,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#eab308;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"Phone is the quickest way to confirm eligibility and make sure the right person gets connected. It only takes a minute."</p>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 5 -->
-            <div class="rebuttal-card" style="border-left:4px solid #3b82f6;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#3b82f6;font-family:Orbitron,sans-serif;">5</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-university" style="color:#3b82f6;font-size:12px;"></i></div>
-                        <div><div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"Are you a bank?"</div><div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Entity Clarification</div></div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-4" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#3b82f6;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#3b82f6;flex-shrink:0;"></div>
+            Entity Clarification
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"Are you a bank?"</div>
+        </div>
+        <div style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#3b82f6;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"No, we're a direct private lender. We work with business-funding programs that provide working capital and lines of credit directly."</p>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 6 — NEW -->
-            <div class="rebuttal-card" style="border-left:4px solid #a855f7;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(168,85,247,0.2);border:1px solid rgba(168,85,247,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#a855f7;font-family:Orbitron,sans-serif;">6</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-chart-line" style="color:#a855f7;font-size:12px;"></i></div>
-                        <div><div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"My credit score is bad."</div><div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Credit Concern</div></div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-5" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#a855f7;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#a855f7;flex-shrink:0;"></div>
+            Credit Concern
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"My credit score is bad."</div>
+        </div>
+        <div style="background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#a855f7;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"Totally understood — but a lower score doesn't disqualify you. We look at your full picture, not just credit. You may still qualify."</p>
                         <div style="margin-top:10px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:7px;">
@@ -863,20 +883,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;">Go right back to qualifying questions</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 7 — NEW -->
-            <div class="rebuttal-card" style="border-left:4px solid #ec4899;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(236,72,153,0.2);border:1px solid rgba(236,72,153,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#ec4899;font-family:Orbitron,sans-serif;">7</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-hand-paper" style="color:#ec4899;font-size:12px;"></i></div>
-                        <div><div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"I don't need a loan."</div><div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Not Interested</div></div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(236,72,153,0.05);border:1px solid rgba(236,72,153,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-6" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#ec4899;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#ec4899;flex-shrink:0;"></div>
+            Not Interested
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"I don't need a loan."</div>
+        </div>
+        <div style="background:rgba(236,72,153,0.05);border:1px solid rgba(236,72,153,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#ec4899;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"Fair enough. Do you see any cash flow gaps or growth opportunities coming up in the next 3–6 months?"</p>
                         <p style="font-size:12px;font-weight:700;color:#94a3b8;margin-top:8px;line-height:1.6;font-style:italic;">— Wait, let them talk — then: "Sometimes it helps to be pre-qualified so the funding is ready when you need it."</p>
@@ -885,20 +901,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#fbbf24;letter-spacing:0.07em;">See how they respond before moving on</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 8 — NEW -->
-            <div class="rebuttal-card" style="border-left:4px solid #06b6d4;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(6,182,212,0.2);border:1px solid rgba(6,182,212,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#06b6d4;font-family:Orbitron,sans-serif;">8</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-question-circle" style="color:#06b6d4;font-size:12px;"></i></div>
-                        <div><div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"Why don't you have my information?"</div><div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Data / Verification</div></div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(6,182,212,0.05);border:1px solid rgba(6,182,212,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-7" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#06b6d4;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#06b6d4;flex-shrink:0;"></div>
+            Data / Verification
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"Why don't you have my information?"</div>
+        </div>
+        <div style="background:rgba(6,182,212,0.05);border:1px solid rgba(6,182,212,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#06b6d4;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"We pull from multiple sources, but we always verify directly with you to make sure everything is accurate. Once confirmed, we can match you with the right options."</p>
                         <div style="margin-top:10px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:7px;">
@@ -906,20 +918,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;">Go right back to qualifying questions</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 9 — NEW -->
-            <div class="rebuttal-card" style="border-left:4px solid #84cc16;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(132,204,22,0.2);border:1px solid rgba(132,204,22,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#84cc16;font-family:Orbitron,sans-serif;">9</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(132,204,22,0.1);border:1px solid rgba(132,204,22,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-percent" style="color:#84cc16;font-size:12px;"></i></div>
-                        <div><div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"What is the interest rate?"</div><div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Rate Question</div></div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(132,204,22,0.05);border:1px solid rgba(132,204,22,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-8" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#84cc16;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#84cc16;flex-shrink:0;"></div>
+            Rate Question
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"What is the interest rate?"</div>
+        </div>
+        <div style="background:rgba(132,204,22,0.05);border:1px solid rgba(132,204,22,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#84cc16;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"Rates depend on your specific risk and credit profile — but the real question is how fast the funding helps your business grow. Our specialist will go over all of that once we confirm you're pre-qualified."</p>
                         <div style="margin-top:10px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:7px;">
@@ -927,20 +935,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;">Go right back to qualifying questions</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 10 — NEW -->
-            <div class="rebuttal-card" style="border-left:4px solid #f43f5e;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(244,63,94,0.2);border:1px solid rgba(244,63,94,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#f43f5e;font-family:Orbitron,sans-serif;">10</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-tags" style="color:#f43f5e;font-size:12px;"></i></div>
-                        <div><div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"I found a cheaper option elsewhere."</div><div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Competitor / Price</div></div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(244,63,94,0.05);border:1px solid rgba(244,63,94,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-9" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#f43f5e;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#f43f5e;flex-shrink:0;"></div>
+            Competitor / Price
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"I found a cheaper option elsewhere."</div>
+        </div>
+        <div style="background:rgba(244,63,94,0.05);border:1px solid rgba(244,63,94,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#f43f5e;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"Smart to shop around. Just know that cheaper on the surface isn't always better — hidden costs and strict terms add up. Our specialist can do a side-by-side so you're truly getting the best deal. Sound fair?"</p>
                         <div style="margin-top:10px;background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:7px;">
@@ -948,20 +952,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#fbbf24;letter-spacing:0.07em;">Wait for their response</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 11 — NEW -->
-            <div class="rebuttal-card" style="border-left:4px solid #8b5cf6;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#8b5cf6;font-family:Orbitron,sans-serif;">11</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-lock" style="color:#8b5cf6;font-size:12px;"></i></div>
-                        <div><div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"How did you get my information?"</div><div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Privacy Concern</div></div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-10" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#8b5cf6;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#8b5cf6;flex-shrink:0;"></div>
+            Privacy Concern
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"How did you get my information?"</div>
+        </div>
+        <div style="background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#8b5cf6;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"Totally fair question. We work with a network of trusted financial partners — if you've ever inquired about business financing, your info may have been shared to match you with the best options. Your privacy is fully protected."</p>
                         <div style="margin-top:10px;background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:7px;">
@@ -969,24 +969,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#fbbf24;letter-spacing:0.07em;">Wait — then go back to where you left off</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 12 — Company Name Flow -->
-            <div class="rebuttal-card" style="border-left:4px solid #6366f1;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)" style="background:linear-gradient(90deg,rgba(99,102,241,0.06),transparent);">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#6366f1;font-family:Orbitron,sans-serif;">12</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-sitemap" style="color:#818cf8;font-size:12px;"></i></div>
-                        <div>
-                            <div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"What is the name of the company?"</div>
-                            <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Company Identity — Full Flow</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-
-                    <!-- Step-by-step flow -->
+    </div>
+<div id="rb-panel-11" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#6366f1;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#6366f1;flex-shrink:0;"></div>
+            Company Identity — Full Flow
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"What is the name of the company?"</div>
+        </div>
+        <!-- Step-by-step flow -->
                     <div style="display:flex;flex-direction:column;gap:10px;">
 
                         <!-- Step 1 -->
@@ -1057,23 +1049,16 @@
                         </div>
 
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 14 — Type of Loan -->
-            <div class="rebuttal-card" style="border-left:4px solid #10b981;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#10b981;font-family:Orbitron,sans-serif;">13</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-file-invoice-dollar" style="color:#10b981;font-size:12px;"></i></div>
-                        <div>
-                            <div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"What type of loan is this?"</div>
-                            <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Loan Type Inquiry</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-12" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#10b981;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0;"></div>
+            Loan Type Inquiry
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"What type of loan is this?"</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#10b981;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"We deal with lines of credit and working capital. As I mentioned, we are a direct, private lender — these are not government-backed loans. The senior advisor will be able to explain everything in more detail for you. We can go ahead with the questions if you're still interested."</p>
                         <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
@@ -1093,23 +1078,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;">Go right back to qualifying questions</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 13 — Pre-Qualified Questions -->
-            <div class="rebuttal-card" style="border-left:4px solid #f59e0b;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#f59e0b;font-family:Orbitron,sans-serif;">14</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-clipboard-check" style="color:#f59e0b;font-size:12px;"></i></div>
-                        <div>
-                            <div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"If I'm already pre-qualified, why do you need more questions?"</div>
-                            <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Pre-Qualification Pushback</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-13" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#f59e0b;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></div>
+            Pre-Qualification Pushback
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"If I'm already pre-qualified, why do you need more questions?"</div>
+        </div>
+        <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#f59e0b;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"I completely understand how that sounds — pre-qualified simply means you meet the general criteria based on the basic info we have. These few questions make sure we match you with the right program and the lender most likely to approve you. If we skip this step, it could lead to delays or even a mismatch, and I want to make sure you get the best possible offer without wasting your time."</p>
                         <div style="margin-top:10px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:7px;">
@@ -1117,23 +1095,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;">Go right back to qualifying questions</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 15 — I didn't apply -->
-            <div class="rebuttal-card" style="border-left:4px solid #0ea5e9;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(14,165,233,0.2);border:1px solid rgba(14,165,233,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#0ea5e9;font-family:Orbitron,sans-serif;">15</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(14,165,233,0.1);border:1px solid rgba(14,165,233,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-user-times" style="color:#0ea5e9;font-size:12px;"></i></div>
-                        <div>
-                            <div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"I didn't apply for a loan — who applied?"</div>
-                            <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Unsolicited Outreach</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(14,165,233,0.05);border:1px solid rgba(14,165,233,0.18);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+    </div>
+<div id="rb-panel-14" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#0ea5e9;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#0ea5e9;flex-shrink:0;"></div>
+            Unsolicited Outreach
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"I didn't apply for a loan — who applied?"</div>
+        </div>
+        <div style="background:rgba(14,165,233,0.05);border:1px solid rgba(14,165,233,0.18);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#0ea5e9;margin-bottom:2px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Choose Your Response</div>
                         <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
                             <span style="font-size:9px;font-weight:900;text-transform:uppercase;color:#0ea5e9;letter-spacing:0.08em;">Option A</span>
@@ -1159,23 +1130,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;">Go right back to qualifying questions</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 16 — Voicemail said approved -->
-            <div class="rebuttal-card" style="border-left:4px solid #d946ef;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(217,70,239,0.2);border:1px solid rgba(217,70,239,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#d946ef;font-family:Orbitron,sans-serif;">16</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(217,70,239,0.1);border:1px solid rgba(217,70,239,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-voicemail" style="color:#d946ef;font-size:12px;"></i></div>
-                        <div>
-                            <div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"Your voicemail said I'm already approved."</div>
-                            <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Pre-Approval Confusion</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(217,70,239,0.05);border:1px solid rgba(217,70,239,0.18);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+    </div>
+<div id="rb-panel-15" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#d946ef;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#d946ef;flex-shrink:0;"></div>
+            Pre-Approval Confusion
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"Your voicemail said I'm already approved."</div>
+        </div>
+        <div style="background:rgba(217,70,239,0.05);border:1px solid rgba(217,70,239,0.18);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#d946ef;margin-bottom:2px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Choose Your Response</div>
                         <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
                             <span style="font-size:9px;font-weight:900;text-transform:uppercase;color:#d946ef;letter-spacing:0.08em;">Option A</span>
@@ -1194,23 +1158,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;">Go right back to qualifying questions</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 17 — Location -->
-            <div class="rebuttal-card" style="border-left:4px solid #22c55e;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#22c55e;font-family:Orbitron,sans-serif;">17</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-map-marker-alt" style="color:#22c55e;font-size:12px;"></i></div>
-                        <div>
-                            <div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"Where is your company located?"</div>
-                            <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Location Question</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.18);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+    </div>
+<div id="rb-panel-16" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#22c55e;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
+            Location Question
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"Where is your company located?"</div>
+        </div>
+        <div style="background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.18);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#22c55e;margin-bottom:2px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Choose Your Response</div>
                         <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
                             <span style="font-size:9px;font-weight:900;text-transform:uppercase;color:#22c55e;letter-spacing:0.08em;">Option A</span>
@@ -1229,23 +1186,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;">Go right back to qualifying questions</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 18 — What's the name of my business -->
-            <div class="rebuttal-card" style="border-left:4px solid #fb923c;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(251,146,60,0.2);border:1px solid rgba(251,146,60,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#fb923c;font-family:Orbitron,sans-serif;">18</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-store" style="color:#fb923c;font-size:12px;"></i></div>
-                        <div>
-                            <div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"What's the name of my business / how did you approve me without knowing it?"</div>
-                            <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Business Name Challenge</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(251,146,60,0.05);border:1px solid rgba(251,146,60,0.18);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+    </div>
+<div id="rb-panel-17" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#fb923c;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#fb923c;flex-shrink:0;"></div>
+            Business Name Challenge
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"What's the name of my business / how did you approve me without knowing it?"</div>
+        </div>
+        <div style="background:rgba(251,146,60,0.05);border:1px solid rgba(251,146,60,0.18);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#fb923c;margin-bottom:2px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Choose Your Response</div>
                         <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
                             <span style="font-size:9px;font-weight:900;text-transform:uppercase;color:#fb923c;letter-spacing:0.08em;">Option A</span>
@@ -1260,23 +1210,16 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;">Go right back to qualifying questions</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
-
-            <!-- 19 — How come you don't know my business name -->
-            <div class="rebuttal-card" style="border-left:4px solid #38bdf8;">
-                <div class="rebuttal-header" onclick="toggleRebuttal(this)">
-                    <div style="display:flex;align-items:center;gap:12px;"><div style="width:24px;height:24px;border-radius:8px;background:rgba(56,189,248,0.2);border:1px solid rgba(56,189,248,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:900;color:#38bdf8;font-family:Orbitron,sans-serif;">19</div>
-                        <div style="width:32px;height:32px;border-radius:10px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-question" style="color:#38bdf8;font-size:12px;"></i></div>
-                        <div>
-                            <div style="font-size:15px;font-weight:900;color:white;line-height:1.3;">"How come you don't know my business name?"</div>
-                            <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.07em;margin-top:3px;">Missing Business Name</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down rebuttal-arrow"></i>
-                </div>
-                <div class="rebuttal-body"><div class="rebuttal-body-inner">
-                    <div style="background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.18);border-radius:12px;padding:14px 16px;">
+    </div>
+<div id="rb-panel-18" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#38bdf8;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#38bdf8;flex-shrink:0;"></div>
+            Missing Business Name
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"How come you don't know my business name?"</div>
+        </div>
+        <div style="background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.18);border-radius:12px;padding:14px 16px;">
                         <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#38bdf8;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Your Response</div>
                         <p style="font-size:16px;font-weight:700;color:white;font-style:italic;line-height:1.7;">"Your pre-qualification file came through with your contact details, but the business name wasn't included. That's exactly why I'm calling — to get that confirmed so we can move you forward and lock in your funding."</p>
                         <div style="margin-top:10px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:7px;">
@@ -1284,20 +1227,18 @@
                             <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;">Go right back to qualifying questions</span>
                         </div>
                     </div>
-                </div></div>
-            </div>
+    </div>
 
         </div>
 
         <!-- Tip bar -->
         <div style="background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.2);border-radius:14px;padding:14px 18px;display:flex;align-items:flex-start;gap:10px;">
             <i class="fas fa-lightbulb" style="color:#3b82f6;flex-shrink:0;margin-top:2px;font-size:14px;"></i>
-            <p style="font-size:12px;font-weight:700;color:#93c5fd;line-height:1.65;">Stay calm, stay brief. The goal is to keep the call moving — not to argue. Acknowledge their concern, give the short answer, and redirect back to qualification questions immediately.</p>
+            <p style="font-size:12px;font-weight:700;color:#93c5fd;line-height:1.65;">Stay calm, stay brief. Acknowledge their concern, give the short answer, and redirect back to qualification questions immediately.</p>
         </div>
     </div>
 
-
-    <!-- PRANK TAB -->
+<!-- PRANK TAB -->
     <div id="prank-view" class="hidden space-y-5 px-2 pb-20">
         <style>
             @media(min-width:768px){.prank-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}.prank-grid-1{display:grid;grid-template-columns:1fr;gap:16px;}}
@@ -1573,6 +1514,34 @@ function toggleRebuttal(header) {
     document.querySelectorAll('.rebuttal-body.open').forEach(b => b.classList.remove('open'));
     document.querySelectorAll('.rebuttal-arrow.open').forEach(a => a.classList.remove('open'));
     if (!isOpen) { body.classList.add('open'); arrow.classList.add('open'); }
+}
+
+const REBUTTAL_TOTAL = 19;
+
+function showRebuttal(idx) {
+    for (let i = 0; i < REBUTTAL_TOTAL; i++) {
+        const p = document.getElementById('rb-panel-' + i);
+        const b = document.getElementById('rb-btn-' + i);
+        if (p) p.style.display = 'none';
+        if (b) { b.style.background='rgba(255,255,255,0.04)'; b.style.borderColor='rgba(255,255,255,0.1)'; b.style.color='#64748b'; }
+    }
+    const panel = document.getElementById('rb-panel-' + idx);
+    const btn   = document.getElementById('rb-btn-' + idx);
+    if (panel) panel.style.display = 'block';
+    if (btn) { btn.style.background='rgba(20,184,166,0.2)'; btn.style.borderColor='#14b8a6'; btn.style.color='#2dd4bf'; btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
+}
+
+function filterRebuttalSearch(val) {
+    const q = val.trim().toLowerCase();
+    const noResults = document.getElementById('rebuttal-no-results');
+    if (!q) { if (noResults) noResults.style.display='none'; showRebuttal(0); return; }
+    let found = -1;
+    for (let i = 0; i < REBUTTAL_TOTAL; i++) {
+        const p = document.getElementById('rb-panel-' + i);
+        if (p && p.innerText.toLowerCase().includes(q)) { if (found === -1) found = i; }
+    }
+    if (found >= 0) { if (noResults) noResults.style.display='none'; showRebuttal(found); }
+    else { if (noResults) noResults.style.display='block'; for (let i=0;i<REBUTTAL_TOTAL;i++){const p=document.getElementById('rb-panel-'+i);if(p)p.style.display='none';} }
 }
 
 function toggleRevenueDropdown() {
@@ -2157,6 +2126,106 @@ const LEAD_ALERT_QUOTES = [
   "You're not just sending leads, you're building your legacy.",
   "Results speak louder than words. Yours just did.",
   "Stay hungry. Stay focused. The board is watching.",
+
+  // 100 Call Center Specific Quotes
+  "Every dial is a chance to change someone's business forever.",
+  "The best call center reps don't just talk — they listen, qualify, and deliver.",
+  "Rejection is just redirection — the next call is your transfer.",
+  "You're not just making calls, you're opening doors for business owners.",
+  "A great rep turns a cold call into a warm transfer every time.",
+  "The phone is your tool, your voice is your power — use both.",
+  "Every no gets you closer to the yes that matters.",
+  "Top reps don't hope for good calls — they create them.",
+  "Your mindset before the dial determines the outcome after it.",
+  "One qualified transfer can change a business owner's life — that's your job.",
+  "The floor is only as good as its hardest workers — be one of them.",
+  "Consistency beats talent when talent takes breaks.",
+  "You have 60 seconds to earn their attention — make it count.",
+  "A transfer on the board means a business got a lifeline today.",
+  "Call center excellence is built rep by rep, lead by lead.",
+  "The best time to make your next call is right now.",
+  "Champions dial through the noise and deliver anyway.",
+  "Your voice on that phone is the difference between a closed and open door.",
+  "Quality calls + consistent effort = a leaderboard with your name at the top.",
+  "Don't count your calls — make your calls count.",
+  "Every qualified transfer is a win for you AND the business owner.",
+  "The reps who dominate are the ones who don't wait for motivation.",
+  "Your script is a guide — your confidence is the closer.",
+  "Handle the objection, redirect the conversation, lock in the transfer.",
+  "A rep who never gives up is a rep who always gets results.",
+  "The floor rewards the ones who show up and push through.",
+  "One more call could be your best transfer of the day.",
+  "Skill gets you started, persistence keeps you going.",
+  "The difference between good and great is one more dial.",
+  "Every call is a new opportunity — don't carry the last one.",
+  "Build your rhythm: qualify, connect, transfer, repeat.",
+  "Your results today are a direct reflection of your effort right now.",
+  "Stay in your lane, keep your energy up, and the board will reflect it.",
+  "Objections are just questions waiting to be answered — answer them.",
+  "The best reps treat every call like it's their most important one.",
+  "You're building a skill set that pays off every single day.",
+  "Speed matters — get to the transfer before they change their mind.",
+  "Every rep who hit their goal today started with one lead.",
+  "The harder you work now, the easier it gets later.",
+  "Your transfers today are tomorrow's success stories.",
+  "You're not just hitting numbers — you're helping businesses get funded.",
+  "A focused rep on a good run is unstoppable — stay focused.",
+  "When the call gets tough, that's when the real rep shows up.",
+  "Trust your training, trust your script, trust your ability.",
+  "Momentum is your best friend on the floor — protect it.",
+  "Every transfer you send represents a business owner who needed you.",
+  "The rep who qualifies fast and transfers clean always wins.",
+  "Your energy through the phone is your greatest qualifying tool.",
+  "Top performers don't take bad calls personally — they take the next one seriously.",
+  "The leaderboard doesn't lie — effort shows up every time.",
+  "Each transfer is proof that your work matters and your calls land.",
+  "Stay sharp, stay focused, and the floor will notice.",
+  "Great call center reps are made in the moments others give up.",
+  "You earn your spot on the board one qualified transfer at a time.",
+  "The call you're about to make could be your best one today.",
+  "Real reps finish what they start — start a transfer, finish it.",
+  "Your tone, your pace, your confidence — that's what gets the transfer.",
+  "The best qualifying happens when you're genuinely curious about their business.",
+  "Transfers stack up when you stop making excuses and start making calls.",
+  "You belong on this floor — your results prove it every shift.",
+  "Stay dialed in — the leads are there for the reps who want them.",
+  "A great transfer starts with a great opener — nail it every time.",
+  "You're one call away from turning this shift around.",
+  "The reps who lead the board all share one trait: they never stopped.",
+  "Your job is simple: qualify fast, transfer confidently, reset, repeat.",
+  "When you pick up that phone, bring everything you've got.",
+  "The floor has energy — yours is the one that sets the pace.",
+  "Business owners need funding. You connect them. That's meaningful work.",
+  "Top of the leaderboard isn't luck — it's one transfer at a time.",
+  "Don't dial just to dial — dial with purpose and watch your numbers rise.",
+  "Confidence on the call starts with believing in what you're offering.",
+  "You're not interrupting their day — you're potentially changing their business.",
+  "A rep with great energy keeps prospects on the line and gets the transfer.",
+  "The fastest way to improve your numbers is to improve your next call.",
+  "Work smart, work fast, and the leaderboard takes care of itself.",
+  "Your best call today is the one you're about to make.",
+  "When the call gets hard, lean into your training — it works.",
+  "One focused hour on this floor can change your whole day.",
+  "Make the call. Qualify the lead. Send the transfer. That's the formula.",
+  "The reps who hit their numbers do one thing differently — they don't stop.",
+  "Your commitment to quality transfers makes this floor better.",
+  "Dial with intention, qualify with skill, transfer with confidence.",
+  "Every single call has potential — you decide how much.",
+  "The clock is running. Your competition is dialing. Are you?",
+  "Top reps know this: every objection handled is a transfer earned.",
+  "One more transfer and you're telling the whole floor what you're made of.",
+  "Your attitude on this call will determine the outcome — choose well.",
+  "When you send that transfer, someone's business just got a real shot.",
+  "Keep showing up, keep dialing, keep delivering — that's how legends are built.",
+  "Real call center grind looks like: dial, qualify, transfer, repeat. All day.",
+  "Don't let one hard call slow down ten great ones.",
+  "The rep who recovers fastest is always the one who leads the board.",
+  "Your confidence is your most powerful qualifying tool — use it.",
+  "Every transfer you lock in today is a win you earned with your skill.",
+  "Reps who dominate know this: momentum beats motivation every time.",
+  "Make your next call your best call — it's always possible.",
+  "This floor is full of opportunity — and you're right in the middle of it.",
+  "You don't need a perfect day. You need consistent transfers. Go get them.",
   // 30 Famous Quotes
   "The secret of getting ahead is getting started. — Mark Twain",
   "It always seems impossible until it's done. — Nelson Mandela",
@@ -2255,7 +2324,58 @@ const LEAD_ALERT_MESSAGES = [
   "Another proof point that you belong at the top! 🔝",
   "You're not on a roll — you ARE the roll! 🎲",
   "Smooth operator — that transfer landed perfectly! 🎶",
-  "The scoreboard agrees: you're having a great day! 🗓️"
+  "The scoreboard agrees: you're having a great day! 🗓️",
+  // 100 Call Center Specific - Regular Lead Messages
+  "Dialed in and delivered — that transfer is officially on the board! 📞",
+  "You just turned a conversation into a transfer — that's the skill! 🎯",
+  "Phone down, lead sent — now reset and go get another one! 🔄",
+  "That's what qualifying looks like! Transfer locked and loaded! ✅",
+  "Another business owner connected — because of YOU! 💼",
+  "You handled the objection AND got the transfer — that's elite! 🏆",
+  "Transfer sent! The floor just felt that energy! ⚡",
+  "That's how you work a call from open to close — beautiful! 🎶",
+  "The script worked because YOU worked it! Transfer confirmed! 📋",
+  "Objection handled, redirect done, transfer sent — textbook! 📖",
+  "You didn't just dial — you delivered. Lead on the board! 🚀",
+  "That business owner is getting funded because you stayed on the call! 💰",
+  "Clean qualifier, smooth transfer — the board has your name! 🌟",
+  "You just showed the floor what a great call looks like! 👀",
+  "Another one sent! Your phone is your weapon and you're using it! ⚔️",
+  "That transfer just wrote your name in today's story — keep going! ✍️",
+  "Call center excellence — transfer confirmed, rep on fire! 🔥",
+  "You didn't let go of that call and the lead proves it! 💪",
+  "The leaderboard is loving you right now — keep feeding it! 📈",
+  "From dial to transfer in record time — that's your speed! ⏱️",
+  "Every time you send a transfer, a business gets a real opportunity! 🏢",
+  "You stayed calm, you qualified, you transferred — that's the formula! 🧪",
+  "Rep on a tear right now! Transfer after transfer! 🌊",
+  "You made that call look easy — it's because you're good at this! 😎",
+  "Transfer confirmed! The floor is taking notes on how you do it! 📝",
+  "You qualify fast and transfer clean — that's a top rep right there! 👑",
+  "Another lead hits! Your energy through the phone is unmatched! 📡",
+  "You turned skepticism into interest and interest into a transfer! 🔄",
+  "The board doesn't update itself — you just did it again! 💻",
+  "That call had everything: rapport, qualification, and a clean close! 🎯",
+  "Rep who doesn't stop = board that doesn't slow down! Keep it rolling! 🎲",
+  "You just proved why you're on this floor — transfer locked in! 🔐",
+  "Another transfer in! The business owners on your list are lucky! 🍀",
+  "Zero hesitation, full commitment — that transfer landed perfectly! 🎯",
+  "The phones are ringing in your favor today — answer that energy! 📲",
+  "Transfer sent to the advisors — your job done, now go get the next one! ✔️",
+  "You read that call perfectly and delivered the transfer! Genius! 🧠",
+  "Your pace on the floor is setting the standard today! 🏃",
+  "That rebuttal was smooth and the transfer was smoother! 🌊",
+  "Another notch! The board is proof your effort isn't going unnoticed! 🗓️",
+  "You pushed through and sent the transfer — that's what champions do! 🏅",
+  "Lead logged! The floor is cheering for you right now! 🎉",
+  "That call started cold and ended hot — you made that happen! 🔥",
+  "You didn't rush the call and you didn't drag it — perfect execution! ⚖️",
+  "Transfer confirmed! Your training is showing up in real time! 📚",
+  "Another business owner is one step closer to funding because of you! 🏦",
+  "You got the transfer without breaking stride — absolute pro! 👔",
+  "The qualifying was tight and the transfer was right — good work! ✅",
+  "Your consistency on the floor is what top reps are built on! 🏗️",
+  "Transfer hit the board — your name is echoing through the floor! 📣"
 ];
 
 const FIRST_LEAD_MESSAGES = [
@@ -2288,7 +2408,104 @@ const FIRST_LEAD_MESSAGES = [
   "Board is open! First lead just dropped — who's adding theirs?! 🙌",
   "One on the day! Small start, big finish — let's go! 🌅",
   "First lead = first step to the top today. Keep climbing! 🧗",
-  "You broke the ice! First transfer is done — now flood the board! 🌊"
+  "You broke the ice! First transfer is done — now flood the board! 🌊",
+  // 100 Call Center Specific - First Lead Messages
+  "First transfer of the day — you broke the seal! Now stack them! 🔓",
+  "Day officially started! First lead on the board from YOU! 📞",
+  "First dial to first transfer — that's how you open a shift! 🌅",
+  "You're on the board before most people are even warmed up! ⚡",
+  "First transfer in — the floor just woke up and it's because of you! 🔔",
+  "Day one lead secured! This shift just got real! 💼",
+  "First qualifier of the day goes to you — keep that energy alive! 🏆",
+  "You didn't let the morning slow you down — first transfer confirmed! ☀️",
+  "Off zero! First lead of the day belongs to the rep who didn't wait! 🏃",
+  "First transfer sent — you just set the pace for the whole floor! 🎯",
+  "The scoreboard just opened and your name is already on it! 📋",
+  "You couldn't wait to get started — first transfer proves it! 🔥",
+  "First one in is the hardest — and you just made it look easy! 💪",
+  "That first lead of the day changes everything — now don't stop! 📈",
+  "You came here to work and the board already knows it — first lead in! 🎉",
+  "First transfer of the shift goes to the rep who picks up and dials first! 📲",
+  "Zero to one — you just crossed the hardest line of the day! 🚧",
+  "First lead secured! The rest of the floor is watching now! 👀",
+  "You started your day the right way — first transfer confirmed! ✅",
+  "First qualifier of the shift! Now double it, then triple it! 🔢",
+  "First transfer of the day logged! Your shift has officially begun! 🕐",
+  "That first lead always feels good — remember this feeling all day! 💡",
+  "First one on the board and the shift isn't even warmed up yet! 🌡️",
+  "You're already ahead of where you were yesterday — first lead in! 📊",
+  "First transfer of the day means momentum is officially yours now! 🏄",
+  "Board opened! First name up? Yours. Now let's go! 🏁",
+  "You dialed, you qualified, you transferred — all before most reps settle in! ⏰",
+  "First transfer in the books — now your only job is to add more! ➕",
+  "You started strong and that's exactly how champions get built! 💎",
+  "First lead of the day is yours — now make it the first of many! 🌟",
+  "First transfer confirmed! The advisors love hearing your name already! 📡",
+  "You opened the board — now let's fill it! First lead done! 🖊️",
+  "Starting the day right takes discipline — you just showed you have it! 🧠",
+  "Your first transfer today is proof you came here ready to work! 🔑",
+  "First transfer sent — you just set the tone for your entire shift! 🎶",
+  "Zero to hero in record time — first lead locked and confirmed! 🦸",
+  "First transfer of the day! Your call started someone's funding journey! 🏦",
+  "The board has a new name up first — and it's yours! Own it! 👑",
+  "First one down before the shift gets going — that's called hunger! 🍽️",
+  "You didn't need a warmup — you came ready! First transfer in! 💥",
+  "First transfer confirmed! The floor energy just shifted in your direction! 🌬️",
+  "You're always the rep who starts fast — and today proves it again! 🚀",
+  "First lead of the day goes to the rep who doesn't hit snooze on their goals! ⏰",
+  "One transfer down, the rest of the day to build on it — let's go! 🧱",
+  "First transfer in = you just told today who's running things! 😤",
+  "The board is live and you put the first mark on it — beautiful! 🖼️",
+  "First lead secured! This is going to be a good shift — keep going! 🌈",
+  "You didn't wait for the floor to heat up — you heated it yourself! 🌡️",
+  "First transfer of the day confirmed! Your advisors are already impressed! 🎖️",
+  "First lead in and the day is young — imagine where this ends up! 🔭"
+];
+
+const TWO_LEAD_MESSAGES = [
+  "TWO on the board! You're not slowing down — double confirmed! 🔥🔥",
+  "2 transfers in! You just told the floor you mean business today! 💼",
+  "Back to back! Second transfer locked — the rhythm is yours now! 🎶",
+  "Two and climbing! The advisors are loving your name right now! 📞",
+  "Second transfer of the day — you're already in beast mode! 🦁",
+  "2 leads down and the shift is wide open! Keep stacking! 📈",
+  "Double digits on the way — second transfer confirmed! ✌️",
+  "Two transfers! You're building something special today! 🏗️",
+  "Second one in! You went from first lead to momentum — fast! ⚡",
+  "2 on the board! You're showing the floor how it's done! 👀",
+  "Back-to-back transfers — that's the mark of a rep locked in! 🔐",
+  "Two and going! The leaderboard is paying attention to you! 📋",
+  "Second transfer secured! The floor has noticed your pace! 👁️",
+  "2 leads confirmed! You're officially on a run — don't break it! 🏃",
+  "Double transfer day! You came here to work and work you did! 💪",
+  "Two on the board — your shift is building beautifully! 🌅",
+  "Second one sent! Your confidence on the call is showing! 🎯",
+  "2 transfers and climbing — the advisors know your name today! 🏆",
+  "Back-to-back! You found your rhythm and you're not letting go! 🎵",
+  "Two leads in — you're showing everyone what consistent looks like! 🔄"
+];
+
+const THREE_PLUS_LEAD_MESSAGES = [
+  "THREE or more! You're officially dominating this shift! 👑",
+  "3+ transfers and you're not done yet! This is your floor today! 🏆",
+  "Multiple transfers locked in — you're running the board right now! 📊",
+  "3 or more leads! Elite rep behavior — pure and simple! 💎",
+  "You're not just on the board — you're leading it! Keep going! 🥇",
+  "Three-plus and counting! The floor is watching a master at work! 🎓",
+  "Multiple transfers in! You've moved from rep to LEGEND today! 🌟",
+  "3+ on the board! Call center greatness is happening right now! 🔥",
+  "You're stacking transfers like a pro — because you ARE one! 💼",
+  "Three or more leads today? The leaderboard has your name LOUD! 📣",
+  "Multiple transfers locked! You came, you dialed, you conquered! ⚔️",
+  "3+ confirmed! You've set the pace for the entire floor today! 🏁",
+  "You're in elite territory now — three or more transfers and climbing! 🧗",
+  "Multiple transfers on the board — your work ethic is unmatched! 🔋",
+  "3 or more leads! The advisors can't get enough of your name today! 📡",
+  "You're putting on a clinic! Three-plus transfers and still going! 🎪",
+  "Three or more! You turned today's shift into something memorable! 🎬",
+  "Multiple transfers in! You've earned every single one with skill! 🏅",
+  "3+ on the board — you belong at the top and you're proving it! ⬆️",
+  "Three-plus transfers! The floor knows, the board shows, you GLOW! ✨"
 ];
 
 let prevLeadCounts = {};
@@ -2309,7 +2526,7 @@ function checkLeadAlerts(newAgents) {
   let snapshot = Object.keys(tracker).length ? tracker : {};
   if (!Object.keys(snapshot).length) {
     newAgents.forEach(a => {
-      if ((a.team || getTeam(a.name)) === 'BB') snapshot[a.name] = a.dailyLeads || 0;
+      if ((a.team || getTeam(a.name)) === 'PR') snapshot[a.name] = a.dailyLeads || 0;
     });
   }
   if (!Object.keys(snapshot).length) return;
@@ -2321,23 +2538,35 @@ function checkLeadAlerts(newAgents) {
     return;
   }
 
-  // Find reps with new leads — track if it's their first of the day
+  // Find reps with new leads
   const newReps = [];
   Object.entries(snapshot).forEach(([name, count]) => {
-    const prev = prevLeadCounts[name] ?? 0;
-    if (count > prev) newReps.push({ name, count, isFirst: prev === 0 });
-    prevLeadCounts[name] = count;
+    const c = Number(count) || 0;
+    const prev = Number(prevLeadCounts[name]) || 0;
+    if (c > prev) newReps.push({ name, count: c, isFirst: prev === 0 });
+    prevLeadCounts[name] = c;
   });
   if (!newReps.length) return;
 
-  // Always show immediately — replaces any existing banner
   if (newReps.length === 1) {
-    const { name, isFirst } = newReps[0];
+    const { name, count, isFirst } = newReps[0];
     const firstName = getFirstName(name);
     const quote = LEAD_ALERT_QUOTES[Math.floor(Math.random() * LEAD_ALERT_QUOTES.length)];
     if (isFirst) {
       const msg = FIRST_LEAD_MESSAGES[Math.floor(Math.random() * FIRST_LEAD_MESSAGES.length)];
       _renderAlert({ icon: '🥇', name: firstName + ' is on the board!', msg, quote, firstLead: true });
+    } else if (count === 2) {
+      const msg = TWO_LEAD_MESSAGES[Math.floor(Math.random() * TWO_LEAD_MESSAGES.length)];
+      _renderAlert({ icon: '✌️', name: firstName + ' with 2 leads!', msg, quote, firstLead: false });
+    } else if (count >= 3 && count <= 5) {
+      const msg = THREE_PLUS_LEAD_MESSAGES[Math.floor(Math.random() * THREE_PLUS_LEAD_MESSAGES.length)];
+      _renderAlert({ icon: '🔥', name: firstName + ' — ' + count + ' leads today!', msg, quote, firstLead: false });
+    } else if (count >= 6 && count < 12) {
+      const msg = THREE_PLUS_LEAD_MESSAGES[Math.floor(Math.random() * THREE_PLUS_LEAD_MESSAGES.length)];
+      _renderAlert({ icon: '💥', name: firstName + ' is on FIRE — ' + count + ' leads!', msg, quote, firstLead: false });
+    } else if (count >= 12) {
+      const msg = THREE_PLUS_LEAD_MESSAGES[Math.floor(Math.random() * THREE_PLUS_LEAD_MESSAGES.length)];
+      _renderAlert({ icon: '👑', name: firstName + ' — MASTER STATUS! ' + count + ' leads!', msg, quote, firstLead: true });
     } else {
       const msg = LEAD_ALERT_MESSAGES[Math.floor(Math.random() * LEAD_ALERT_MESSAGES.length)];
       _renderAlert({ icon: '🔥', name: 'Good Job, ' + firstName + '!', msg, quote, firstLead: false });
