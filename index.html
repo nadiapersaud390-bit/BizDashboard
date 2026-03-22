@@ -233,6 +233,12 @@
   <div class="biz-login-hint">Agents — enter your Ytel ID only<br>Admin — enter 0000 then your password</div>
 </div>
 
+<!-- ── BIZ LOGOUT BUTTON (hidden until logged in) ── -->
+<button id="biz-logout-btn" onclick="bizLogout()" style="display:none;position:fixed;bottom:80px;right:16px;z-index:9999;padding:8px 16px;border-radius:20px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.1);color:#f87171;font-family:'Orbitron',sans-serif;font-size:0.6rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(239,68,68,0.1)'">
+  <i class="fas fa-sign-out-alt" style="margin-right:4px;"></i>LOGOUT
+</button>
+
+
 
 <!-- ===== FIREBASE SDK ===== -->
 <script type="module">
@@ -2962,7 +2968,7 @@ setInterval(checkTopPerformerSchedule, 60000);
 // ══════════════════════════════════════════════
 //  BIZ/ATL LOGIN + ATTENDANCE — BB TEAM
 // ══════════════════════════════════════════════
-const BIZ_BRIDGE_URL = 'https://script.google.com/macros/s/AKfycbwLPuE28XKvSF8yf603n_xFML9SVfAG9w4cudwdjorrokAdoU7EY8WZc_v4GRYw2ACWQQ/exec';
+const BIZ_BRIDGE_URL = 'https://script.google.com/macros/s/AKfycby7tt8Dx-hAZ9-TlQQ6ZNTrfmlL9S3q7W3LfXd4b1XyDllAaa9lg2G6-ZLmpnE-_af98A/exec';
 const BIZ_TEAM       = 'BB';
 const BIZ_ADMIN_PASS = 'bizadmin2025';
 
@@ -3009,6 +3015,23 @@ function getBizAttStatus(shift) {
   }catch(e){return 'P';}
 }
 
+function bizLogout() {
+  // Clear session
+  const today = new Date().toLocaleDateString('en-CA', {timeZone:'America/Guyana'});
+  sessionStorage.removeItem('biz_login_'+today);
+  // Show login overlay again
+  document.getElementById('biz-login-overlay').classList.remove('hidden');
+  document.getElementById('biz-id-input').value = '';
+  document.getElementById('biz-pw-input').value = '';
+  document.getElementById('biz-pw-wrap').style.display = 'none';
+  document.getElementById('biz-err').textContent = '';
+  document.getElementById('biz-login-btn').innerHTML = '<i class="fas fa-sign-in-alt" style="margin-right:8px;"></i>ENTER DASHBOARD';
+  document.getElementById('biz-login-btn').disabled = false;
+  document.getElementById('biz-logout-btn').style.display = 'none';
+  document.body.style.overflow = 'hidden';
+  setTimeout(()=>document.getElementById('biz-id-input').focus(), 100);
+}
+
 function bizOnIdInput(val) {
   document.getElementById('biz-pw-wrap').style.display = val === '0000' ? 'block' : 'none';
   document.getElementById('biz-err').textContent = '';
@@ -3032,6 +3055,9 @@ function bizShowOverlay() {
 function bizHideOverlay() {
   const el = document.getElementById('biz-login-overlay');
   if(el) { el.classList.add('hidden'); document.body.style.overflow=''; }
+  // Show logout button
+  const lb = document.getElementById('biz-logout-btn');
+  if(lb) lb.style.display = '';
 }
 
 function bizSetWelcome(name, detail, statusText, statusColor) {
@@ -3172,6 +3198,9 @@ async function bizLogin() {
       // Hide overlay — valid session
       document.getElementById('biz-login-overlay').classList.add('hidden');
       document.body.style.overflow = '';
+      // Show logout button
+      const lb = document.getElementById('biz-logout-btn');
+      if(lb) lb.style.display = '';
     } catch(e) { /* show login */ }
   }
   // No else needed — overlay is visible by default
