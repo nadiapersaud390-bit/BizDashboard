@@ -2801,7 +2801,17 @@ function dismissLeadAlert() {
 }
 
 updateDashboard();
-// No polling — leaderboard updates on CSV upload
+
+// ── Live update: when admin uploads CSV on any device,
+//    every open tab/window sees the leaderboard refresh instantly ──
+window.addEventListener('storage', function(e) {
+  if (e.key && e.key.startsWith('biz_csv_')) {
+    loadAgentsFromStorage();
+    checkLeadAlerts(agents);
+    render();
+    renderDaySubTabs();
+  }
+});
 
 // ===== BROADCAST SYSTEM =====
 const BC_ADMIN_PASSWORD = 'bizadmin2025'; // 🔑 Change this to your secret password
@@ -3406,50 +3416,16 @@ function handleCsvFile(file) {
 }
 
 function parseCsv(text) {
-  // Get roster names from bizRoster (already loaded at login)
-  const rosterNames = (bizRoster || []).map(a => normalizeName(a.name));
+  // Match by Agent Id (exact) — automatically excludes PH and anyone not on BIZ roster
+  const rosterById = {};
+  (bizRoster || []).forEach(a => { rosterById[String(a.userId).trim()] = a; });
 
-  // Parse CSV rows
-  const lines = text.split(/
-?
-/).filter(l => l.trim());
-  if (lines.length < 2) { showCsvStatus('❌ CSV appears empty', 'error'); return; }
+  // Strip BOM
+  text = text.replace(/^\uFEFF/, '');
+  const rawLines = text.split(/\r?\n/).filter(l => l.trim());
+  if (rawLines.length < 3) { showCsvStatus('❌ CSV appears empty or too short', 'error'); return; }
 
-  // Detect header row
-  const header = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,'').toLowerCase());
-
-  // Find columns — handle various Ytel export column names
-  const col = name => {
-    const variants = {
-      agent:    ['agent','agent name','rep','rep name','user','username'],
-      duration: ['duration','call duration','duration (sec)','seconds','talk time','billsec'],
-      type:     ['call type','type','direction','calltype'],
-      status:   ['status','disposition','call status'],
-    };
-    const opts = variants[name] || [name];
-    for (const o of opts) {
-      const idx = header.indexOf(o);
-      if (idx !== -1) return idx;
-    }
-    // partial match
-    for (const o of opts) {
-      const idx = header.findIndex(h => h.includes(o));
-      if (idx !== -1) return idx;
-    }
-    return -1;
-  };
-
-  const agentCol    = col('agent');
-  const durationCol = col('duration');
-
-  if (agentCol === -1 || durationCol === -1) {
-    showCsvStatus('❌ Cannot find Agent or Duration columns in this CSV. Headers found: ' + header.join(', '), 'error');
-    return;
-  }
-
-  // Parse each data row
   function parseRow(line) {
-    // Handle quoted fields
     const result = [];
     let cur = '', inQ = false;
     for (let i = 0; i < line.length; i++) {
@@ -3462,56 +3438,73 @@ function parseCsv(text) {
     return result;
   }
 
-  // Count qualified leads per agent
+  // Find the real header row (Ytel exports have a title row first)
+  let headerIdx = -1;
+  for (let i = 0; i < Math.min(5, rawLines.length); i++) {
+    if (rawLines[i].toLowerCase().includes('agent id')) { headerIdx = i; break; }
+  }
+  if (headerIdx === -1) { showCsvStatus('❌ Cannot find "Agent Id" header row in this CSV', 'error'); return; }
+
+  const header      = parseRow(rawLines[headerIdx]).map(h => h.replace(/^"|"$/g,'').toLowerCase().trim());
+  const agentIdCol  = header.indexOf('agent id');
+  const durationCol = header.indexOf('duration');
+
+  if (agentIdCol === -1 || durationCol === -1) {
+    showCsvStatus('❌ Missing "Agent Id" or "Duration" column. Found: ' + header.join(', '), 'error');
+    return;
+  }
+
   const leadMap = {};
-  for (let i = 1; i < lines.length; i++) {
-    const row = parseRow(lines[i]);
+  let skippedShort = 0, skippedNotOnRoster = 0;
+
+  for (let i = headerIdx + 1; i < rawLines.length; i++) {
+    const row      = parseRow(rawLines[i]);
     if (row.length < 2) continue;
-    const rawAgent   = (row[agentCol]   || '').trim().replace(/^"|"$/g,'');
-    const rawDur     = (row[durationCol]|| '').trim().replace(/^"|"$/g,'');
-    if (!rawAgent || !rawDur) continue;
+    const agentId  = (row[agentIdCol]  || '').replace(/^"|"$/g,'').trim();
+    const rawDur   = (row[durationCol] || '').replace(/^"|"$/g,'').trim();
+    if (!agentId || rawDur === '') continue;
 
     const durSec = parseDuration(rawDur);
-    if (durSec < MIN_DURATION_SEC) continue; // filter < 120s
+    if (durSec < MIN_DURATION_SEC) { skippedShort++; continue; }
 
-    const normed = normalizeName(rawAgent);
-    // Must match someone on roster
-    const match = rosterNames.find(r => r === normed || r.includes(normed) || normed.includes(r));
-    if (!match) continue;
+    const rosterAgent = rosterById[agentId];
+    if (!rosterAgent) { skippedNotOnRoster++; continue; } // PH / ATL / anyone not on BIZ roster
 
-    // Find the original roster agent for proper name + team
-    const rosterAgent = (bizRoster || []).find(a => normalizeName(a.name) === match);
-    const agentName = rosterAgent ? rosterAgent.name : rawAgent;
-    const team      = rosterAgent ? rosterAgent.team : getTeam(rawAgent);
-
-    if (!leadMap[agentName]) leadMap[agentName] = { name: agentName, team, dailyLeads: 0 };
-    leadMap[agentName].dailyLeads++;
+    const key = rosterAgent.userId;
+    if (!leadMap[key]) leadMap[key] = { name: rosterAgent.name, team: rosterAgent.team, userId: rosterAgent.userId, dailyLeads: 0 };
+    leadMap[key].dailyLeads++;
   }
 
   csvParsedRows = Object.values(leadMap).sort((a,b) => b.dailyLeads - a.dailyLeads);
 
   if (!csvParsedRows.length) {
-    showCsvStatus('⚠️ No qualifying leads found (duration ≥ 120s, roster match). Check the CSV format.', 'warn');
+    showCsvStatus('⚠️ No qualifying leads found — ' + skippedShort + ' rows under 120s, ' + skippedNotOnRoster + ' not on roster', 'warn');
     document.getElementById('csv-preview').classList.add('hidden');
     return;
   }
 
-  const total = csvParsedRows.reduce((s,a)=>s+a.dailyLeads,0);
+  const total = csvParsedRows.reduce((s,a) => s + a.dailyLeads, 0);
   document.getElementById('csv-preview-count').textContent = total + ' leads · ' + csvParsedRows.length + ' agents';
   document.getElementById('csv-preview-table').innerHTML = csvParsedRows.map(a =>
     '<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 14px;">'
     + '<div style="font-size:12px;font-weight:900;color:white;">' + escapeHtml(a.name)
-    + ' <span style="font-size:9px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:1px 5px;color:'+(a.team==='BB'?'#c084fc':'#a78bfa')+';font-weight:900;margin-left:4px;">'+(a.team==='BB'?'BERB':'PROV')+'</span></div>'
+    + ' <span style="font-size:9px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:1px 5px;color:'
+    + (a.team==='BB'?'#c084fc':'#a78bfa') + ';font-weight:900;margin-left:4px;">'
+    + (a.team==='BB'?'BERB':'PROV') + '</span></div>'
     + '<div style="font-size:18px;font-weight:900;color:#f59e0b;">' + a.dailyLeads + '</div>'
     + '</div>'
   ).join('');
 
   document.getElementById('csv-preview').classList.remove('hidden');
-  showCsvStatus('✅ ' + total + ' qualifying leads parsed from ' + csvParsedRows.length + ' agents — review and publish', 'success');
+  showCsvStatus(
+    '✅ ' + total + ' leads · ' + csvParsedRows.length + ' agents on roster'
+    + (skippedShort     ? ' · ' + skippedShort     + ' rows under 120s skipped' : '')
+    + (skippedNotOnRoster ? ' · ' + skippedNotOnRoster + ' non-roster rows ignored' : ''),
+    'success'
+  );
 }
 
 function parseDuration(raw) {
-  // Handles: "125", "2:05", "00:02:05"
   raw = String(raw).trim();
   if (/^\d+$/.test(raw)) return parseInt(raw);
   const parts = raw.split(':').map(Number);
@@ -3523,6 +3516,7 @@ function parseDuration(raw) {
 function normalizeName(name) {
   return String(name||'').toLowerCase().replace(/\s+/g,' ').trim();
 }
+
 
 function commitCsvUpload() {
   if (!csvParsedRows.length) return;
