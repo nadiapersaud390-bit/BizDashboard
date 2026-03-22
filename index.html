@@ -3302,7 +3302,7 @@ async function bizLogin() {
     }
 
     // Save session
-    const sessionData = {userId:String(idVal),name:agent.name,status:attStatus,team:BIZ_TEAM};
+    const sessionData = {userId:String(idVal),name:agent.name,status:attStatus,team:BIZ_TEAM,isAdmin:false};
     sessionStorage.setItem(key, JSON.stringify(sessionData));
     if(window._fbWriteSession) window._fbWriteSession(String(idVal),sessionData).catch(()=>{});
 
@@ -3349,7 +3349,10 @@ async function bizLogin() {
           if(r&&r.success) bizRoster = r.agents||[];
         }).catch(()=>{});
       } else if(s.userId) {
-        // Reload roster for regular agents too
+        // Ensure admin tab stays hidden for agents
+        const adminTab = document.getElementById('tab-admin');
+        if(adminTab) adminTab.style.display = 'none';
+        // Reload roster for regular agents
         bizCallBridge({action:'getRoster',team:BIZ_TEAM}).then(r=>{
           if(r&&r.success) bizRoster = r.agents||[];
         }).catch(()=>{});
