@@ -184,6 +184,28 @@
         .lab-close{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:white;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0;transition:background 0.2s;}
         .lab-close:hover{background:rgba(0,0,0,0.5);}
     </style>
+    <style>
+        /* ── BIZ/ATL LOGIN OVERLAY ── */
+        #biz-login-overlay{position:fixed;inset:0;background:#020617;z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;}
+        #biz-login-overlay.hidden{display:none;}
+        .biz-login-box{width:100%;max-width:360px;text-align:center;}
+        .biz-login-logo{font-family:'Orbitron',sans-serif;font-size:clamp(1.6rem,6vw,2.4rem);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#3b82f6);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:loginShine 3s linear infinite;margin-bottom:6px;}
+        @keyframes loginShine{0%{background-position:0%}100%{background-position:200%}}
+        .biz-login-sub{font-size:0.7rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#334155;margin-bottom:32px;}
+        .biz-id-input{width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);border-radius:16px;color:white;font-size:1.8rem;padding:18px 20px;outline:none;text-align:center;letter-spacing:0.25em;font-family:'Orbitron',sans-serif;margin-bottom:10px;transition:border-color 0.2s,box-shadow 0.2s;box-sizing:border-box;}
+        .biz-id-input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.18);}
+        .biz-id-input.error{border-color:#ef4444;animation:loginShake 0.4s;}
+        @keyframes loginShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+        .biz-login-btn{width:100%;padding:18px;border-radius:16px;border:none;background:linear-gradient(90deg,#1d4ed8,#3b82f6,#1d4ed8);background-size:200%;color:white;font-family:'Orbitron',sans-serif;font-weight:900;font-size:0.85rem;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 30px rgba(59,130,246,0.4);transition:opacity 0.2s,transform 0.1s;animation:loginShine 3s linear infinite;}
+        .biz-login-btn:hover{opacity:0.9;}.biz-login-btn:active{transform:scale(0.97);}
+        .biz-login-btn:disabled{opacity:0.5;cursor:not-allowed;}
+        .biz-err{color:#ef4444;font-size:0.72rem;font-weight:700;letter-spacing:0.05em;min-height:18px;margin-bottom:10px;}
+        .biz-welcome{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:14px;padding:18px 20px;margin-bottom:16px;animation:bizFadeIn 0.4s ease;}
+        @keyframes bizFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .biz-welcome-name{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:900;color:#4ade80;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;}
+        .biz-welcome-detail{font-size:0.72rem;color:#64748b;font-weight:600;letter-spacing:0.05em;}
+        .biz-welcome-status{font-size:0.8rem;font-weight:800;margin-top:8px;letter-spacing:0.08em;}
+    </style>
 </head>
 <body class="p-4 pb-20">
 
@@ -240,6 +262,22 @@
   window._fbSaveTriviaScore = async (roundKey, entry) => {
     const entryRef = ref(db, `trivia_scores/${roundKey}/${Date.now()}_${Math.random().toString(36).slice(2,7)}`);
     await set(entryRef, entry);
+  };
+  // ── BIZ/ATL SESSION HELPERS — exposed to global scope ──
+  window._fbWriteSession = async (userId, data) => {
+    const today = new Date().toLocaleDateString('en-CA', {timeZone:'America/Guyana'});
+    const sessionRef = ref(db, `biz_sessions/${today}/${userId}`);
+    await set(sessionRef, { ...data, ts: Date.now() });
+  };
+  window._fbReadSession = (userId, callback) => {
+    const today = new Date().toLocaleDateString('en-CA', {timeZone:'America/Guyana'});
+    const sessionRef = ref(db, `biz_sessions/${today}/${userId}`);
+    onValue(sessionRef, (snap) => { callback(snap.val()); }, { onlyOnce: true });
+  };
+  window._fbListenSessions = (callback) => {
+    const today = new Date().toLocaleDateString('en-CA', {timeZone:'America/Guyana'});
+    const sessionsRef = ref(db, `biz_sessions/${today}`);
+    onValue(sessionsRef, (snap) => { callback(snap.val() || {}); });
   };
 </script>
 
@@ -2893,6 +2931,226 @@ function stopTpConfetti(){
 
 // Check every minute
 setInterval(checkTopPerformerSchedule, 60000);
+</script>
+
+<script>
+// ══════════════════════════════════════════════
+//  BIZ/ATL LOGIN + ATTENDANCE — BB TEAM
+//  Two modes: Ytel ID (rep) | Admin password
+//  Session stored in Firebase + sessionStorage
+// ══════════════════════════════════════════════
+const BIZ_BRIDGE_URL  = 'https://script.google.com/macros/s/AKfycbwLPuE28XKvSF8yf603n_xFML9SVfAG9w4cudwdjorrokAdoU7EY8WZc_v4GRYw2ACWQQ/exec';
+const BIZ_TEAM        = 'BB';
+const BIZ_ADMIN_PASS  = 'bizadmin2025'; // 🔑 change this
+
+let bizRoster  = [];
+let bizIsAdmin = false;
+
+function bizCallBridge(params) {
+  return new Promise((resolve, reject) => {
+    const cbName = 'bizcb_' + Date.now() + '_' + Math.floor(Math.random()*9999);
+    let tag;
+    const timeout = setTimeout(() => {
+      delete window[cbName];
+      if(tag && tag.parentNode) tag.parentNode.removeChild(tag);
+      reject(new Error('Timeout'));
+    }, 15000);
+    window[cbName] = (data) => {
+      clearTimeout(timeout);
+      delete window[cbName];
+      if(tag && tag.parentNode) tag.parentNode.removeChild(tag);
+      resolve(data);
+    };
+    const qs = Object.entries({...params, callback:cbName})
+      .map(([k,v])=>encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
+    tag = document.createElement('script');
+    tag.src = BIZ_BRIDGE_URL + '?' + qs;
+    tag.onerror = () => { clearTimeout(timeout); delete window[cbName]; reject(new Error('Load error')); };
+    document.head.appendChild(tag);
+  });
+}
+
+function getTodayBizGY() {
+  return new Date().toLocaleDateString('en-CA', {timeZone:'America/Guyana'});
+}
+
+function getBizAttStatus(shift) {
+  try {
+    const nowGY = new Date(new Date().toLocaleString('en-US',{timeZone:'America/Guyana'}));
+    const m = (shift||'').match(/(\d+)(?::(\d+))?\s*(am|pm)/i);
+    if(!m) return 'P';
+    let h=parseInt(m[1]), min=parseInt(m[2]||'0');
+    const ap=m[3].toLowerCase();
+    if(ap==='pm'&&h!==12) h+=12;
+    if(ap==='am'&&h===12) h=0;
+    const start = new Date(nowGY.getFullYear(),nowGY.getMonth(),nowGY.getDate(),h,min,0);
+    return (nowGY-start)/60000>15?'L':'P';
+  } catch(e){ return 'P'; }
+}
+
+function bizUnlockAdmin() {
+  weeklyUnlocked = true;
+  const wTab = document.getElementById('tab-weekly');
+  if(wTab) wTab.innerHTML = 'Weekly';
+  const bcFloat = document.getElementById('bc-float-btn');
+  if(bcFloat) bcFloat.style.display = '';
+  bizIsAdmin = true;
+}
+
+function bizDismissLogin() {
+  document.getElementById('biz-login-overlay').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+async function bizSaveSession(data) {
+  const key = 'biz_login_' + getTodayBizGY();
+  // 1. sessionStorage (instant, same tab)
+  sessionStorage.setItem(key, JSON.stringify(data));
+  // 2. Firebase (syncs across devices)
+  const id = data.userId || 'admin';
+  if(window._fbWriteSession) {
+    try { await window._fbWriteSession(id, data); } catch(e) { console.warn('FB write failed:', e); }
+  }
+}
+
+async function bizLogin() {
+  const idVal   = (document.getElementById('biz-id-input').value||'').trim();
+  const errEl   = document.getElementById('biz-err');
+  const btnEl   = document.getElementById('biz-login-btn');
+  const inputEl = document.getElementById('biz-id-input');
+  errEl.textContent = '';
+
+  if(!idVal) {
+    inputEl.classList.add('error');
+    errEl.textContent = 'Please enter your User ID or admin password.';
+    setTimeout(()=>inputEl.classList.remove('error'), 500);
+    return;
+  }
+
+  // ── ADMIN PATH ──
+  if(idVal === BIZ_ADMIN_PASS) {
+    bizUnlockAdmin();
+    await bizSaveSession({isAdmin:true, status:'admin', userId:'admin'});
+    const wEl = document.getElementById('biz-welcome');
+    document.getElementById('biz-welcome-name').textContent = 'Admin Access Granted';
+    document.getElementById('biz-welcome-detail').textContent = 'Weekly tab + Broadcast unlocked';
+    const sEl = document.getElementById('biz-welcome-status');
+    sEl.textContent = '⚡ Admin Mode Active';
+    sEl.style.color = '#fbbf24';
+    wEl.style.display = '';
+    btnEl.innerHTML = '⚡ ENTER AS ADMIN';
+    setTimeout(bizDismissLogin, 1500);
+    return;
+  }
+
+  // ── REP PATH ──
+  btnEl.disabled = true;
+  btnEl.textContent = 'LOADING ROSTER...';
+
+  try {
+    if(!bizRoster.length) {
+      const r = await bizCallBridge({action:'getRoster', team:BIZ_TEAM});
+      if(!r.success) throw new Error(r.error || 'Could not load roster');
+      bizRoster = r.agents || [];
+    }
+
+    const agent = bizRoster.find(a => String(a.userId).trim() === String(idVal).trim());
+    if(!agent) {
+      inputEl.classList.add('error');
+      errEl.textContent = 'ID not found. Check your User ID and try again.';
+      setTimeout(()=>inputEl.classList.remove('error'), 500);
+      btnEl.disabled = false;
+      btnEl.innerHTML = '<i class="fas fa-sign-in-alt" style="margin-right:8px;"></i>ENTER DASHBOARD';
+      return;
+    }
+
+    btnEl.textContent = 'MARKING ATTENDANCE...';
+    const today = getTodayBizGY();
+    let attStatus = 'P', alreadyMarked = false;
+
+    // Check sessionStorage first
+    const savedLocal = sessionStorage.getItem('biz_login_' + today);
+    if(savedLocal) {
+      const s = JSON.parse(savedLocal);
+      if(s.userId === String(idVal)) { alreadyMarked = true; attStatus = s.status || 'P'; }
+    }
+
+    // Check Firebase if not found locally
+    if(!alreadyMarked && window._fbReadSession) {
+      await new Promise(resolve => {
+        window._fbReadSession(String(idVal), (data) => {
+          if(data && data.status) { alreadyMarked = true; attStatus = data.status; }
+          resolve();
+        });
+      });
+    }
+
+    // Check sheet if still not found
+    if(!alreadyMarked) {
+      const check = await bizCallBridge({action:'checkAttendance', userId:idVal, team:BIZ_TEAM});
+      if(check.marked) {
+        alreadyMarked = true;
+        attStatus = check.status || 'P';
+      } else {
+        attStatus = getBizAttStatus(agent.shift);
+        await bizCallBridge({action:'markAttendance', userId:idVal, team:BIZ_TEAM, status:attStatus});
+      }
+    }
+
+    // Save session to both sessionStorage + Firebase
+    await bizSaveSession({userId:String(idVal), name:agent.name, status:attStatus, team:BIZ_TEAM});
+
+    // Show welcome
+    const wEl = document.getElementById('biz-welcome');
+    document.getElementById('biz-welcome-name').textContent = 'Welcome, ' + agent.name.split(' ')[0] + '!';
+    document.getElementById('biz-welcome-detail').textContent =
+      'ID: ' + idVal + (agent.shift ? ' · Shift: ' + agent.shift : '') + (agent.lunch ? ' · Lunch: ' + agent.lunch : '');
+    const labels = {P:'✅ Present', L:'🕐 Late — check in with your TL', S:'🤒 Sick'};
+    const colors = {P:'#4ade80', L:'#fbbf24', S:'#60a5fa'};
+    const sEl = document.getElementById('biz-welcome-status');
+    sEl.textContent = (alreadyMarked ? 'Already logged — ' : 'Marked ') + (labels[attStatus] || attStatus);
+    sEl.style.color = colors[attStatus] || '#94a3b8';
+    wEl.style.display = '';
+    btnEl.innerHTML = '🚀 ENTER DASHBOARD';
+    btnEl.disabled = false;
+    setTimeout(bizDismissLogin, 1800);
+
+  } catch(e) {
+    console.error('BIZ Login error:', e);
+    errEl.textContent = '⚠ Connection error — try again.';
+    btnEl.disabled = false;
+    btnEl.innerHTML = '<i class="fas fa-sign-in-alt" style="margin-right:8px;"></i>ENTER DASHBOARD';
+  }
+}
+
+// ── On load: check sessionStorage first, then Firebase ──
+(async function() {
+  const today = getTodayBizGY();
+  const key   = 'biz_login_' + today;
+  const local = sessionStorage.getItem(key);
+
+  if(local) {
+    const s = JSON.parse(local);
+    if(s.isAdmin) bizUnlockAdmin();
+    bizDismissLogin();
+    return;
+  }
+
+  // Not in sessionStorage — check Firebase (handles other-device logins)
+  // We need to wait for Firebase to be ready
+  const waitForFb = () => new Promise(resolve => {
+    let tries = 0;
+    const interval = setInterval(() => {
+      tries++;
+      if(window._fbReadSession || tries > 20) { clearInterval(interval); resolve(); }
+    }, 100);
+  });
+  await waitForFb();
+
+  // We can't check Firebase without knowing the userId yet — show login
+  // But keep body locked
+  document.body.style.overflow = 'hidden';
+})();
 </script>
 </body>
 </html>
