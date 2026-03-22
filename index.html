@@ -1703,23 +1703,48 @@ function toggleRevenueDropdown() {
     else { body.style.maxHeight = '800px'; arrow.style.transform = 'rotate(180deg)'; }
 }
 
+function callFeedJsonp(url, params) {
+  return new Promise((resolve, reject) => {
+    const cbName = 'feedcb_' + Date.now() + '_' + Math.floor(Math.random()*9999);
+    let tag;
+    const to = setTimeout(() => {
+      delete window[cbName];
+      if(tag&&tag.parentNode) tag.parentNode.removeChild(tag);
+      reject(new Error('Timeout'));
+    }, 15000);
+    window[cbName] = d => {
+      clearTimeout(to); delete window[cbName];
+      if(tag&&tag.parentNode) tag.parentNode.removeChild(tag);
+      resolve(d);
+    };
+    const qs = Object.entries({...params, callback: cbName})
+      .map(([k,v]) => encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
+    tag = document.createElement('script');
+    tag.src = url + '?' + qs;
+    tag.onerror = () => { clearTimeout(to); delete window[cbName]; reject(new Error('Load error')); };
+    document.head.appendChild(tag);
+  });
+}
+
 async function updateDashboard() {
     const btn=document.getElementById('refresh-btn');btn.classList.add('spin-anim');
-    loadAgentsFromStorage();
-    checkLeadAlerts(agents);
-    render();renderDaySubTabs();
-    document.getElementById('timestamp').innerText='Updated: '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    // Pull prank numbers + broadcast data from the sheet feed
     try {
-        const res = await fetch(FEED_URL);
-        const feedData = await res.json();
-        if(Array.isArray(feedData) && feedData.length > 0) {
-            if(feedData[0].prankNumbers) feedData[0].prankNumbers.forEach(n=>{if(n&&!KNOWN_PRANK_NUMBERS.includes(n))KNOWN_PRANK_NUMBERS.push(n);});
-        } else if(feedData && feedData.prankNumbers) {
-            feedData.prankNumbers.forEach(n=>{if(n&&!KNOWN_PRANK_NUMBERS.includes(n))KNOWN_PRANK_NUMBERS.push(n);});
+        const feedData = await callFeedJsonp(FEED_URL, {});
+        if(Array.isArray(feedData)){
+            agents=feedData;
+        } else if(feedData && feedData.agents){
+            agents=feedData.agents;
         }
-    } catch(e){}
-    setTimeout(()=>btn.classList.remove('spin-anim'),600);
+        agents.forEach(a=>{if(!a.team)a.team=getTeam(a.name);});
+        if(agents.length>0) agents[0].todayName=getGuyanaToday();
+        if(agents.length>0){if(agents[0].dayHistory)dayHistory=agents[0].dayHistory;dayHistory.forEach(d=>{d.agents.forEach(a=>{if(!a.team)a.team=getTeam(a.name);});});}
+        if(agents.length>0&&!agents[0].prTotal&&!agents[0].bbTotal){let pr=0,bb=0;agents.forEach(a=>{if(a.team==='PR')pr+=(a.dailyLeads||0);else bb+=(a.dailyLeads||0);});agents[0].prTotal=pr;agents[0].bbTotal=bb;}
+        if(agents.length>0&&agents[0].prankNumbers&&agents[0].prankNumbers.length>0){agents[0].prankNumbers.forEach(n=>{if(n&&!KNOWN_PRANK_NUMBERS.includes(n))KNOWN_PRANK_NUMBERS.push(n);});}
+        checkLeadAlerts(agents);
+        render();renderDaySubTabs();
+        document.getElementById('timestamp').innerText='Live: '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    } catch(e){document.getElementById('timestamp').innerText='System Offline';}
+    finally{setTimeout(()=>btn.classList.remove('spin-anim'),1000);}
 }
 
 function renderDaySubTabs() {
