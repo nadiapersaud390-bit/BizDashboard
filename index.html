@@ -149,6 +149,8 @@
 
         /* ===== ADMIN BROADCAST PANEL ===== */
         #bc-admin-btn{display:none!important;}
+        #tab-admin{display:none!important;}
+        #tab-admin.admin-visible{display:block!important;}
         #bc-float-btn{display:none;position:fixed;bottom:24px;right:20px;z-index:10000;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#991b1b,#ef4444);border:2px solid rgba(255,100,100,0.4);box-shadow:0 4px 24px rgba(239,68,68,0.55);cursor:pointer;align-items:center;justify-content:center;font-size:22px;transition:transform 0.2s,box-shadow 0.2s;}
         #bc-float-btn:hover{transform:scale(1.1);box-shadow:0 6px 32px rgba(239,68,68,0.8);}
         #bc-float-btn.unlocked{display:flex;}
@@ -430,7 +432,7 @@
         <button onclick="switchTab('playbook')"  id="tab-playbook"  class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
         <button onclick="switchTab('rebuttals')" id="tab-rebuttals" class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#14b8a6;border-color:rgba(20,184,166,0.3);">💬 Rebuttals</button>
         <button onclick="switchTab('prank')"     id="tab-prank"     class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#a855f7;">🚨 Prank</button>
-        <button onclick="switchTab('admin')"     id="tab-admin"     class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#f59e0b;border-color:rgba(245,158,11,0.3);display:none;">⚙️ Admin</button>
+        <button onclick="switchTab('admin')"     id="tab-admin"     class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#f59e0b;border-color:rgba(245,158,11,0.3);">⚙️ Admin</button>
         <button onclick="switchTab('trivia')"    id="tab-trivia"    class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#f59e0b;border-color:rgba(245,158,11,0.3);grid-column:1/-1;">🎯 Trivia Blitz</button>
     </div>
 
@@ -1758,12 +1760,22 @@ function toggleRevenueDropdown() {
     else { body.style.maxHeight = '800px'; arrow.style.transform = 'rotate(180deg)'; }
 }
 
-function updateDashboard() {
+async function updateDashboard() {
     const btn=document.getElementById('refresh-btn');btn.classList.add('spin-anim');
     loadAgentsFromStorage();
     checkLeadAlerts(agents);
     render();renderDaySubTabs();
     document.getElementById('timestamp').innerText='Updated: '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    // Pull prank numbers + broadcast data from the sheet feed
+    try {
+        const res = await fetch(FEED_URL);
+        const feedData = await res.json();
+        if(Array.isArray(feedData) && feedData.length > 0) {
+            if(feedData[0].prankNumbers) feedData[0].prankNumbers.forEach(n=>{if(n&&!KNOWN_PRANK_NUMBERS.includes(n))KNOWN_PRANK_NUMBERS.push(n);});
+        } else if(feedData && feedData.prankNumbers) {
+            feedData.prankNumbers.forEach(n=>{if(n&&!KNOWN_PRANK_NUMBERS.includes(n))KNOWN_PRANK_NUMBERS.push(n);});
+        }
+    } catch(e){}
     setTimeout(()=>btn.classList.remove('spin-anim'),600);
 }
 
@@ -1792,13 +1804,17 @@ function updateTabUI(){
     ['daily','lookup','playbook','rebuttals','prank','admin','trivia'].forEach(t=>{
         const b=document.getElementById('tab-'+t);
         if(!b) return;
+        // For admin tab: only update styling, never touch className (would wipe admin-visible)
+        const isAdmin = (t==='admin');
         if(t===currentTab){
-            b.className='flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all tab-active';
+            if(!isAdmin) b.className='flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all tab-active';
+            else { b.classList.remove('text-slate-500'); b.classList.add('tab-active'); }
             b.style.color='';b.style.borderColor='';b.style.background='';
             if(t==='trivia'){b.style.background='linear-gradient(90deg,rgba(255,229,0,0.2),rgba(255,107,0,0.2))';b.style.borderColor='rgba(255,229,0,0.5)';}
             if(t==='admin'){b.style.background='linear-gradient(90deg,rgba(245,158,11,0.2),rgba(180,83,9,0.2))';b.style.borderColor='rgba(245,158,11,0.5)';}
         } else {
-            b.className='flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500';
+            if(!isAdmin) b.className='flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500';
+            else { b.classList.remove('tab-active'); b.classList.add('text-slate-500'); }
             b.style.background='';
             if(t==='rebuttals'){b.style.color='#14b8a6';b.style.borderColor='rgba(20,184,166,0.3)';}
             else if(t==='prank'){b.style.color='#a855f7';b.style.borderColor='';}
@@ -3140,6 +3156,7 @@ setInterval(checkTopPerformerSchedule, 60000);
 //  BIZ/ATL LOGIN + ATTENDANCE — BB TEAM
 // ══════════════════════════════════════════════
 const BIZ_BRIDGE_URL = 'https://script.google.com/macros/s/AKfycbwhe1S4PujPOSmQuUC2LthkM86PhMeBXoYtdJYqzKVjjY068QQugX28KRibS0iZ5fQxNA/exec';
+const FEED_URL = 'https://script.google.com/macros/s/AKfycby3xpXiC8RAO5aZhGxjHO5XhnkzrwYv8quohxZSLpAkWSqc1JOizkMfVCS9txooz_uCTA/exec';
 const BIZ_TEAM       = 'BB';
 const BIZ_ADMIN_PASS = 'bizadmin2025';
 
@@ -3214,7 +3231,7 @@ function bizOnIdInput(val) {
 
 function bizUnlockAdmin() {
   const adminTab = document.getElementById('tab-admin');
-  if(adminTab) adminTab.style.display = '';
+  if(adminTab) adminTab.classList.add('admin-visible');
   const bcFloat = document.getElementById('bc-float-btn');
   if(bcFloat) bcFloat.style.display = '';
   bizIsAdmin = true;
@@ -3384,7 +3401,7 @@ async function bizLogin() {
       } else if(s.userId) {
         // Ensure admin tab stays hidden for agents
         const adminTab = document.getElementById('tab-admin');
-        if(adminTab) adminTab.style.display = 'none';
+        if(adminTab) adminTab.classList.remove('admin-visible');
         // Reload roster for regular agents
         bizCallBridge({action:'getRoster',team:BIZ_TEAM}).then(r=>{
           if(r&&r.success) bizRoster = r.agents||[];
