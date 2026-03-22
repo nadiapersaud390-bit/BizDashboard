@@ -218,6 +218,7 @@
       placeholder="Type your Ytel ID here"
       maxlength="6"
       oninput="bizOnIdInput(this.value)"
+      onkeyup="bizOnIdInput(this.value)"
       onkeydown="if(event.key==='Enter')bizLogin()"
       autocomplete="off"/>
     <div class="biz-pw-wrap" id="biz-pw-wrap">
@@ -3169,9 +3170,12 @@ function bizLogout() {
 }
 
 function bizOnIdInput(val) {
-  document.getElementById('biz-pw-wrap').style.display = val === '0000' ? 'block' : 'none';
+  const show = val.trim() === '0000';
+  const wrap = document.getElementById('biz-pw-wrap');
+  wrap.style.display = show ? 'block' : 'none';
+  if (show) setTimeout(()=>document.getElementById('biz-pw-input').focus(), 50);
   document.getElementById('biz-err').textContent = '';
-  if(val === '0000') setTimeout(()=>document.getElementById('biz-pw-input').focus(), 50);
+
 }
 
 function bizUnlockAdmin() {
