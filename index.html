@@ -202,7 +202,6 @@
         .biz-login-btn:disabled{opacity:0.6;cursor:not-allowed;filter:none;}
         .biz-login-err{font-size:0.72rem;color:#ef4444;text-align:center;margin-top:10px;min-height:18px;font-weight:700;letter-spacing:0.03em;}
         .biz-login-hint{font-size:0.58rem;color:#1e293b;text-align:center;margin-top:16px;line-height:1.7;font-weight:700;letter-spacing:0.05em;}
-        .biz-pw-wrap{display:none;}
     </style>
 </head>
 <body class="p-4 pb-20">
@@ -225,7 +224,7 @@
     <button class="biz-login-btn" id="biz-login-btn" onclick="bizLogin()">ENTER DASHBOARD</button>
     <div class="biz-login-err" id="biz-err"></div>
   </div>
-  <div class="biz-login-hint">Agents — enter your Ytel ID only<br>Admin — enter 0000 then your password</div>
+  <div class="biz-login-hint">Agents — enter your Ytel ID only<br>Admin — enter 0000 to unlock</div>
 </div>
 
 <!-- ── BIZ LOGOUT BUTTON (hidden until logged in) ── -->
@@ -3192,7 +3191,7 @@ async function bizLogin() {
 
   if(!idVal) {
     inputEl.classList.add('error');
-    errEl.textContent = 'Please enter your User ID or admin password.';
+    errEl.textContent = 'Please enter your User ID.';
     setTimeout(()=>inputEl.classList.remove('error'),500);
     return;
   }
