@@ -429,7 +429,7 @@
         <button onclick="switchTab('playbook')"  id="tab-playbook"  class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500">Playbook</button>
         <button onclick="switchTab('rebuttals')" id="tab-rebuttals" class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#14b8a6;border-color:rgba(20,184,166,0.3);">💬 Rebuttals</button>
         <button onclick="switchTab('prank')"     id="tab-prank"     class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#a855f7;">🚨 Prank</button>
-        <button onclick="requestWeekly()"        id="tab-weekly"    class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500"><i class="fas fa-lock text-[9px] mr-1 opacity-60"></i>Weekly</button>
+        <button onclick="switchTab('admin')"     id="tab-admin"     class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#f59e0b;border-color:rgba(245,158,11,0.3);display:none;">⚙️ Admin</button>
         <button onclick="switchTab('trivia')"    id="tab-trivia"    class="glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500" style="color:#f59e0b;border-color:rgba(245,158,11,0.3);grid-column:1/-1;">🎯 Trivia Blitz</button>
     </div>
 
@@ -1543,17 +1543,152 @@
         </div>
       </div>
 
+
+    <!-- ADMIN TAB -->
+    <div id="admin-view" class="hidden px-2 pb-20 space-y-5">
+      <div class="glass p-6 rounded-3xl border-t-4" style="border-color:#f59e0b;">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);">
+            <i class="fas fa-upload" style="color:#f59e0b;"></i>
+          </div>
+          <div>
+            <div class="font-black text-white text-sm uppercase tracking-widest">Upload Daily Leads</div>
+            <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wide mt-0.5">CSV · Duration ≥ 120s · BIZ roster only</div>
+          </div>
+        </div>
+
+        <!-- Date picker -->
+        <div class="mb-4">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Date for this upload</label>
+          <input type="date" id="admin-upload-date"
+            class="w-full rounded-xl px-4 py-3 text-white font-bold text-sm outline-none"
+            style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color-scheme:dark;"/>
+        </div>
+
+        <!-- Drop zone -->
+        <div id="csv-drop-zone"
+          onclick="document.getElementById('csv-file-input').click()"
+          ondragover="event.preventDefault();this.style.borderColor='#f59e0b';"
+          ondragleave="this.style.borderColor='rgba(255,255,255,0.1)';"
+          ondrop="handleCsvDrop(event)"
+          style="border:2px dashed rgba(255,255,255,0.1);border-radius:16px;padding:32px 20px;text-align:center;cursor:pointer;transition:border-color 0.2s;">
+          <i class="fas fa-file-csv" style="font-size:28px;color:#f59e0b;margin-bottom:10px;display:block;"></i>
+          <div class="font-black text-white text-sm mb-1">Drop CSV here or tap to browse</div>
+          <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Ytel call export</div>
+        </div>
+        <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleCsvFile(this.files[0])"/>
+
+        <!-- Status -->
+        <div id="csv-upload-status" style="display:none;margin-top:14px;border-radius:12px;padding:12px 16px;font-size:12px;font-weight:700;"></div>
+
+        <!-- Preview table -->
+        <div id="csv-preview" class="hidden mt-5">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Preview — Qualified Leads</div>
+            <div id="csv-preview-count" class="text-[10px] font-black text-yellow-500 uppercase tracking-widest"></div>
+          </div>
+          <div id="csv-preview-table" class="space-y-2"></div>
+          <button onclick="commitCsvUpload()"
+            class="w-full mt-5 py-4 rounded-xl font-black uppercase tracking-widest text-sm"
+            style="background:linear-gradient(90deg,#92400e,#f59e0b,#fbbf24);color:#020617;border:none;cursor:pointer;box-shadow:0 0 20px rgba(245,158,11,0.35);">
+            <i class="fas fa-check mr-2"></i>PUBLISH TO LEADERBOARD
+          </button>
+        </div>
+      </div>
+
+      <!-- Uploaded history -->
+      <div class="glass p-5 rounded-3xl">
+        <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Uploaded Sessions</div>
+        <div id="csv-history-list" class="space-y-2"></div>
+      </div>
+    </div>
+
     </div>
 
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycby3xpXiC8RAO5aZhGxjHO5XhnkzrwYv8quohxZSLpAkWSqc1JOizkMfVCS9txooz_uCTA/exec';
-const WEEKLY_PASSWORD = 'bizlevelup2025';
+// ── CSV-based leads ──
 const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+// Day index: Mon=0 Tue=1 Wed=2 Thu=3 Fri=4 Sat=5  (JS getDay: Sun=0 Mon=1...Sat=6)
+const JS_TO_IDX = {1:0,2:1,3:2,4:3,5:4,6:5}; // Mon-Sat only
 let agents = [], dayHistory = [];
-let currentTab = 'daily', currentDayView = 'today', weeklyUnlocked = false;
+let currentTab = 'daily', currentDayView = 'today';
+const MIN_DURATION_SEC = 120; // leads must be >= 120 seconds
+
+// ── Storage helpers ──
+function csvStorageKey(dateStr) { return 'biz_csv_' + dateStr; }
+
+function getTodayKey() {
+  return new Date().toLocaleDateString('en-CA', {timeZone:'America/Guyana'});
+}
+
+// Returns Monday date string (en-CA) for the week containing dateStr
+function getWeekMonday(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const day = d.getDay(); // 0=Sun,1=Mon,...,6=Sat
+  const diff = (day === 0) ? -6 : 1 - day; // shift to Monday
+  d.setDate(d.getDate() + diff);
+  return d.toLocaleDateString('en-CA');
+}
+
+// Clear any uploads that belong to a previous week
+function clearOldWeekIfNeeded() {
+  const todayKey   = getTodayKey();
+  const thisMonday = getWeekMonday(todayKey);
+  const toDelete   = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (!k || !k.startsWith('biz_csv_')) continue;
+    const dateStr = k.replace('biz_csv_', '');
+    if (getWeekMonday(dateStr) !== thisMonday) toDelete.push(k);
+  }
+  toDelete.forEach(k => localStorage.removeItem(k));
+}
+
+// Load today's agents + rebuild dayHistory from this week's uploads
+function loadAgentsFromStorage() {
+  clearOldWeekIfNeeded();
+
+  const todayKey   = getTodayKey();
+  const thisMonday = getWeekMonday(todayKey);
+
+  // Collect all uploads for this week
+  const weekUploads = []; // { dateStr, dayIdx, agents[] }
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (!k || !k.startsWith('biz_csv_')) continue;
+    const dateStr = k.replace('biz_csv_', '');
+    if (getWeekMonday(dateStr) !== thisMonday) continue;
+    try {
+      const data = JSON.parse(localStorage.getItem(k));
+      const d    = new Date(dateStr + 'T12:00:00');
+      const jsDay = d.getDay();
+      const dayIdx = JS_TO_IDX[jsDay];
+      if (dayIdx === undefined) continue;
+      weekUploads.push({ dateStr, dayIdx, agents: data.agents || [] });
+    } catch(e) {}
+  }
+  weekUploads.sort((a,b) => a.dayIdx - b.dayIdx);
+
+  // Today's agents
+  const todayEntry = weekUploads.find(u => u.dateStr === todayKey);
+  agents = todayEntry ? todayEntry.agents : [];
+
+  // dayHistory = all days EXCEPT today, sorted by dayIdx ascending
+  dayHistory = weekUploads
+    .filter(u => u.dateStr !== todayKey)
+    .map(u => ({
+      day:     u.dayIdx,
+      dayName: DAY_FULL[u.dayIdx],
+      agents:  u.agents.map(a => ({...a, leads: a.dailyLeads || 0})),
+      prTotal: u.agents.filter(a=>a.team==='PR').reduce((s,a)=>s+(a.dailyLeads||0),0),
+      bbTotal: u.agents.filter(a=>a.team==='BB').reduce((s,a)=>s+(a.dailyLeads||0),0),
+    }));
+
+  return !!todayEntry;
+}
 
 // ── CLIENT-SIDE GUYANA DAY DETECTION ──
 // Uses America/Guyana timezone — same approach as the Apps Script.
@@ -1621,21 +1756,13 @@ function toggleRevenueDropdown() {
     else { body.style.maxHeight = '800px'; arrow.style.transform = 'rotate(180deg)'; }
 }
 
-async function updateDashboard() {
+function updateDashboard() {
     const btn=document.getElementById('refresh-btn');btn.classList.add('spin-anim');
-    try {
-        const res=await fetch(API_URL);agents=await res.json();
-        agents.forEach(a=>{if(!a.team)a.team=getTeam(a.name);});
-        // Always override todayName with client-side Guyana day
-        if(agents.length>0) agents[0].todayName=getGuyanaToday();
-        if(agents.length>0){if(agents[0].dayHistory)dayHistory=agents[0].dayHistory;dayHistory.forEach(d=>{d.agents.forEach(a=>{if(!a.team)a.team=getTeam(a.name);});});}
-        if(agents.length>0&&!agents[0].prTotal&&!agents[0].bbTotal){let pr=0,bb=0;agents.forEach(a=>{if(a.team==='PR')pr+=(a.dailyLeads||0);else bb+=(a.dailyLeads||0);});agents[0].prTotal=pr;agents[0].bbTotal=bb;}
-        if(agents.length>0&&agents[0].prankNumbers&&agents[0].prankNumbers.length>0){agents[0].prankNumbers.forEach(n=>{if(n&&!KNOWN_PRANK_NUMBERS.includes(n))KNOWN_PRANK_NUMBERS.push(n);});}
-        checkLeadAlerts(agents);
-        render();renderDaySubTabs();
-        document.getElementById('timestamp').innerText='Live: '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    } catch(e){document.getElementById('timestamp').innerText='System Offline';}
-    finally{setTimeout(()=>btn.classList.remove('spin-anim'),1000);}
+    loadAgentsFromStorage();
+    checkLeadAlerts(agents);
+    render();renderDaySubTabs();
+    document.getElementById('timestamp').innerText='Updated: '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    setTimeout(()=>btn.classList.remove('spin-anim'),600);
 }
 
 function renderDaySubTabs() {
@@ -1649,32 +1776,31 @@ function renderDaySubTabs() {
 
 function switchDayView(key){currentDayView=key;renderDaySubTabs();render();}
 
-function requestWeekly(){if(weeklyUnlocked){currentTab='weekly';updateTabUI();render();renderDaySubTabs();return;}document.getElementById('pw-modal').classList.remove('hidden');document.getElementById('pw-input').value='';document.getElementById('pw-error').innerText='';document.getElementById('pw-input').classList.remove('error');setTimeout(()=>document.getElementById('pw-input').focus(),100);}
-function checkPassword(){if(document.getElementById('pw-input').value===WEEKLY_PASSWORD){weeklyUnlocked=true;document.getElementById('pw-modal').classList.add('hidden');document.getElementById('tab-weekly').innerHTML='Weekly';currentTab='weekly';currentDayView='today';updateTabUI();render();renderDaySubTabs();}else{const inp=document.getElementById('pw-input');inp.classList.add('error');document.getElementById('pw-error').innerText='Incorrect access code. Try again.';inp.value='';setTimeout(()=>inp.classList.remove('error'),500);setTimeout(()=>inp.focus(),100);}}
-function cancelPassword(){document.getElementById('pw-modal').classList.add('hidden');}
+// Weekly tab removed — leads now via CSV upload in Admin tab
 
 function switchTab(tab){
-    if(tab==='weekly'){requestWeekly();return;}
     currentTab=tab;currentDayView='today';
     updateTabUI();render();renderDaySubTabs();
     if(tab==='lookup')renderLookupHistory();
     if(tab==='trivia')initTriviaTab();
+    if(tab==='admin')renderCsvHistory();
 }
 
 function updateTabUI(){
-    ['daily','lookup','playbook','rebuttals','prank','weekly','trivia'].forEach(t=>{
+    ['daily','lookup','playbook','rebuttals','prank','admin','trivia'].forEach(t=>{
         const b=document.getElementById('tab-'+t);
         if(!b) return;
         if(t===currentTab){
             b.className='flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all tab-active';
             b.style.color='';b.style.borderColor='';b.style.background='';
             if(t==='trivia'){b.style.background='linear-gradient(90deg,rgba(255,229,0,0.2),rgba(255,107,0,0.2))';b.style.borderColor='rgba(255,229,0,0.5)';}
+            if(t==='admin'){b.style.background='linear-gradient(90deg,rgba(245,158,11,0.2),rgba(180,83,9,0.2))';b.style.borderColor='rgba(245,158,11,0.5)';}
         } else {
             b.className='flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500';
             b.style.background='';
             if(t==='rebuttals'){b.style.color='#14b8a6';b.style.borderColor='rgba(20,184,166,0.3)';}
             else if(t==='prank'){b.style.color='#a855f7';b.style.borderColor='';}
-            else if(t==='trivia'){b.style.color='#f59e0b';b.style.borderColor='rgba(245,158,11,0.3)';}
+            else if(t==='trivia'||t==='admin'){b.style.color='#f59e0b';b.style.borderColor='rgba(245,158,11,0.3)';}
             else{b.style.color='';b.style.borderColor='';}
         }
     });
@@ -1683,22 +1809,23 @@ function updateTabUI(){
 function getLevel(l){if(l>=17)return{title:'CONQUEROR',cls:'conqueror-tier',color:'text-red-500'};if(l>=12)return{title:'MASTER',cls:'gold-tier',color:'text-yellow-500'};if(l>=7)return{title:'ELITE',cls:'orange-tier',color:'text-orange-500'};if(l>=4)return{title:'PRO',cls:'blue-tier',color:'text-blue-500'};return{title:'ROOKIE',cls:'slate-tier',color:'text-slate-500'};}
 
 function render(){
-    const lView=document.getElementById('leaderboard-view'),pView=document.getElementById('playbook-view'),luView=document.getElementById('lookup-view'),prView=document.getElementById('prank-view'),rbView=document.getElementById('rebuttals-view'),trView=document.getElementById('trivia-view');
-    [lView,pView,luView,prView,rbView,trView].forEach(v=>{if(v)v.classList.add('hidden');});
+    const lView=document.getElementById('leaderboard-view'),pView=document.getElementById('playbook-view'),luView=document.getElementById('lookup-view'),prView=document.getElementById('prank-view'),rbView=document.getElementById('rebuttals-view'),trView=document.getElementById('trivia-view'),adView=document.getElementById('admin-view');
+    [lView,pView,luView,prView,rbView,trView,adView].forEach(v=>{if(v)v.classList.add('hidden');});
     if(currentTab==='playbook'){pView.classList.remove('hidden');return;}
     if(currentTab==='lookup'){luView.classList.remove('hidden');return;}
     if(currentTab==='prank'){if(prView)prView.classList.remove('hidden');return;}
     if(currentTab==='rebuttals'){if(rbView)rbView.classList.remove('hidden');return;}
     if(currentTab==='trivia'){if(trView)trView.classList.remove('hidden');return;}
+    if(currentTab==='admin'){if(adView)adView.classList.remove('hidden');return;}
     lView.classList.remove('hidden');
-    const isWeekly=currentTab==='weekly',isHistory=currentTab==='daily'&&currentDayView!=='today',target=isWeekly?800:150,todayName=agents.length>0?(agents[0].todayName||'Today'):'Today',banner=document.getElementById('history-banner');
+    const isHistory=currentTab==='daily'&&currentDayView!=='today',target=150,todayName=getGuyanaToday(),banner=document.getElementById('history-banner');
     if(isHistory){const snap=dayHistory.find(d=>d.day===currentDayView);document.getElementById('history-banner-text').innerText='Viewing '+(snap?snap.dayName:DAY_FULL[currentDayView])+' — Final Results';banner.classList.remove('hidden');}else{banner.classList.add('hidden');}
-    document.getElementById('goal-label').innerText=isWeekly?'Weekly Team Goal':isHistory?DAY_FULL[currentDayView]+' Final':todayName+' Daily Goal';
+    document.getElementById('goal-label').innerText=isHistory?DAY_FULL[currentDayView]+' Final':todayName+' Daily Goal';
     document.getElementById('target-display').innerText='Target: '+target;
-    document.getElementById('day-indicator').innerText=isWeekly?'Weekly Sprint':isHistory?DAY_SHORT[currentDayView]+' — Completed':todayName+' Performance';
+    document.getElementById('day-indicator').innerText=isHistory?DAY_SHORT[currentDayView]+' — Completed':todayName+' Performance';
     let displayData=[],prTotal=0,bbTotal=0;
     if(isHistory){const snap=dayHistory.find(d=>d.day===currentDayView);if(snap){displayData=[...snap.agents].sort((a,b)=>b.leads-a.leads);prTotal=snap.prTotal||0;bbTotal=snap.bbTotal||0;if(!prTotal&&!bbTotal)displayData.forEach(a=>{if(a.team==='PR')prTotal+=a.leads;else bbTotal+=a.leads;});}}
-    else{displayData=agents.map(a=>({name:a.name,leads:isWeekly?(a.weeklyLeads||0):(a.dailyLeads||0),team:a.team||getTeam(a.name)})).sort((a,b)=>b.leads-a.leads);if(isWeekly){displayData.forEach(a=>{if(a.team==='PR')prTotal+=a.leads;else bbTotal+=a.leads;});}else if(agents.length>0){prTotal=agents[0].prTotal||0;bbTotal=agents[0].bbTotal||0;if(!prTotal&&!bbTotal)displayData.forEach(a=>{if(a.team==='PR')prTotal+=a.leads;else bbTotal+=a.leads;});}}
+    else{displayData=agents.map(a=>({name:a.name,leads:a.dailyLeads||0,team:a.team||getTeam(a.name)})).sort((a,b)=>b.leads-a.leads);let pr=0,bb=0;displayData.forEach(a=>{if(a.team==='PR')pr+=a.leads;else bb+=a.leads;});prTotal=pr;bbTotal=bb;}
     let totalLeads=0,masters=0,activeReps=0;
     document.getElementById('leaderboard').innerHTML=displayData.map((agent,i)=>{
         const lvl=getLevel(agent.leads);totalLeads+=agent.leads;if(agent.leads>=12)masters++;if(agent.leads>0)activeReps++;
@@ -1745,12 +1872,11 @@ async function logPrankCall(){
   statusEl.style.color='#60a5fa';
   statusEl.textContent='Sending to sheet...';
   try{
-    const body=JSON.stringify({action:'logPrank',number:q,timestamp:new Date().toISOString(),loggedBy:'rep'});
-    await fetch(API_URL,{method:'POST',body:body});
+    // Log prank locally
     statusEl.style.background='rgba(34,197,94,0.12)';
     statusEl.style.border='1px solid rgba(34,197,94,0.35)';
     statusEl.style.color='#4ade80';
-    statusEl.textContent='✅ Prank number logged to sheet!';
+    statusEl.textContent='✅ Prank number noted!';
     document.getElementById('lookup-input').value='';
     setTimeout(()=>{statusEl.style.display='none';},4000);
   }catch(e){
@@ -2675,7 +2801,7 @@ function dismissLeadAlert() {
 }
 
 updateDashboard();
-setInterval(updateDashboard,30000);
+// No polling — leaderboard updates on CSV upload
 
 // ===== BROADCAST SYSTEM =====
 const BC_ADMIN_PASSWORD = 'bizadmin2025'; // 🔑 Change this to your secret password
@@ -3039,9 +3165,8 @@ function bizOnIdInput(val) {
 }
 
 function bizUnlockAdmin() {
-  if(typeof weeklyUnlocked !== 'undefined') weeklyUnlocked = true;
-  const wTab = document.getElementById('tab-weekly');
-  if(wTab) wTab.innerHTML = 'Weekly';
+  const adminTab = document.getElementById('tab-admin');
+  if(adminTab) adminTab.style.display = '';
   const bcFloat = document.getElementById('bc-float-btn');
   if(bcFloat) bcFloat.style.display = '';
   bizIsAdmin = true;
@@ -3205,6 +3330,239 @@ async function bizLogin() {
   }
   // No else needed — overlay is visible by default
 })();
+
+// ============================================================
+//  ADMIN CSV UPLOAD + LEAD PROCESSING
+// ============================================================
+
+let csvParsedRows = [];   // holds parsed + filtered rows before commit
+let csvUploadDate = '';   // date selected for this upload
+
+// Set today's date as default in the date picker when admin tab opens
+function renderCsvHistory() {
+  const datePicker = document.getElementById('admin-upload-date');
+  if (datePicker && !datePicker.value) datePicker.value = getTodayKey();
+  const histEl = document.getElementById('csv-history-list');
+  if (!histEl) return;
+
+  clearOldWeekIfNeeded();
+  const todayKey   = getTodayKey();
+  const thisMonday = getWeekMonday(todayKey);
+
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('biz_csv_') && getWeekMonday(k.replace('biz_csv_','')) === thisMonday) keys.push(k);
+  }
+  if (!keys.length) {
+    histEl.innerHTML = '<div style="font-size:11px;color:#475569;font-weight:700;text-align:center;padding:12px;">No uploads this week</div>';
+    return;
+  }
+  keys.sort().reverse();
+  histEl.innerHTML = keys.map(k => {
+    const dateStr = k.replace('biz_csv_','');
+    let data;
+    try { data = JSON.parse(localStorage.getItem(k)); } catch(e) { return ''; }
+    const count      = (data.agents||[]).reduce((s,a)=>s+(a.dailyLeads||0),0);
+    const agentCount = (data.agents||[]).length;
+    const d          = new Date(dateStr+'T12:00:00');
+    const dayName    = DAY_FULL[JS_TO_IDX[d.getDay()]] || dateStr;
+    const isToday    = dateStr === todayKey;
+    const uploadTime = data.uploadedAt ? new Date(data.uploadedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+    return '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,'+(isToday?'0.2':'0.08')+');border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">'
+      + '<div>'
+      + '<div style="font-size:12px;font-weight:900;color:white;">' + dayName + (isToday?' <span style="font-size:9px;color:#4ade80;font-weight:900;">TODAY</span>':'') + (uploadTime?' <span style="color:#475569;font-size:10px;">· '+uploadTime+'</span>':'') + '</div>'
+      + '<div style="font-size:10px;color:#f59e0b;font-weight:700;margin-top:2px;">' + count + ' qualified leads · ' + agentCount + ' agents</div>'
+      + '</div>'
+      + '<button onclick="deleteCsvUpload(''+k+'')" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:6px 12px;color:#f87171;font-size:10px;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;">Delete</button>'
+      + '</div>';
+  }).join('');
+}
+
+function deleteCsvUpload(key) {
+  if (!confirm('Delete this upload?')) return;
+  localStorage.removeItem(key);
+  loadAgentsFromStorage();
+  render();
+  renderDaySubTabs();
+  renderCsvHistory();
+}
+
+function handleCsvDrop(event) {
+  event.preventDefault();
+  document.getElementById('csv-drop-zone').style.borderColor = 'rgba(255,255,255,0.1)';
+  const file = event.dataTransfer.files[0];
+  if (file) handleCsvFile(file);
+}
+
+function handleCsvFile(file) {
+  if (!file || !file.name.toLowerCase().endsWith('.csv')) {
+    showCsvStatus('❌ Please upload a .csv file', 'error');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => parseCsv(e.target.result);
+  reader.readAsText(file);
+}
+
+function parseCsv(text) {
+  // Get roster names from bizRoster (already loaded at login)
+  const rosterNames = (bizRoster || []).map(a => normalizeName(a.name));
+
+  // Parse CSV rows
+  const lines = text.split(/
+?
+/).filter(l => l.trim());
+  if (lines.length < 2) { showCsvStatus('❌ CSV appears empty', 'error'); return; }
+
+  // Detect header row
+  const header = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,'').toLowerCase());
+
+  // Find columns — handle various Ytel export column names
+  const col = name => {
+    const variants = {
+      agent:    ['agent','agent name','rep','rep name','user','username'],
+      duration: ['duration','call duration','duration (sec)','seconds','talk time','billsec'],
+      type:     ['call type','type','direction','calltype'],
+      status:   ['status','disposition','call status'],
+    };
+    const opts = variants[name] || [name];
+    for (const o of opts) {
+      const idx = header.indexOf(o);
+      if (idx !== -1) return idx;
+    }
+    // partial match
+    for (const o of opts) {
+      const idx = header.findIndex(h => h.includes(o));
+      if (idx !== -1) return idx;
+    }
+    return -1;
+  };
+
+  const agentCol    = col('agent');
+  const durationCol = col('duration');
+
+  if (agentCol === -1 || durationCol === -1) {
+    showCsvStatus('❌ Cannot find Agent or Duration columns in this CSV. Headers found: ' + header.join(', '), 'error');
+    return;
+  }
+
+  // Parse each data row
+  function parseRow(line) {
+    // Handle quoted fields
+    const result = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { inQ = !inQ; }
+      else if (c === ',' && !inQ) { result.push(cur.trim()); cur = ''; }
+      else { cur += c; }
+    }
+    result.push(cur.trim());
+    return result;
+  }
+
+  // Count qualified leads per agent
+  const leadMap = {};
+  for (let i = 1; i < lines.length; i++) {
+    const row = parseRow(lines[i]);
+    if (row.length < 2) continue;
+    const rawAgent   = (row[agentCol]   || '').trim().replace(/^"|"$/g,'');
+    const rawDur     = (row[durationCol]|| '').trim().replace(/^"|"$/g,'');
+    if (!rawAgent || !rawDur) continue;
+
+    const durSec = parseDuration(rawDur);
+    if (durSec < MIN_DURATION_SEC) continue; // filter < 120s
+
+    const normed = normalizeName(rawAgent);
+    // Must match someone on roster
+    const match = rosterNames.find(r => r === normed || r.includes(normed) || normed.includes(r));
+    if (!match) continue;
+
+    // Find the original roster agent for proper name + team
+    const rosterAgent = (bizRoster || []).find(a => normalizeName(a.name) === match);
+    const agentName = rosterAgent ? rosterAgent.name : rawAgent;
+    const team      = rosterAgent ? rosterAgent.team : getTeam(rawAgent);
+
+    if (!leadMap[agentName]) leadMap[agentName] = { name: agentName, team, dailyLeads: 0 };
+    leadMap[agentName].dailyLeads++;
+  }
+
+  csvParsedRows = Object.values(leadMap).sort((a,b) => b.dailyLeads - a.dailyLeads);
+
+  if (!csvParsedRows.length) {
+    showCsvStatus('⚠️ No qualifying leads found (duration ≥ 120s, roster match). Check the CSV format.', 'warn');
+    document.getElementById('csv-preview').classList.add('hidden');
+    return;
+  }
+
+  const total = csvParsedRows.reduce((s,a)=>s+a.dailyLeads,0);
+  document.getElementById('csv-preview-count').textContent = total + ' leads · ' + csvParsedRows.length + ' agents';
+  document.getElementById('csv-preview-table').innerHTML = csvParsedRows.map(a =>
+    '<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 14px;">'
+    + '<div style="font-size:12px;font-weight:900;color:white;">' + escapeHtml(a.name)
+    + ' <span style="font-size:9px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:1px 5px;color:'+(a.team==='BB'?'#c084fc':'#a78bfa')+';font-weight:900;margin-left:4px;">'+(a.team==='BB'?'BERB':'PROV')+'</span></div>'
+    + '<div style="font-size:18px;font-weight:900;color:#f59e0b;">' + a.dailyLeads + '</div>'
+    + '</div>'
+  ).join('');
+
+  document.getElementById('csv-preview').classList.remove('hidden');
+  showCsvStatus('✅ ' + total + ' qualifying leads parsed from ' + csvParsedRows.length + ' agents — review and publish', 'success');
+}
+
+function parseDuration(raw) {
+  // Handles: "125", "2:05", "00:02:05"
+  raw = String(raw).trim();
+  if (/^\d+$/.test(raw)) return parseInt(raw);
+  const parts = raw.split(':').map(Number);
+  if (parts.length === 2) return parts[0]*60 + parts[1];
+  if (parts.length === 3) return parts[0]*3600 + parts[1]*60 + parts[2];
+  return 0;
+}
+
+function normalizeName(name) {
+  return String(name||'').toLowerCase().replace(/\s+/g,' ').trim();
+}
+
+function commitCsvUpload() {
+  if (!csvParsedRows.length) return;
+  const datePicker = document.getElementById('admin-upload-date');
+  const dateStr = (datePicker && datePicker.value) ? datePicker.value : getTodayKey();
+  const key = csvStorageKey(dateStr);
+  const payload = {
+    agents: csvParsedRows,
+    uploadedAt: new Date().toISOString(),
+    date: dateStr
+  };
+  try {
+    localStorage.setItem(key, JSON.stringify(payload));
+  } catch(e) {
+    showCsvStatus('❌ Storage failed — ' + e.message, 'error');
+    return;
+  }
+  // Reload leaderboard if this is today
+  loadAgentsFromStorage();
+  checkLeadAlerts(agents);
+  render();
+  renderDaySubTabs();
+  renderCsvHistory();
+  document.getElementById('csv-preview').classList.add('hidden');
+  document.getElementById('csv-file-input').value = '';
+  csvParsedRows = [];
+  showCsvStatus('🚀 Published! Leaderboard updated.', 'success');
+}
+
+function showCsvStatus(msg, type) {
+  const el = document.getElementById('csv-upload-status');
+  if (!el) return;
+  const styles = {
+    success: 'background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#4ade80;',
+    error:   'background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#f87171;',
+    warn:    'background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);color:#fbbf24;',
+  };
+  el.style.cssText = (styles[type]||styles.warn) + 'display:block;margin-top:14px;border-radius:12px;padding:12px 16px;font-size:12px;font-weight:700;';
+  el.textContent = msg;
+  if (type === 'success') setTimeout(() => { el.style.display = 'none'; }, 5000);
+}
+
 </script>
-</body>
-</html>
