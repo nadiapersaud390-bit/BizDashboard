@@ -3224,11 +3224,19 @@ async function bizLogin() {
     if(!pw){ document.getElementById('biz-err').textContent='Enter admin password.'; document.getElementById('biz-pw-input').focus(); return; }
     if(pw !== BIZ_ADMIN_PASS){ const inp=document.getElementById('biz-pw-input'); inp.classList.add('error'); document.getElementById('biz-err').textContent='Incorrect password. Try again.'; inp.value=''; setTimeout(()=>inp.classList.remove('error'),500); setTimeout(()=>inp.focus(),100); return; }
     bizUnlockAdmin();
+    // Load full roster so admin CSV matching works
+    btnEl.textContent = 'LOADING ROSTER...';
+    if(!bizRoster.length) {
+      try {
+        const r = await bizCallBridge({action:'getRoster',team:'all'});
+        if(r.success) bizRoster = r.agents||[];
+      } catch(e) {}
+    }
     // Save admin session
     const key = 'biz_login_'+getTodayBizGY();
     sessionStorage.setItem(key, JSON.stringify({isAdmin:true}));
     if(window._fbWriteSession) window._fbWriteSession('admin',{isAdmin:true,status:'admin'}).catch(()=>{});
-    bizSetWelcome('Admin Access Granted','Weekly + Broadcast unlocked','⚡ Admin Mode Active','#fbbf24');
+    bizSetWelcome('Admin Access Granted','CSV Upload + Broadcast unlocked','⚡ Admin Mode Active','#fbbf24');
     btnEl.innerHTML = '⚡ ENTER AS ADMIN';
     setTimeout(bizHideOverlay, 1500);
     return;
@@ -3329,7 +3337,18 @@ async function bizLogin() {
   if(saved) {
     try {
       const s = JSON.parse(saved);
-      if(s.isAdmin) bizUnlockAdmin();
+      if(s.isAdmin) {
+        bizUnlockAdmin();
+        // Reload roster in background so CSV upload works
+        bizCallBridge({action:'getRoster',team:'all'}).then(r=>{
+          if(r&&r.success) bizRoster = r.agents||[];
+        }).catch(()=>{});
+      } else if(s.userId) {
+        // Reload roster for regular agents too
+        bizCallBridge({action:'getRoster',team:BIZ_TEAM}).then(r=>{
+          if(r&&r.success) bizRoster = r.agents||[];
+        }).catch(()=>{});
+      }
       // Hide overlay — valid session
       document.getElementById('biz-login-overlay').classList.add('hidden');
       document.body.style.overflow = '';
