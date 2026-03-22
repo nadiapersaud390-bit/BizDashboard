@@ -1585,16 +1585,16 @@
 
         <!-- Preview table -->
         <div id="csv-preview" class="hidden mt-5">
+          <button onclick="commitCsvUpload()"
+            class="w-full mb-4 py-4 rounded-xl font-black uppercase tracking-widest text-sm"
+            style="background:linear-gradient(90deg,#92400e,#f59e0b,#fbbf24);color:#020617;border:none;cursor:pointer;box-shadow:0 0 20px rgba(245,158,11,0.35);">
+            <i class="fas fa-check mr-2"></i>PUBLISH TO LEADERBOARD
+          </button>
           <div class="flex items-center justify-between mb-3">
             <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Preview — Qualified Leads</div>
             <div id="csv-preview-count" class="text-[10px] font-black text-yellow-500 uppercase tracking-widest"></div>
           </div>
           <div id="csv-preview-table" class="space-y-2"></div>
-          <button onclick="commitCsvUpload()"
-            class="w-full mt-5 py-4 rounded-xl font-black uppercase tracking-widest text-sm"
-            style="background:linear-gradient(90deg,#92400e,#f59e0b,#fbbf24);color:#020617;border:none;cursor:pointer;box-shadow:0 0 20px rgba(245,158,11,0.35);">
-            <i class="fas fa-check mr-2"></i>PUBLISH TO LEADERBOARD
-          </button>
         </div>
       </div>
 
@@ -1826,8 +1826,41 @@ function render(){
     document.getElementById('target-display').innerText='Target: '+target;
     document.getElementById('day-indicator').innerText=isHistory?DAY_SHORT[currentDayView]+' — Completed':todayName+' Performance';
     let displayData=[],prTotal=0,bbTotal=0;
-    if(isHistory){const snap=dayHistory.find(d=>d.day===currentDayView);if(snap){displayData=[...snap.agents].sort((a,b)=>b.leads-a.leads);prTotal=snap.prTotal||0;bbTotal=snap.bbTotal||0;if(!prTotal&&!bbTotal)displayData.forEach(a=>{if(a.team==='PR')prTotal+=a.leads;else bbTotal+=a.leads;});}}
-    else{displayData=agents.map(a=>({name:a.name,leads:a.dailyLeads||0,team:a.team||getTeam(a.name)})).sort((a,b)=>b.leads-a.leads);let pr=0,bb=0;displayData.forEach(a=>{if(a.team==='PR')pr+=a.leads;else bb+=a.leads;});prTotal=pr;bbTotal=bb;}
+    if(isHistory){
+      const snap=dayHistory.find(d=>d.day===currentDayView);
+      if(snap){
+        // Merge full roster into history snapshot so zeros show too
+        const rosterList=(bizRoster&&bizRoster.length)?bizRoster:snap.agents;
+        const histMap={};
+        rosterList.forEach(a=>{const k=String(a.userId||a.name);histMap[k]={name:a.name,leads:0,team:a.team||getTeam(a.name)};});
+        snap.agents.forEach(a=>{const k=String(a.userId||a.name);if(histMap[k])histMap[k].leads=a.leads||0;else histMap[k]={name:a.name,leads:a.leads||0,team:a.team||getTeam(a.name)};});
+        displayData=Object.values(histMap).sort((a,b)=>b.leads-a.leads||(a.name>b.name?1:-1));
+        prTotal=0;bbTotal=0;displayData.forEach(a=>{if(a.team==='PR')prTotal+=a.leads;else bbTotal+=a.leads;});
+      }
+    }
+    else{
+      // Build a map of uploaded leads keyed by userId
+      const uploadMap={};
+      agents.forEach(a=>{ uploadMap[String(a.userId||a.name)]=a; });
+      // Merge full roster — everyone shows, zero if not in upload
+      const rosterList = (bizRoster&&bizRoster.length) ? bizRoster : agents;
+      const merged={};
+      // Start with everyone on the roster at 0
+      rosterList.forEach(a=>{
+        const k=String(a.userId||a.name);
+        merged[k]={name:a.name,leads:0,team:a.team||getTeam(a.name),userId:a.userId};
+      });
+      // Fill in actual leads from upload
+      agents.forEach(a=>{
+        const k=String(a.userId||a.name);
+        if(merged[k]) merged[k].leads=a.dailyLeads||0;
+        else merged[k]={name:a.name,leads:a.dailyLeads||0,team:a.team||getTeam(a.name),userId:a.userId};
+      });
+      displayData=Object.values(merged).sort((a,b)=>b.leads-a.leads||(a.name>b.name?1:-1));
+      let pr=0,bb=0;
+      displayData.forEach(a=>{if(a.team==='PR')pr+=a.leads;else bb+=a.leads;});
+      prTotal=pr;bbTotal=bb;
+    }
     let totalLeads=0,masters=0,activeReps=0;
     document.getElementById('leaderboard').innerHTML=displayData.map((agent,i)=>{
         const lvl=getLevel(agent.leads);totalLeads+=agent.leads;if(agent.leads>=12)masters++;if(agent.leads>0)activeReps++;
