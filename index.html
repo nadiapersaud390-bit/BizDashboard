@@ -3407,7 +3407,7 @@ function renderCsvHistory() {
       + '<div style="font-size:12px;font-weight:900;color:white;">' + dayName + (isToday?' <span style="font-size:9px;color:#4ade80;font-weight:900;">TODAY</span>':'') + (uploadTime?' <span style="color:#475569;font-size:10px;">· '+uploadTime+'</span>':'') + '</div>'
       + '<div style="font-size:10px;color:#f59e0b;font-weight:700;margin-top:2px;">' + count + ' qualified leads · ' + agentCount + ' agents</div>'
       + '</div>'
-      + '<button onclick="deleteCsvUpload(''+k+'')" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:6px 12px;color:#f87171;font-size:10px;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;">Delete</button>'
+      + '<button onclick="deleteCsvUpload(\'' + k + '\')" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:6px 12px;color:#f87171;font-size:10px;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;">Delete</button>'
       + '</div>';
   }).join('');
 }
