@@ -17,12 +17,14 @@ if (sessionStorage.getItem('agentLoggedIn') !== '1') {
 }
 
 function logoutUser() {
-    sessionStorage.removeItem('agentLoggedIn');
-    sessionStorage.removeItem('bizAdminUnlocked');
-    sessionStorage.removeItem('bizUserRole');
-    sessionStorage.removeItem('currentAgentName');
-    sessionStorage.removeItem('currentAgentProfile');
+    sessionStorage.clear();
     window.location.replace('agent-login.html');
+}
+
+function dismissLeadAlert() {
+    const banner = document.getElementById('lead-alert-banner');
+    if (banner) banner.style.display = 'none';
+    document.body.style.paddingTop = '0px';
 }
 </script>
 
