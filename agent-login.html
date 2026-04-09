@@ -347,12 +347,24 @@
         const aRes = await fetch(`${API_URL}?action=autoAttendance&ytelId=${encodeURIComponent(ytelId)}&name=${encodeURIComponent(sData.name)}&status=${encodeURIComponent(status)}`);
         const aData = await aRes.json();
 
-        if (!aData.ok) {
-          flashError(input, errEl, btn, 'Attendance marking failed — please try again.');
+        // ── FIX: allow through if already_marked (cell had P/L from a previous
+        //    mark by supervisor or trigger) or absent_overwrite (cell had A).
+        //    Only block on genuine failures.
+        if (!aData.ok && aData.writeResult !== 'already_marked') {
+          let msg = 'Attendance marking failed — please try again.';
+          if (aData.writeResult === 'agent_not_found') {
+            msg = 'You were found in the system but not in the weekly sheet — please contact your supervisor.';
+          } else if (aData.writeResult === 'no_sheet') {
+            msg = 'Weekly attendance sheet not found — contact your supervisor.';
+          } else if (aData.writeResult === 'no_week_block') {
+            msg = 'No active week block found in the sheet — contact your supervisor.';
+          }
+          flashError(input, errEl, btn, msg);
           return;
         }
 
-        // Save to localStorage so re-logins today reuse this status
+        // Save to localStorage so re-logins today reuse this status.
+        // If already_marked, we still save so the agent can proceed to dashboard.
         storeAttendance(ytelId, status, clockedAt);
         showResult(sData, status, ytelId, clockedAt);
       }
