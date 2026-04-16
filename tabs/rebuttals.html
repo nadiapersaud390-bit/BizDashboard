@@ -700,11 +700,10 @@
 
 <script>
 (function() {
-    // Track the currently active panel index
     var activePanel = -1;
 
     function showRebuttal(index) {
-        // Hide previous panel if there is one
+        // Close the currently open panel (if any)
         if (activePanel !== -1) {
             var prev = document.getElementById('rb-panel-' + activePanel);
             if (prev) prev.style.display = 'none';
@@ -717,11 +716,32 @@
             }
         }
 
-        // If clicking the same panel again, toggle it off
+        // If same button clicked again → toggle off
         if (activePanel === index) {
             activePanel = -1;
             return;
         }
+
+        // Open the new panel
+        var panel = document.getElementById('rb-panel-' + index);
+        if (panel) {
+            panel.style.display = 'block';
+            panel.style.animation = 'none';
+            panel.offsetHeight;
+            panel.style.animation = 'fadeSlideIn 0.2s ease';
+        }
+
+        var btn = document.getElementById('rb-btn-' + index);
+        if (btn) {
+            btn.style.background = 'rgba(20,184,166,0.2)';
+            btn.style.borderColor = '#14b8a6';
+            btn.style.color = '#2dd4bf';
+        }
+
+        activePanel = index;
+    }
+    // ... rest unchanged
+})();
 
         // Show the new panel
         var panel = document.getElementById('rb-panel-' + index);
