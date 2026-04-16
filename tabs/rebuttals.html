@@ -1,13 +1,3 @@
-<!-- ===== REBUTTALS TAB - FULLY UPDATED ===== -->
-<link rel="preconnect" href="https://cdnjs.cloudflare.com">
-
-<style>
-@keyframes fadeSlideIn {
-    0% { opacity: 0; transform: translateY(8px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-</style>
-
 <!-- Header -->
 <div style="border-radius:20px;overflow:hidden;border:2px solid rgba(20,184,166,0.4);box-shadow:0 0 30px rgba(20,184,166,0.1);">
     <div style="background:linear-gradient(135deg,rgba(20,184,166,0.12),rgba(15,118,110,0.22));padding:18px 24px;position:relative;overflow:hidden;">
@@ -24,44 +14,44 @@
 </div>
 
 <!-- Search Box -->
-<div style="position:relative; margin-top: 16px;">
+<div style="position:relative;">
     <i class="fas fa-search" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#14b8a6;font-size:13px;pointer-events:none;"></i>
     <input id="rebuttal-search" type="text" placeholder="Search objections..."
-        oninput="if(window.RebuttalManager) RebuttalManager.filterSearch(this.value)"
+        oninput="filterRebuttalSearch(this.value)"
         style="width:100%;background:rgba(20,184,166,0.06);border:1.5px solid rgba(20,184,166,0.3);border-radius:14px;color:white;font-size:13px;font-weight:600;padding:13px 16px 13px 44px;outline:none;font-family:'Inter',sans-serif;box-sizing:border-box;transition:border-color 0.2s,box-shadow 0.2s;"
         onfocus="this.style.borderColor='#14b8a6';this.style.boxShadow='0 0 0 3px rgba(20,184,166,0.15)'"
         onblur="this.style.borderColor='rgba(20,184,166,0.3)';this.style.boxShadow='none'"/>
 </div>
 
 <!-- Objection Buttons -->
-<div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#475569;margin-bottom:-4px;margin-top:12px;">Select Objection</div>
+<div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#475569;margin-bottom:-4px;">Select Objection</div>
 <div id="rb-btn-row" style="display:flex;gap:8px;flex-wrap:wrap;">
-    <button id="rb-btn-0" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(0)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Which Company?</button>
-    <button id="rb-btn-1" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(1)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Is This a Scam?</button>
-    <button id="rb-btn-2" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(2)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Email Me First</button>
-    <button id="rb-btn-3" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(3)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Why Calling?</button>
-    <button id="rb-btn-4" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(4)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Are You a Bank?</button>
-    <button id="rb-btn-5" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(5)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Bad Credit</button>
-    <button id="rb-btn-6" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(6)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Don't Need Loan</button>
-    <button id="rb-btn-7" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(7)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Why No Info?</button>
-    <button id="rb-btn-8" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(8)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Interest Rate?</button>
-    <button id="rb-btn-9" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(9)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Cheaper Option</button>
-    <button id="rb-btn-10" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(10)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">How'd You Get My Info?</button>
-    <button id="rb-btn-11" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(11)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Company Name?</button>
-    <button id="rb-btn-12" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(12)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Type of Loan?</button>
-    <button id="rb-btn-13" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(13)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Pre-Qualified?</button>
-    <button id="rb-btn-14" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(14)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Didn't Apply</button>
-    <button id="rb-btn-15" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(15)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Already Approved?</button>
-    <button id="rb-btn-16" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(16)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Where Located?</button>
-    <button id="rb-btn-17" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(17)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Business Name?</button>
-    <button id="rb-btn-18" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(18)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Don't Know Biz Name</button>
-    <button id="rb-btn-19" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(19)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Website?</button>
-    <button id="rb-btn-20" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(20)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Address?</button>
-    <button id="rb-btn-21" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(21)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Do Not Call</button>
-    <button id="rb-btn-22" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(22)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Anthony Smith / AI</button>
-    <button id="rb-btn-23" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(23)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">How Pre-Qualified?</button>
-    <button id="rb-btn-24" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(24)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Division of What?</button>
-    <button id="rb-btn-25" onclick="if(window.RebuttalManager) RebuttalManager.showRebuttal(25)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Affect Credit?</button>
+    <button id="rb-btn-0" onclick="showRebuttal(0)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Which Company?</button>
+    <button id="rb-btn-1" onclick="showRebuttal(1)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Is This a Scam?</button>
+    <button id="rb-btn-2" onclick="showRebuttal(2)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Email Me First</button>
+    <button id="rb-btn-3" onclick="showRebuttal(3)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Why Calling?</button>
+    <button id="rb-btn-4" onclick="showRebuttal(4)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Are You a Bank?</button>
+    <button id="rb-btn-5" onclick="showRebuttal(5)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Bad Credit</button>
+    <button id="rb-btn-6" onclick="showRebuttal(6)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Don't Need Loan</button>
+    <button id="rb-btn-7" onclick="showRebuttal(7)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Why No Info?</button>
+    <button id="rb-btn-8" onclick="showRebuttal(8)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Interest Rate?</button>
+    <button id="rb-btn-9" onclick="showRebuttal(9)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Cheaper Option</button>
+    <button id="rb-btn-10" onclick="showRebuttal(10)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">How'd You Get My Info?</button>
+    <button id="rb-btn-11" onclick="showRebuttal(11)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Company Name?</button>
+    <button id="rb-btn-12" onclick="showRebuttal(12)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Type of Loan?</button>
+    <button id="rb-btn-13" onclick="showRebuttal(13)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Pre-Qualified?</button>
+    <button id="rb-btn-14" onclick="showRebuttal(14)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Didn't Apply</button>
+    <button id="rb-btn-15" onclick="showRebuttal(15)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Already Approved?</button>
+    <button id="rb-btn-16" onclick="showRebuttal(16)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Where Located?</button>
+    <button id="rb-btn-17" onclick="showRebuttal(17)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Business Name?</button>
+    <button id="rb-btn-18" onclick="showRebuttal(18)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Don't Know Biz Name</button>
+    <button id="rb-btn-19" onclick="showRebuttal(19)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Website?</button>
+    <button id="rb-btn-20" onclick="showRebuttal(20)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Address?</button>
+    <button id="rb-btn-21" onclick="showRebuttal(21)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Do Not Call</button>
+    <button id="rb-btn-22" onclick="showRebuttal(22)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Anthony Smith / AI</button>
+    <button id="rb-btn-23" onclick="showRebuttal(23)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">How Pre-Qualified?</button>
+    <button id="rb-btn-24" onclick="showRebuttal(24)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Division of What?</button>
+    <button id="rb-btn-25" onclick="showRebuttal(25)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Affect Credit?</button>
 </div>
 
 <!-- No results -->
@@ -708,92 +698,81 @@
     <p style="font-size:12px;font-weight:700;color:#93c5fd;line-height:1.65;">Stay calm, stay brief. Acknowledge their concern, give the short answer, and redirect back to qualification questions immediately. Use acknowledgment phrases every 2 objections: "Perfect, thank you." / "Got it, that helps." / "That's great to know."</p>
 </div>
 
-<!-- NAMESPACED SCRIPT - FIXES EDGE COMPATIBILITY -->
 <script>
 (function() {
-    // Use a unique namespace to avoid conflicts with parent page functions
-    if (window.RebuttalManager) return;
-    
+    // Track the currently active panel index
     var activePanel = -1;
-    
-    window.RebuttalManager = {
-        showRebuttal: function(index) {
-            if (activePanel !== -1) {
-                var prev = document.getElementById('rb-panel-' + activePanel);
-                if (prev) prev.style.display = 'none';
-                
-                var prevBtn = document.getElementById('rb-btn-' + activePanel);
-                if (prevBtn) {
-                    prevBtn.style.background = 'rgba(255,255,255,0.04)';
-                    prevBtn.style.borderColor = 'rgba(255,255,255,0.1)';
-                    prevBtn.style.color = '#64748b';
-                }
-            }
-            
-            if (activePanel === index) {
-                activePanel = -1;
-                return;
-            }
-            
-            var panel = document.getElementById('rb-panel-' + index);
-            if (panel) {
-                panel.style.display = 'block';
-                panel.style.animation = 'none';
-                panel.offsetHeight;
-                panel.style.animation = 'fadeSlideIn 0.2s ease';
-            }
-            
-            var btn = document.getElementById('rb-btn-' + index);
-            if (btn) {
-                btn.style.background = 'rgba(20,184,166,0.2)';
-                btn.style.borderColor = '#14b8a6';
-                btn.style.color = '#2dd4bf';
-            }
-            
-            activePanel = index;
-        },
-        
-        filterSearch: function(searchTerm) {
-            var buttons = document.querySelectorAll('#rb-btn-row button');
-            var noResultsDiv = document.getElementById('rebuttal-no-results');
-            var searchTermLower = searchTerm.toLowerCase().trim();
-            var visibleCount = 0;
-            
-            buttons.forEach(function(button) {
-                var buttonText = button.textContent.toLowerCase();
-                if (searchTermLower === '' || buttonText.includes(searchTermLower)) {
-                    button.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    button.style.display = 'none';
-                }
-            });
-            
-            if (noResultsDiv) {
-                noResultsDiv.style.display = (visibleCount === 0 && searchTermLower !== '') ? 'block' : 'none';
-            }
-        },
-        
-        reset: function() {
-            if (activePanel !== -1) {
-                var prev = document.getElementById('rb-panel-' + activePanel);
-                if (prev) prev.style.display = 'none';
-                var prevBtn = document.getElementById('rb-btn-' + activePanel);
-                if (prevBtn) {
-                    prevBtn.style.background = 'rgba(255,255,255,0.04)';
-                    prevBtn.style.borderColor = 'rgba(255,255,255,0.1)';
-                    prevBtn.style.color = '#64748b';
-                }
-                activePanel = -1;
+
+    function showRebuttal(index) {
+        // Hide previous panel if there is one
+        if (activePanel !== -1) {
+            var prev = document.getElementById('rb-panel-' + activePanel);
+            if (prev) prev.style.display = 'none';
+
+            var prevBtn = document.getElementById('rb-btn-' + activePanel);
+            if (prevBtn) {
+                prevBtn.style.background = 'rgba(255,255,255,0.04)';
+                prevBtn.style.borderColor = 'rgba(255,255,255,0.1)';
+                prevBtn.style.color = '#64748b';
             }
         }
-    };
-    
-    // Also attach to window for inline onclick handlers
-    window.showRebuttal = window.RebuttalManager.showRebuttal;
-    window.filterRebuttalSearch = window.RebuttalManager.filterSearch;
-    
-    // Log success for debugging
-    console.log('Rebuttals module loaded successfully');
+
+        // If clicking the same panel again, toggle it off
+        if (activePanel === index) {
+            activePanel = -1;
+            return;
+        }
+
+        // Show the new panel
+        var panel = document.getElementById('rb-panel-' + index);
+        if (panel) {
+            panel.style.display = 'block';
+            panel.style.animation = 'none';
+            panel.offsetHeight; // force reflow to restart animation
+            panel.style.animation = 'fadeSlideIn 0.2s ease';
+        }
+
+        // Highlight the new button
+        var btn = document.getElementById('rb-btn-' + index);
+        if (btn) {
+            btn.style.background = 'rgba(20,184,166,0.2)';
+            btn.style.borderColor = '#14b8a6';
+            btn.style.color = '#2dd4bf';
+        }
+
+        activePanel = index;
+    }
+
+    function filterRebuttalSearch(searchTerm) {
+        var buttons = document.querySelectorAll('#rb-btn-row button');
+        var noResultsDiv = document.getElementById('rebuttal-no-results');
+        var searchTermLower = searchTerm.toLowerCase().trim();
+        var visibleCount = 0;
+
+        buttons.forEach(function(button) {
+            var buttonText = button.textContent.toLowerCase();
+            if (searchTermLower === '' || buttonText.includes(searchTermLower)) {
+                button.style.display = 'block';
+                visibleCount++;
+            } else {
+                button.style.display = 'none';
+            }
+        });
+
+        if (noResultsDiv) {
+            noResultsDiv.style.display = (visibleCount === 0 && searchTermLower !== '') ? 'block' : 'none';
+        }
+    }
+
+    // Expose to global scope for inline onclick handlers
+    window.showRebuttal = showRebuttal;
+    window.filterRebuttalSearch = filterRebuttalSearch;
 })();
 </script>
+
+<style>
+@keyframes fadeSlideIn {
+    0% { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+</style>
