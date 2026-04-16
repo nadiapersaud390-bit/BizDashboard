@@ -111,8 +111,16 @@ function render() {
         banner.classList.add('hidden');
     }
 
+    const isAdmin = sessionStorage.getItem('bizUserRole') === 'admin';
+    const targetDisplay = document.getElementById('target-display');
+
     document.getElementById('goal-label').innerText = isWeekly ? 'Weekly Team Goal' : isHistory ? DAY_FULL[currentDayView] + ' Final' : todayName + ' Daily Goal';
-    document.getElementById('target-display').innerText = 'Target: ' + target;
+
+    if (targetDisplay) {
+        targetDisplay.innerText = isAdmin ? 'Target: ' + target : '';
+        targetDisplay.style.display = isAdmin ? '' : 'none';
+    }
+
     document.getElementById('day-indicator').innerText = isWeekly ? 'Weekly Sprint' : isHistory ? DAY_SHORT[currentDayView] + ' — Completed' : todayName + ' Performance';
 
     // 3. Process Data
@@ -148,14 +156,14 @@ function render() {
         }
     }
 
-    // 4. Global Stat Calculations (always based on full team)
+    // 4. Global Stat Calculations
     fullList.forEach(agent => {
         totalLeads += agent.leads;
         if (agent.leads >= 12) masters++;
         if (agent.leads > 0) activeReps++;
     });
 
-    // 5. All users see the full leaderboard — assign rank to every entry
+    // 5. All users see the full leaderboard
     const displayData = fullList.map((a, i) => ({ ...a, rank: i + 1 }));
 
     // 6. Rendering
@@ -225,14 +233,18 @@ function getLevel(l) {
 function renderDaySubTabs() {
     const wrapper = document.getElementById('day-sub-tabs-wrapper');
     const container = document.getElementById('day-sub-tabs-container');
+
     if (currentTab !== 'daily' || !dayHistory.length) {
         if (wrapper) wrapper.classList.add('hidden');
         return;
     }
+
     let html = `<button onclick="switchDayView('today')" class="day-sub-tab is-today ${currentDayView === 'today' ? 'active' : ''}">Today</button>`;
+
     dayHistory.forEach(d => {
         html += `<button onclick="switchDayView(${d.day})" class="day-sub-tab is-history ${currentDayView === d.day ? 'active' : ''}">${DAY_SHORT[d.day]}<span class="history-dot"></span></button>`;
     });
+
     container.innerHTML = html;
     wrapper.classList.remove('hidden');
 }
@@ -245,11 +257,14 @@ function switchDayView(key) {
 
 function switchTab(tab) {
     if (tab === 'weekly') { requestWeekly(); return; }
+
     currentTab = tab;
     currentDayView = 'today';
+
     updateTabUI();
     render();
     renderDaySubTabs();
+
     if (tab === 'lookup') renderLookupHistory();
     if (tab === 'trivia') initTriviaTab();
 }
@@ -258,9 +273,12 @@ function updateTabUI() {
     ['daily', 'lookup', 'playbook', 'rebuttals', 'prank', 'weekly', 'trivia'].forEach(t => {
         const b = document.getElementById('tab-' + t);
         if (!b) return;
+
         if (t === currentTab) {
             b.className = 'flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all tab-active';
-            b.style.background = ''; b.style.color = '';
+            b.style.background = '';
+            b.style.color = '';
+
             if (t === 'trivia') {
                 b.style.background = 'linear-gradient(90deg,rgba(255,229,0,0.2),rgba(255,107,0,0.2))';
                 b.style.borderColor = 'rgba(255,229,0,0.5)';
@@ -268,9 +286,16 @@ function updateTabUI() {
         } else {
             b.className = 'flex-1 glass py-3 rounded-xl text-[10px] md:text-sm font-black uppercase tracking-widest transition-all text-slate-500';
             b.style.background = '';
-            if (t === 'rebuttals') { b.style.color = '#14b8a6'; b.style.borderColor = 'rgba(20,184,166,0.3)'; }
-            else if (t === 'prank') { b.style.color = '#a855f7'; }
-            else if (t === 'trivia') { b.style.color = '#f59e0b'; b.style.borderColor = 'rgba(245,158,11,0.3)'; }
+
+            if (t === 'rebuttals') {
+                b.style.color = '#14b8a6';
+                b.style.borderColor = 'rgba(20,184,166,0.3)';
+            } else if (t === 'prank') {
+                b.style.color = '#a855f7';
+            } else if (t === 'trivia') {
+                b.style.color = '#f59e0b';
+                b.style.borderColor = 'rgba(245,158,11,0.3)';
+            }
         }
     });
 }
@@ -283,12 +308,15 @@ function requestWeekly() {
         renderDaySubTabs();
         return;
     }
+
     const modal = document.getElementById('pw-modal');
     modal.classList.remove('hidden');
+
     const input = document.getElementById('pw-input');
     input.value = '';
     document.getElementById('pw-error').innerText = '';
     input.classList.remove('error');
+
     setTimeout(() => input.focus(), 100);
 }
 
@@ -297,16 +325,20 @@ function checkPassword() {
         weeklyUnlocked = true;
         document.getElementById('pw-modal').classList.add('hidden');
         document.getElementById('tab-weekly').innerHTML = 'Weekly';
+
         currentTab = 'weekly';
         currentDayView = 'today';
+
         updateTabUI();
         render();
         renderDaySubTabs();
     } else {
         const inp = document.getElementById('pw-input');
         inp.classList.add('error');
+
         document.getElementById('pw-error').innerText = 'Incorrect access code. Try again.';
         inp.value = '';
+
         setTimeout(() => inp.classList.remove('error'), 500);
         setTimeout(() => inp.focus(), 100);
     }
