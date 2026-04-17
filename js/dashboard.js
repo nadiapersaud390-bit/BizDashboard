@@ -14,7 +14,7 @@ async function updateDashboard() {
 
         // Data enrichment
         agents.forEach(a => {
-            if (!a.team) a.team = getTeam(a.name);
+            a.team = normalizeTeam(a.team, a.name);
         });
 
         // Client-side Guyana day override
@@ -27,20 +27,22 @@ async function updateDashboard() {
             dayHistory = agents[0].dayHistory;
             dayHistory.forEach(d => {
                 d.agents.forEach(a => {
-                    if (!a.team) a.team = getTeam(a.name);
+                    a.team = normalizeTeam(a.team, a.name);
                 });
             });
         }
 
         // Calculate Team Totals if missing
-        if (agents.length > 0 && !agents[0].prTotal && !agents[0].bbTotal) {
-            let pr = 0, bb = 0;
+        if (agents.length > 0 && !agents[0].prTotal && !agents[0].bbTotal && !agents[0].rmTotal) {
+            let pr = 0, bb = 0, rm = 0;
             agents.forEach(a => {
                 if (a.team === 'PR') pr += (a.dailyLeads || 0);
-                else bb += (a.dailyLeads || 0);
+                else if (a.team === 'BB') bb += (a.dailyLeads || 0);
+                else if (a.team === 'RM') rm += (a.dailyLeads || 0);
             });
             agents[0].prTotal = pr;
             agents[0].bbTotal = bb;
+            agents[0].rmTotal = rm;
         }
 
         // Update prank list
@@ -125,35 +127,35 @@ function render() {
 
     // 3. Process Data
     let fullList = [];
-    let prTotal = 0, bbTotal = 0, totalLeads = 0, masters = 0, activeReps = 0;
+    let prTotal = 0, bbTotal = 0, rmTotal = 0, totalLeads = 0, masters = 0, activeReps = 0;
 
     if (isHistory) {
         const snap = dayHistory.find(d => d.day === currentDayView);
         if (snap) {
             fullList = [...snap.agents].sort((a, b) => b.leads - a.leads);
-            prTotal = snap.prTotal || 0;
-            bbTotal = snap.bbTotal || 0;
-            if (!prTotal && !bbTotal) {
-                fullList.forEach(a => { if (a.team === 'PR') prTotal += a.leads; else bbTotal += a.leads; });
-            }
+            fullList = fullList.map(a => ({
+                ...a,
+                team: normalizeTeam(a.team, a.name)
+            }));
+            fullList.forEach(a => {
+                if (a.team === 'PR') prTotal += a.leads;
+                else if (a.team === 'BB') bbTotal += a.leads;
+                else if (a.team === 'RM') rmTotal += a.leads;
+            });
         }
     } else {
         fullList = agents.map(a => ({
             name: a.name,
             leads: isWeekly ? (a.weeklyLeads || 0) : (a.dailyLeads || 0),
-            team: a.team || getTeam(a.name),
+            team: normalizeTeam(a.team, a.name),
             ytelId: a.ytelId || ''
         })).sort((a, b) => b.leads - a.leads);
 
-        if (isWeekly) {
-            fullList.forEach(a => { if (a.team === 'PR') prTotal += a.leads; else bbTotal += a.leads; });
-        } else if (agents.length > 0) {
-            prTotal = agents[0].prTotal || 0;
-            bbTotal = agents[0].bbTotal || 0;
-            if (!prTotal && !bbTotal) {
-                fullList.forEach(a => { if (a.team === 'PR') prTotal += a.leads; else bbTotal += a.leads; });
-            }
-        }
+        fullList.forEach(a => {
+            if (a.team === 'PR') prTotal += a.leads;
+            else if (a.team === 'BB') bbTotal += a.leads;
+            else if (a.team === 'RM') rmTotal += a.leads;
+        });
     }
 
     // 4. Global Stat Calculations
@@ -172,9 +174,8 @@ function render() {
         const rank = agent.rank;
         const isMe = myName && agent.name && agent.name.trim().toUpperCase() === myName;
 
-        const badge = agent.team === 'PR'
-            ? '<span style="font-size:8px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:1px 5px;color:#a78bfa;font-weight:900;margin-left:6px;">PROV</span>'
-            : '<span style="font-size:8px;background:rgba(192,132,252,0.15);border:1px solid rgba(192,132,252,0.3);border-radius:4px;padding:1px 5px;color:#c084fc;font-weight:900;margin-left:6px;">BERB</span>';
+        const teamMeta = getTeamMeta(agent.team);
+        const badge = `<span style="font-size:8px;background:rgba(${teamMeta.rgb},0.15);border:1px solid rgba(${teamMeta.rgb},0.3);border-radius:4px;padding:1px 5px;color:${teamMeta.color};font-weight:900;margin-left:6px;">${teamMeta.label}</span>`;
 
         const myHighlight = isMe
             ? 'outline: 2px solid rgba(250,204,21,0.6); outline-offset: -2px;'
@@ -209,6 +210,7 @@ function render() {
     document.getElementById('current-leads-sum').innerText = totalLeads + ' Leads';
     document.getElementById('pr-count').innerText = prTotal;
     document.getElementById('bb-count').innerText = bbTotal;
+    document.getElementById('rm-count').innerText = rmTotal;
 
     // Progress Bar
     const pct = Math.min((totalLeads / target) * 100, 100);
