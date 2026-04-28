@@ -1,0 +1,635 @@
+<!-- tabs/adminpanel.html - Redesigned Admin Hub - No Popup, No Lag, Clean Layout -->
+<div class="w-full max-w-7xl mx-auto">
+    
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent uppercase tracking-tight">
+                    <i class="fas fa-shield-alt text-cyan-400 mr-2"></i>Admin Hub
+                </h2>
+                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Complete System Management</p>
+            </div>
+            <div class="bg-white/5 px-4 py-2 rounded-2xl border border-white/10">
+                <span class="text-[10px] text-slate-400 font-black uppercase tracking-widest" id="ah-live-clock">--:--:--</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation - Clean Horizontal Tabs (No Sidebar) -->
+    <div class="flex flex-wrap gap-2 mb-8 border-b border-white/10 pb-4">
+        <!-- Row 1: Core Features -->
+        <button onclick="switchAdminHubTab('overview')" id="ah-tab-overview" class="ah-tab-btn active">
+            <i class="fas fa-chart-pie"></i> Overview
+        </button>
+        <button onclick="switchAdminHubTab('profiles')" id="ah-tab-profiles" class="ah-tab-btn">
+            <i class="fas fa-users"></i> Profiles
+        </button>
+        <button onclick="switchAdminHubTab('attendance')" id="ah-tab-attendance" class="ah-tab-btn">
+            <i class="fas fa-calendar-check"></i> Attendance
+        </button>
+        <button onclick="switchAdminHubTab('coaching')" id="ah-tab-coaching" class="ah-tab-btn">
+            <i class="fas fa-user-graduate"></i> Coaching
+        </button>
+        <button onclick="switchAdminHubTab('monitoring')" id="ah-tab-monitoring" class="ah-tab-btn">
+            <i class="fas fa-headphones"></i> Monitoring
+        </button>
+        
+        <!-- Row 2: Analytics & Stats -->
+        <button onclick="switchAdminHubTab('stats')" id="ah-tab-stats" class="ah-tab-btn">
+            <i class="fas fa-chart-line"></i> Agent Stats
+        </button>
+        <button onclick="switchAdminHubTab('rebuttals')" id="ah-tab-rebuttals" class="ah-tab-btn">
+            <i class="fas fa-brain"></i> Rebuttal Intel
+        </button>
+        <button onclick="switchAdminHubTab('performance')" id="ah-tab-performance" class="ah-tab-btn">
+            <i class="fas fa-trophy"></i> Weekly Perf
+        </button>
+        <button onclick="switchAdminHubTab('zero')" id="ah-tab-zero" class="ah-tab-btn">
+            <i class="fas fa-ghost"></i> Zero Perf
+        </button>
+        
+        <!-- Row 3: Management Tools -->
+        <button onclick="switchAdminHubTab('admintools')" id="ah-tab-admintools" class="ah-tab-btn">
+            <i class="fas fa-tools"></i> Admin Tools
+        </button>
+        <button onclick="switchAdminHubTab('broadcast')" id="ah-tab-broadcast" class="ah-tab-btn">
+            <i class="fas fa-bullhorn"></i> Broadcast
+        </button>
+        <button onclick="switchAdminHubTab('super')" id="ah-tab-super" class="ah-tab-btn hidden">
+            <i class="fas fa-crown"></i> Super Admin
+        </button>
+    </div>
+
+    <!-- Content Area - Clean Scrollable Container -->
+    <div class="bg-black/20 rounded-3xl border border-white/5 p-6 md:p-8 min-h-[600px]">
+        
+        <!-- ========== OVERVIEW SECTION ========== -->
+        <div id="ah-sect-overview" class="ah-section">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass p-5 rounded-2xl text-center border border-white/5">
+                    <div class="text-cyan-400 text-2xl mb-2"><i class="fas fa-users"></i></div>
+                    <div class="text-2xl font-black text-white" id="ah-roster-total">0</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Total Agents</div>
+                </div>
+                <div class="glass p-5 rounded-2xl text-center border border-white/5">
+                    <div class="text-green-400 text-2xl mb-2"><i class="fas fa-circle"></i></div>
+                    <div class="text-2xl font-black text-white" id="ah-online-count">0</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Online Now</div>
+                </div>
+                <div class="glass p-5 rounded-2xl text-center border border-white/5">
+                    <div class="text-yellow-400 text-2xl mb-2"><i class="fas fa-chart-line"></i></div>
+                    <div class="text-2xl font-black text-white" id="ah-total-transfers">0</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Today's Transfers</div>
+                </div>
+                <div class="glass p-5 rounded-2xl text-center border border-white/5">
+                    <div class="text-purple-400 text-2xl mb-2"><i class="fas fa-trophy"></i></div>
+                    <div class="text-2xl font-black text-white" id="ah-master-count">0</div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">12+ Masters</div>
+                </div>
+            </div>
+
+            <!-- Goal Tracker -->
+            <div class="glass p-6 rounded-2xl border border-white/5 mb-8">
+                <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+                    <div>
+                        <div class="text-[10px] text-slate-500 font-black uppercase tracking-widest">Combined Transfer Goal</div>
+                        <div class="text-3xl font-black text-white" id="ah-goal-current">0 <span class="text-lg text-slate-600">/ 300</span></div>
+                    </div>
+                    <button onclick="ahEditGoal()" class="text-[10px] text-cyan-400 font-bold hover:underline px-3 py-2 rounded-lg bg-white/5">Edit Goal</button>
+                </div>
+                <div class="h-3 bg-black/40 rounded-full overflow-hidden">
+                    <div id="ah-goal-progress" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Team Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="glass p-5 rounded-2xl border border-white/5 cursor-pointer hover:bg-white/5 transition" onclick="ahShowTeamBreakdown('PR')">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-purple-400 text-lg font-black uppercase">Providence</div>
+                            <div class="text-3xl font-black text-white" id="ah-pr-count">0</div>
+                        </div>
+                        <div class="text-4xl">🐆</div>
+                    </div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-2">transfers</div>
+                </div>
+                <div class="glass p-5 rounded-2xl border border-white/5 cursor-pointer hover:bg-white/5 transition" onclick="ahShowTeamBreakdown('BB')">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-blue-400 text-lg font-black uppercase">Berbice</div>
+                            <div class="text-3xl font-black text-white" id="ah-bb-count">0</div>
+                        </div>
+                        <div class="text-4xl">🦁</div>
+                    </div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-2">transfers</div>
+                </div>
+                <div class="glass p-5 rounded-2xl border border-white/5 cursor-pointer hover:bg-white/5 transition" onclick="ahShowTeamBreakdown('RM')">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-cyan-400 text-lg font-black uppercase">Remote</div>
+                            <div class="text-3xl font-black text-white" id="ah-rm-count">0</div>
+                        </div>
+                        <div class="text-4xl">🌐</div>
+                    </div>
+                    <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-2">transfers</div>
+                </div>
+            </div>
+
+            <!-- Online / Offline Grids -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="glass p-6 rounded-2xl border border-white/5">
+                    <h4 class="text-sm font-black text-green-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Online Now
+                    </h4>
+                    <div id="ah-online-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[400px] overflow-y-auto pr-2">
+                        <div class="text-center text-slate-500 text-xs py-8">Loading...</div>
+                    </div>
+                </div>
+                <div class="glass p-6 rounded-2xl border border-white/5">
+                    <h4 class="text-sm font-black text-red-400 uppercase tracking-widest mb-4">🔴 Not Logged In</h4>
+                    <div id="ah-offline-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[400px] overflow-y-auto pr-2">
+                        <div class="text-center text-slate-500 text-xs py-8">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Detail Modal (Inline) -->
+            <div id="ah-sect-team-detail" class="hidden mt-8">
+                <div class="glass p-6 rounded-2xl border border-white/10">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center gap-4">
+                            <div id="ah-team-modal-icon" class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl bg-white/5"></div>
+                            <div>
+                                <h3 id="ah-team-modal-title" class="text-2xl font-black text-white uppercase">Team Name</h3>
+                                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Live Performance</p>
+                            </div>
+                        </div>
+                        <button onclick="ahCloseTeamDetail()" class="w-8 h-8 rounded-full bg-white/5 text-slate-400 hover:text-white">✕</button>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white/5 p-4 rounded-xl text-center">
+                            <div id="ah-team-modal-agents" class="text-2xl font-black text-white">0</div>
+                            <div class="text-[8px] text-slate-500 font-bold uppercase">Agents</div>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-xl text-center">
+                            <div id="ah-team-modal-xfers" class="text-2xl font-black text-white">0</div>
+                            <div class="text-[8px] text-slate-500 font-bold uppercase">Xfers</div>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-xl text-center">
+                            <div id="ah-team-modal-avg" class="text-2xl font-black text-white">0.0</div>
+                            <div class="text-[8px] text-slate-500 font-bold uppercase">Avg</div>
+                        </div>
+                        <div class="bg-cyan-500/10 p-4 rounded-xl text-center">
+                            <div id="ah-team-modal-top" class="text-2xl font-black text-cyan-400">#--</div>
+                            <div class="text-[8px] text-cyan-500 font-bold uppercase">Rank</div>
+                        </div>
+                    </div>
+                    <div class="max-h-[300px] overflow-y-auto">
+                        <table class="w-full text-left">
+                            <thead><tr class="text-[9px] font-black text-slate-500 border-b border-white/5"><th class="pb-2">Agent</th><th class="pb-2">Status</th><th class="pb-2 text-right">Transfers</th><tr></thead>
+                            <tbody id="ah-team-modal-list" class="text-[11px]"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== ATTENDANCE SECTION ========== -->
+        <div id="ah-sect-attendance" class="ah-section hidden">
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                <h3 class="text-xl font-black text-white uppercase">📅 Attendance Hub</h3>
+                <div class="flex gap-2">
+                    <button onclick="switchAttView('daily')" id="att-v-daily" class="px-4 py-2 rounded-xl text-[10px] font-black bg-blue-500 text-white">Daily</button>
+                    <button onclick="switchAttView('weekly')" id="att-v-weekly" class="px-4 py-2 rounded-xl text-[10px] font-black text-slate-400 hover:text-white">Weekly</button>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button onclick="filterAttTeam('ALL')" class="att-team-btn active">All Teams</button>
+                <button onclick="filterAttTeam('BB')" class="att-team-btn">Berbice</button>
+                <button onclick="filterAttTeam('PR')" class="att-team-btn">Providence</button>
+                <button onclick="filterAttTeam('RM')" class="att-team-btn">Remote</button>
+            </div>
+            <div id="att-view-daily" class="att-view-content">
+                <div class="glass p-4 rounded-2xl overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead><tr class="text-[9px] font-black text-slate-500 border-b border-white/10"><th class="p-3">#</th><th>Agent</th><th>Team</th><th>Status</th><th class="text-right">Time</th></tr></thead>
+                        <tbody id="att-daily-list"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="att-view-weekly" class="att-view-content hidden">
+                <div class="glass p-6 rounded-2xl text-center"><div id="att-weekly-matrix" class="py-10 text-slate-500">Select a team to load weekly data</div></div>
+            </div>
+        </div>
+
+        <!-- ========== AGENT PROFILES SECTION ========== -->
+        <div id="ah-sect-profiles" class="ah-section hidden">
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                <h3 class="text-xl font-black text-white uppercase">👤 Agent Profiles</h3>
+                <button onclick="apOpenModal()" class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black">+ Add Agent</button>
+            </div>
+            <div class="glass p-4 rounded-2xl mb-6">
+                <div class="flex flex-wrap gap-4">
+                    <input type="text" id="ap-search-input" oninput="apFilterAgents()" placeholder="Search..." class="flex-1 bg-black/40 border border-white/10 rounded-xl p-3 text-white text-sm">
+                    <select id="ap-team-filter" onchange="apFilterAgents()" class="bg-black/40 border border-white/10 rounded-xl p-3 text-white text-sm">
+                        <option value="ALL">All Teams</option><option value="BB">Berbice</option><option value="PR">Providence</option><option value="RM">Remote</option>
+                    </select>
+                </div>
+            </div>
+            <div id="ap-agent-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="ah-profiles-inline" class="hidden mt-6 glass p-6 rounded-2xl">
+                <form id="ap-form" onsubmit="apHandleSubmit(event)" class="space-y-4">
+                    <input type="hidden" id="ap-form-mode" value="add">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="ap-name" placeholder="Full Name" class="bg-black/40 border border-white/10 rounded-xl p-3 text-white" required>
+                        <input type="text" id="ap-userid" placeholder="User ID (4-digit)" maxlength="4" class="bg-black/40 border border-white/10 rounded-xl p-3 text-white" required>
+                        <select id="ap-team" class="bg-black/40 border border-white/10 rounded-xl p-3 text-white"><option value="BB">Berbice</option><option value="PR">Providence</option><option value="RM">Remote</option></select>
+                        <input type="text" id="ap-ytel-name" placeholder="Ytel Name" class="bg-black/40 border border-white/10 rounded-xl p-3 text-white">
+                        <select id="ap-shift" class="bg-black/40 border border-white/10 rounded-xl p-3 text-white"><option>10:00AM-7:00PM</option><option>11:00AM-8:00PM</option><option>12:00PM-9:00PM</option></select>
+                        <select id="ap-status" class="bg-black/40 border border-white/10 rounded-xl p-3 text-white"><option>Agent</option><option>Trainee</option><option>Inactive</option></select>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 py-3 rounded-xl font-black">Save Profile</button>
+                </form>
+            </div>
+        </div>
+
+        <style>
+            .ret-btn.active-ret { background: linear-gradient(90deg, rgba(6,182,212,0.25), rgba(59,130,246,0.25)); border-color: rgba(6,182,212,0.7); color: #67e8f9; }
+            tr.new-lead-row { background: rgba(34, 197, 94, 0.08); box-shadow: inset 3px 0 0 rgba(34,197,94,0.7); }
+        </style>
+        <!-- ========== AGENT STATS SECTION ========== -->
+        <div id="ah-sect-stats" class="ah-section hidden">
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                <h3 class="text-xl font-black text-white uppercase">📊 Agent Stats</h3>
+                <div class="flex gap-2">
+                    <button onclick="window.renderAgentStatsHistory()" class="bg-cyan-600 px-4 py-2 rounded-xl text-[10px] font-black">Refresh</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="glass p-5 rounded-2xl">
+                    <div id="as-drop-zone" class="border-2 border-dashed border-cyan-500/30 rounded-xl p-6 text-center cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-cyan-500 mb-2"></i>
+                        <p class="text-xs">Drop CSV or Click to Upload</p>
+                        <input type="file" id="as-file-input" accept=".csv" class="hidden">
+                    </div>
+                    <div id="as-upload-panel" class="hidden mt-4 space-y-3">
+                        <label class="text-[9px] uppercase tracking-widest text-slate-400 font-black">Report Date</label>
+                        <input type="text" id="as-report-date-input" readonly placeholder="Report Date" class="w-full bg-black/40 border border-white/10 rounded-xl p-2 text-sm">
+                        <div>
+                            <label class="text-[9px] uppercase tracking-widest text-slate-400 font-black">Auto-Delete After</label>
+                            <div class="grid grid-cols-2 gap-2 mt-1">
+                                <button type="button" id="as-ret-30" onclick="asSetRetention(30)" class="ret-btn bg-black/40 border border-white/10 hover:border-cyan-500/50 rounded-xl py-2 text-[11px] font-black text-white">30 Days</button>
+                                <button type="button" id="as-ret-90" onclick="asSetRetention(90)" class="ret-btn bg-black/40 border border-white/10 hover:border-cyan-500/50 rounded-xl py-2 text-[11px] font-black text-white">90 Days</button>
+                            </div>
+                            <div class="text-[9px] text-slate-500 mt-2">Auto-deletes on <span id="as-expiry-display" class="text-cyan-400 font-black">--</span></div>
+                        </div>
+                        <button onclick="asConfirmUpload()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-2 rounded-xl text-sm font-black">Confirm Upload</button>
+                    </div>
+                    <div id="as-upload-status" class="mt-3 text-center text-xs"></div>
+                    <button onclick="asDeleteAllPrevious()" class="mt-4 w-full bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest"><i class="fas fa-trash-alt mr-2"></i>Delete Previous Reports</button>
+                    <p class="text-[9px] text-slate-500 mt-2 text-center">Keeps the most recent report.</p>
+                </div>
+                <div class="lg:col-span-2 glass p-5 rounded-2xl">
+                    <h4 class="text-sm font-black text-white mb-4">Report History</h4>
+                    <div id="as-history-list" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
+                </div>
+            </div>
+            <div class="mt-6 glass p-5 rounded-2xl">
+                <div id="as-report-title" class="text-lg font-black text-white mb-4">Select a Report</div>
+                <div class="overflow-x-auto"><table class="w-full"><tbody id="as-table-body"></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- ========== COACHING SECTION ========== -->
+        <div id="ah-sect-coaching" class="ah-section hidden">
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                <h3 class="text-xl font-black text-white uppercase tracking-widest">📝 Coaching Notes</h3>
+                <button onclick="ahOpenCoachingInline()" class="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 px-4 py-2 rounded-xl text-[11px] font-black text-cyan-300 uppercase tracking-widest transition">+ Add Note</button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 mb-5">
+                <div class="flex-1 min-w-[240px] bg-black/40 border border-white/10 rounded-xl px-4 py-2 flex items-center gap-2">
+                    <span class="text-cyan-400">🔍</span>
+                    <input type="text" id="coach-search" oninput="ahFilterCoachingList()" placeholder="Search by rep name..." class="flex-1 bg-transparent text-white text-[12px] outline-none placeholder-slate-500">
+                </div>
+                <select id="coach-team-filter" onchange="ahFilterCoachingList()" class="bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-[11px] font-bold uppercase tracking-widest outline-none cursor-pointer">
+                    <option value="ALL" class="bg-slate-900">All Teams</option>
+                    <option value="BB" class="bg-slate-900">BB Team</option>
+                    <option value="PR" class="bg-slate-900">PR Team</option>
+                    <option value="RM" class="bg-slate-900">RM Team</option>
+                </select>
+            </div>
+
+            <div id="ah-coaching-inline" class="hidden glass p-6 rounded-2xl mb-6 border border-cyan-400/20">
+                <div class="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-4">New Coaching Note</div>
+                <form onsubmit="ahHandleCoachingSubmit(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Rep Name</label>
+                            <input type="text" id="coach-rep-name" list="coach-rep-list" placeholder="Start typing name..." class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]" required>
+                            <datalist id="coach-rep-list"></datalist>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Admin <span class="text-slate-500 normal-case font-normal">(Coached by)</span></label>
+                            <input type="text" id="coach-admin-name" placeholder="Your name..." class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[9px] font-black text-cyan-400 uppercase tracking-widest mb-1 block">💬 Discussion</label>
+                        <input type="text" id="coach-discussion" placeholder="e.g. Consistency and Efficiency" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]">
+                    </div>
+
+                    <div>
+                        <label class="text-[9px] font-black text-pink-400 uppercase tracking-widest mb-1 block">🌹 Goal</label>
+                        <input type="text" id="coach-goal" placeholder="e.g. Break the cycle of 8 leads to reach the 12-lead target" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]">
+                    </div>
+
+                    <div>
+                        <label class="text-[9px] font-black text-yellow-400 uppercase tracking-widest mb-1 block">✏️ Key Discussion Points <span class="text-slate-500 normal-case font-normal">(one per line)</span></label>
+                        <textarea id="coach-points" rows="4" placeholder="• Proven Potential: Reminded her that she has hit 12 leads before&#10;• Energy Check: Reviewed her script delivery&#10;• Speed to Lead: Focused on dispositioning calls faster" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[9px] font-black text-yellow-400 uppercase tracking-widest mb-1 block">💡 My Advice</label>
+                            <textarea id="coach-advice" rows="4" placeholder="Your personal advice to the rep..." class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]"></textarea>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-green-400 uppercase tracking-widest mb-1 block">✅ Outcome <span class="text-slate-500 normal-case font-normal">(one per line)</span></label>
+                            <textarea id="coach-outcome" rows="4" placeholder="• Process Shift: Focused on faster call handling&#10;• Commitment: Agreed to push past the 8-lead wall" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-2">
+                        <button type="submit" id="coach-save-btn" class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 py-3 rounded-xl font-black text-white uppercase tracking-widest text-[12px] transition">💾 Save Note</button>
+                        <button type="button" onclick="ahCloseCoachingInline()" class="bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-3 rounded-xl text-slate-400 text-[11px] font-black uppercase tracking-widest transition">Cancel</button>
+                    </div>
+                    <div id="coach-submit-status" class="text-[11px] text-center"></div>
+                </form>
+            </div>
+
+            <div id="ah-coaching-list" class="space-y-3"></div>
+        </div>
+
+        <!-- ========== MONITORING SECTION ========== -->
+        <div id="ah-sect-monitoring" class="ah-section hidden">
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                <h3 class="text-xl font-black text-white uppercase tracking-widest">🎧 Live Monitoring</h3>
+                <button onclick="ahOpenMonitoringInline()" class="bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 px-4 py-2 rounded-xl text-[11px] font-black text-purple-300 uppercase tracking-widest transition">+ Add Session</button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 mb-5">
+                <div class="flex-1 min-w-[240px] bg-black/40 border border-white/10 rounded-xl px-4 py-2 flex items-center gap-2">
+                    <span class="text-purple-400">🔍</span>
+                    <input type="text" id="mon-search" oninput="ahFilterMonitoringList()" placeholder="Search by rep name..." class="flex-1 bg-transparent text-white text-[12px] outline-none placeholder-slate-500">
+                </div>
+                <select id="mon-team-filter" onchange="ahFilterMonitoringList()" class="bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-[11px] font-bold uppercase tracking-widest outline-none cursor-pointer">
+                    <option value="ALL" class="bg-slate-900">All Teams</option>
+                    <option value="BB" class="bg-slate-900">BB Team</option>
+                    <option value="PR" class="bg-slate-900">PR Team</option>
+                    <option value="RM" class="bg-slate-900">RM Team</option>
+                </select>
+            </div>
+
+            <div id="ah-monitoring-inline" class="hidden glass p-6 rounded-2xl mb-6 border border-purple-400/20">
+                <div class="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-4">New Monitoring Session</div>
+                <form onsubmit="ahHandleMonitoringSubmit(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Rep Name</label>
+                            <input type="text" id="mon-rep-name" list="mon-rep-list" placeholder="Start typing name..." class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]" required>
+                            <datalist id="mon-rep-list"></datalist>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Admin Name</label>
+                            <input type="text" id="mon-admin-name" placeholder="Your name..." class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[9px] font-black text-pink-400 uppercase tracking-widest mb-1 block">📞 Dial Behavior <span class="text-slate-500 normal-case font-normal">(Voicemails)</span></label>
+                            <textarea id="mon-dial-behavior" rows="3" placeholder="Observations on call handling and dispositions..." class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]"></textarea>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-yellow-400 uppercase tracking-widest mb-1 block">🎙 Voice, Energy & Tone</label>
+                            <textarea id="mon-voice-tone" rows="3" placeholder="Voice quality, energy level, tone on calls..." class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[9px] font-black text-cyan-400 uppercase tracking-widest mb-1 block">📜 Script & Engagement</label>
+                            <textarea id="mon-script-engagement" rows="3" placeholder="How well they followed the script..." class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]"></textarea>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-purple-400 uppercase tracking-widest mb-1 block">💬 Objection / Rebuttal Handling</label>
+                            <textarea id="mon-objection-handling" rows="3" placeholder="How they handled objections live..." class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]"></textarea>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[9px] font-black text-yellow-400 uppercase tracking-widest mb-1 block">⭐ Coaching Points <span class="text-slate-500 normal-case font-normal">(feedback from this session)</span></label>
+                        <textarea id="mon-coaching-pts" rows="4" placeholder="Key takeaways and what the rep should focus on..." class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-[12px]"></textarea>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-2">
+                        <button type="submit" id="mon-save-btn" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 py-3 rounded-xl font-black text-white uppercase tracking-widest text-[12px] transition">💾 Save Session</button>
+                        <button type="button" onclick="ahCloseMonitoringInline()" class="bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-3 rounded-xl text-slate-400 text-[11px] font-black uppercase tracking-widest transition">Cancel</button>
+                    </div>
+                    <div id="mon-submit-status" class="text-[11px] text-center"></div>
+                </form>
+            </div>
+
+            <div id="ah-monitoring-list" class="space-y-3"></div>
+        </div>
+
+        <!-- ========== REBUTTAL INTEL SECTION ========== -->
+        <div id="ah-sect-rebuttals" class="ah-section hidden">
+            <h3 class="text-xl font-black text-white uppercase mb-6">💡 Rebuttal Intel</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="glass p-6 rounded-2xl"><h4 class="text-sm font-black mb-4">🏆 Top Rebuttals</h4><div id="ah-rebuttal-chart"></div></div>
+                <div class="glass p-6 rounded-2xl"><h4 class="text-sm font-black mb-4">🎯 Coaching Signals</h4><div id="ah-coaching-signals" class="space-y-3"></div></div>
+            </div>
+            <div class="mt-6 glass p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-sm font-black text-white uppercase">👥 All Agents — Click on a name to see which rebuttals they use</h4>
+                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Use rate = uses ÷ (uses + views)</span>
+                </div>
+                <div id="ah-rebuttal-agents" class="space-y-2 max-h-[500px] overflow-y-auto pr-2"></div>
+            </div>
+            <div class="mt-6 glass p-6 rounded-2xl overflow-x-auto">
+                <h4 class="text-sm font-black text-white uppercase mb-4">📊 Per-Rebuttal Totals</h4>
+                <table class="w-full"><tbody id="ah-rebuttal-table-body"></tbody></table>
+            </div>
+        </div>
+
+        <!-- ========== WEEKLY PERFORMANCE WITH DROPDOWN & ALL AGENTS ========== -->
+        <div id="ah-sect-performance" class="ah-section hidden">
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                <h3 class="text-xl font-black text-white uppercase">🏆 Weekly Performance</h3>
+                <div class="flex items-center gap-3">
+                    <!-- Week Selector Dropdown -->
+                    <div class="bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                        <select id="ah-week-select" class="bg-transparent text-white text-[11px] font-black uppercase tracking-widest outline-none cursor-pointer">
+                            <option value="current" selected>📅 Current Week</option>
+                        </select>
+                    </div>
+                    <button onclick="refreshWeeklyPerformance()" class="bg-cyan-600/20 border border-cyan-500/30 px-3 py-2 rounded-xl text-cyan-400 text-[10px] font-black hover:bg-cyan-600/30 transition">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Week Range Display -->
+            <div class="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-2xl p-4 mb-6 text-center">
+                <span class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Selected Week</span>
+                <div class="text-sm font-black text-cyan-400 uppercase tracking-wider" id="ah-weekly-range">Loading...</div>
+            </div>
+            
+            <!-- Team Rankings & Top 5 Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="glass p-6 rounded-2xl border border-white/5">
+                    <h4 class="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <i class="fas fa-trophy text-yellow-400"></i> Team Rankings
+                    </h4>
+                    <div id="ah-weekly-team-list" class="space-y-4">
+                        <div class="animate-pulse text-slate-500">Loading team data...</div>
+                    </div>
+                </div>
+                <div class="glass p-6 rounded-2xl border border-white/5">
+                    <h4 class="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <i class="fas fa-crown text-yellow-500"></i> Top 5 Agents
+                    </h4>
+                    <div id="ah-weekly-agent-list" class="space-y-3">
+                        <div class="animate-pulse text-slate-500">Loading top agents...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ALL AGENTS WEEKLY PERFORMANCE TABLE -->
+            <div class="glass p-6 rounded-2xl border border-white/5 mt-6">
+                <h4 class="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <i class="fas fa-list-ol text-cyan-400"></i> All Agents - Weekly Performance
+                </h4>
+                <div id="ah-weekly-agents-table-container" class="overflow-x-auto">
+                    <div class="animate-pulse text-center py-10 text-slate-500">Loading agent data...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== ZERO PERFORMANCE ========== -->
+        <div id="ah-sect-zero" class="ah-section hidden">
+            <h3 class="text-xl font-black text-white uppercase mb-6">👻 Zero Performance</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass p-6 rounded-2xl"><h4 class="text-sm font-black text-red-400 mb-4">Daily Zero Transfers</h4><div id="ah-zero-daily-list"></div></div>
+                <div class="glass p-6 rounded-2xl"><h4 class="text-sm font-black text-orange-400 mb-4">Weekly Zero Transfers</h4><div id="ah-zero-weekly-list"></div></div>
+            </div>
+        </div>
+
+        <!-- ========== ADMIN TOOLS ========== -->
+        <div id="ah-sect-admintools" class="ah-section hidden">
+            <div class="flex flex-wrap gap-2 mb-6 border-b border-white/10 pb-4">
+                <button onclick="switchAhToolsSubTab('resources')" class="aht-sub-btn active" id="aht-tab-resources">Resources</button>
+                <button onclick="switchAhToolsSubTab('performance')" class="aht-sub-btn" id="aht-tab-performance">Performance</button>
+                <button onclick="switchAhToolsSubTab('logs')" class="aht-sub-btn" id="aht-tab-logs">Activity Logs</button>
+                <button onclick="switchAhToolsSubTab('users')" class="aht-sub-btn hidden" id="aht-tab-users">Users</button>
+            </div>
+            <div id="aht-sect-resources" class="aht-sub-section">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass p-6 rounded-2xl"><h4 class="text-lg font-black mb-2">📊 BIZ Master Sheet</h4><p class="text-sm text-slate-400 mb-4">Access the primary database for roster and metrics</p><a href="https://docs.google.com/spreadsheets/d/1am-IQJU4SEvOSB4hCN4XdrnE5frPfw5DYGxKo9DRQd4/edit" target="_blank" class="inline-block bg-white/10 px-4 py-2 rounded-xl text-sm">Open Sheet →</a></div>
+                    <div class="glass p-6 rounded-2xl opacity-60"><h4 class="text-lg font-black mb-2">📂 Secondary Archive</h4><p class="text-sm text-slate-400 mb-4">Legacy data and historical reports</p><button disabled class="bg-white/5 px-4 py-2 rounded-xl text-sm">Locked</button></div>
+                </div>
+            </div>
+            <div id="aht-sect-performance" class="aht-sub-section hidden"><div class="glass p-6 rounded-2xl"><div id="ah-performance-table-body"></div><div id="ah-perf-empty" class="hidden py-10 text-center">No data</div></div></div>
+            <div id="aht-sect-logs" class="aht-sub-section hidden"><div class="glass p-6 rounded-2xl"><div id="ah-activity-logs" class="max-h-[500px] overflow-y-auto"></div></div></div>
+            <div id="aht-sect-users" class="aht-sub-section hidden"><div class="glass p-6 rounded-2xl"><div id="ah-admins-list"></div></div></div>
+        </div>
+
+        <!-- ========== BROADCAST ========== -->
+        <div id="ah-sect-broadcast" class="ah-section hidden">
+            <h3 class="text-xl font-black text-white uppercase mb-6">📢 Broadcast System</h3>
+            <div class="glass p-6 rounded-2xl">
+                <textarea id="bc-input" rows="3" placeholder="Type your broadcast message..." class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white mb-4"></textarea>
+                <button onclick="sendBroadcast()" class="bg-gradient-to-r from-orange-600 to-orange-500 px-6 py-3 rounded-xl font-black">🚀 Send Broadcast</button>
+                <div id="bc-status" class="mt-3 text-center text-sm"></div>
+            </div>
+        </div>
+
+        <!-- ========== SUPER ADMIN ========== -->
+        <div id="ah-sect-super" class="ah-section hidden">
+            <h3 class="text-xl font-black text-white uppercase mb-6">👑 Super Admin</h3>
+            <div class="glass p-6 rounded-2xl">
+                <div id="super-admins-list" class="space-y-2 mb-6"></div>
+                <div class="border-t border-white/10 pt-6">
+                    <h4 class="text-sm font-black mb-4">Add New Admin</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="text" id="super-new-admin-name" placeholder="Name" class="bg-black/40 border border-white/10 rounded-xl p-3">
+                        <input type="email" id="super-new-admin-email" placeholder="Email" class="bg-black/40 border border-white/10 rounded-xl p-3">
+                        <input type="password" id="super-new-admin-password" placeholder="Password" class="bg-black/40 border border-white/10 rounded-xl p-3">
+                    </div>
+                    <button onclick="superAddNewAdmin()" class="mt-4 bg-yellow-600 px-6 py-2 rounded-xl font-black">Add Admin</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .ah-tab-btn {
+        padding: 8px 18px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .ah-tab-btn i { font-size: 12px; }
+    .ah-tab-btn:hover { background: rgba(255,255,255,0.08); color: #94a3b8; }
+    .ah-tab-btn.active { background: rgba(6,182,212,0.2); border-color: #06b6d4; color: #22d3ee; }
+    
+    .aht-sub-btn {
+        padding: 6px 16px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        background: rgba(255,255,255,0.03);
+        color: #64748b;
+        cursor: pointer;
+    }
+    .aht-sub-btn.active { background: rgba(6,182,212,0.2); color: #22d3ee; }
+    
+    .att-team-btn {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 900;
+        background: rgba(255,255,255,0.03);
+        color: #64748b;
+        cursor: pointer;
+    }
+    .att-team-btn.active { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    
+    .glass {
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(10px);
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+</style>

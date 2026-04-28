@@ -1,5 +1,25 @@
 function timeAgo(date){const m=Math.floor((Date.now()-date.getTime())/60000);if(m<1)return'Just now';if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
 function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function getFormattedDate(d = new Date()) {
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    const weekday = { weekday: 'short' };
+    return d.toLocaleDateString('en-US', options) + ' (' + d.toLocaleDateString('en-US', weekday) + ')';
+}
+
+function getGuyanaDayName(d = new Date()) {
+    const options = { weekday: 'short', timeZone: 'America/Guyana' };
+    return d.toLocaleDateString('en-US', options).toUpperCase(); // "MON", "TUE" etc.
+}
+
+function isSameWeek(d1, d2) {
+    const getStartOfWeek = (d) => {
+        const date = new Date(d);
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Monday start
+        return new Date(date.setDate(diff)).setHours(0,0,0,0);
+    };
+    return getStartOfWeek(d1) === getStartOfWeek(d2);
+}
 
 // ============================================================
 // CLOCK UPDATE
