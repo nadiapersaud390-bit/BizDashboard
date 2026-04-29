@@ -2,6 +2,29 @@ const KNOWN_PRANK_NUMBERS=['9163656189','7725380078','5155382287','2524125130','
 const KNOWN_TRUCKING_NUMBERS=['8037355052','9094384996','4073752418','9175613116','9049451857','6122136729','2282787454','4784519553','7708916065','8327711931','7734915634','9196044629','3345908864','5135182367','8646014987','9168786362','9313388267','8126218311','7123308224','9099129813','7739561628','8048220400','8133319694','3302068622','2038855026','6083061773','3252476208','8645852073','8037471102','8043249527','2765664965','8036248184','8593539222','2158506881','3203333445','6692921025','3465228286','3134925553','8636571633','3194503310','2313711551','2677675579','7869012853','9104177920','7708991115','7346120002','2244886335','6066224334','3126759631','3194718151','4069301685','9562633814','3033195765','9095182805','5164440447','3013189419','2602371073','8326128410','9518370245','6156486511','6613756862','6204086324','4697816350','3234473277','7542130413','8645209840','2024251872','7573444483','2108348944','9102319543'];
 const KNOWN_NOT_SERIOUS_NUMBERS=['8315969595','6025249999','9545531044','9545998844','6108587766','4049363703','3525526656','4403902075','2482400067','6176920021','7855500429','7074907029','7077389769','3869371667','2172425249','7153401448','8087477788','8635576929','9012192066','5415154514','5607500429','5129379494','3124793437','6265900828','9144699875','7408918422','7862185383','8325151689','9727487356','2173161719','9016128611','9157908824','8132848555','8703120279','8324413144','2103632150','7708996994','6284883332','9287654951','7732506946','3505627400','5806197420','8158146330','3478604021','4809955447','8134654567','5038870600','5083264440','6015736850','5188782513','3046737500','2162693152','8088603481','2533818589','7868283211','9096930598','3083059178','3053218180','7575742897','7012619840','8623687500','3058898191','5326247000','7039693579','8134203849','5314669271','3109087986','3105988171','6023634805','7865976907','6628008473','8054447815','6787566023','3052095548','3053365569'];
 
+// ========== LOAD PRANK NUMBERS FROM SHEET ==========
+// Fetches numbers logged via "Log Prank Call → Sheet" and merges them into
+// KNOWN_PRANK_NUMBERS so live-logged pranks are caught on next page load.
+async function loadPrankNumbersFromSheet(){
+  try{
+    if(typeof API_URL==='undefined'||!API_URL)return;
+    const res=await fetch(API_URL+'?action=getPrankNumbers');
+    if(!res.ok)return;
+    const data=await res.json();
+    if(data&&Array.isArray(data.prankNumbers)){
+      data.prankNumbers.forEach(n=>{
+        const d=String(n).replace(/\D/g,'').slice(-10);
+        if(d.length>=7&&!KNOWN_PRANK_NUMBERS.includes(d)){
+          KNOWN_PRANK_NUMBERS.push(d);
+        }
+      });
+    }
+  }catch(e){
+    // silent fail — hardcoded list still works
+  }
+}
+loadPrankNumbersFromSheet();
+
 function normalizePhone(q){return q.replace(/\D/g,'');}
 function checkKnownBadNumber(q){const digits=normalizePhone(q);if(digits.length<7)return null;const d10=digits.slice(-10);if(KNOWN_PRANK_NUMBERS.includes(d10))return{type:'prank',label:'🎭 CONFIRMED PRANK CALLER',color:'#ef4444',msg:'This number is on the confirmed prank caller list. End the call professionally and move on.'};if(KNOWN_TRUCKING_NUMBERS.includes(d10))return{type:'trucking',label:'🚛 CONFIRMED TRUCKING — DNQ',color:'#f97316',msg:'This number is a confirmed trucking business. They do not qualify. Do not transfer.'};if(KNOWN_NOT_SERIOUS_NUMBERS.includes(d10))return{type:'notserious',label:'⚠️ NOT A SERIOUS LEAD',color:'#eab308',msg:'This number is flagged as not a serious lead. Proceed with extreme caution or skip.'};return null;}
 function detectPrank(query){const q=query.trim().toLowerCase();const reasons=[];let score=0;const isPhone=/^[\d\s\-\(\)\+\.]+$/.test(query)&&query.replace(/\D/g,'').length>=7;if(isPhone){const d=query.replace(/\D/g,'');if(/^(\d)\1+$/.test(d)){score+=85;reasons.push('All same digits — clearly fake number');}if(['1234567890','0987654321','1234567'].some(s=>d.includes(s.slice(0,7)))){score+=70;reasons.push('Sequential digits — common fake number');}if(['0000000000','1111111111','1234567890','9999999999'].includes(d)){score+=90;reasons.push('Known placeholder/test phone number');}}const fictional=['dunder mifflin','umbrella corp','initech','globex','vandelay','acme corp','nakatomi','aperture','wayne enterprises','stark industries'];if(fictional.some(f=>q.includes(f))){score+=95;reasons.push('Fictional company name detected');}if(/^[a-z]{1,3}$/.test(q)){score+=85;reasons.push('Too short to be a real business name');}if(/(.)\1{3,}/.test(q)){score+=75;reasons.push('Repeated characters — keyboard mashing');}if(/^(asdf|qwer|zxcv|test|fake|blah|lol|haha)/.test(q)){score+=90;reasons.push('Nonsense or test input');}['business name','company name','my business','test business','sample','placeholder'].forEach(p=>{if(q.includes(p)){score+=88;reasons.push('Generic placeholder name');}});['money inc','cash cash','big bucks','easy money','get rich','bank of nigeria','free money'].forEach(j=>{if(q.includes(j)){score+=80;reasons.push('Matches known scam/joke phrase');}});if(/[!@#$%^&*]{2,}/.test(query)){score+=60;reasons.push('Excessive special characters');}const words=q.split(/\s+/).filter(Boolean);if(words.length>1&&new Set(words).size===1){score+=75;reasons.push('All words identical — suspicious');}score=Math.min(score,100);return{prankScore:score,prankReasons:reasons,prankVerdict:score>=80?'definite_prank':score>=56?'likely_prank':score>=26?'suspicious':'clean'};}
@@ -40,6 +63,9 @@ async function logPrankCall(){
     statusEl.style.border='1px solid rgba(34,197,94,0.35)';
     statusEl.style.color='#4ade80';
     statusEl.textContent='✅ Prank number logged to sheet!';
+    // Also add to local array immediately so this session catches it right away
+    const d=String(q).replace(/\D/g,'').slice(-10);
+    if(d.length>=7&&!KNOWN_PRANK_NUMBERS.includes(d))KNOWN_PRANK_NUMBERS.push(d);
     document.getElementById('lookup-input').value='';
     setTimeout(()=>{statusEl.style.display='none';},4000);
   }catch(e){
