@@ -551,43 +551,29 @@ function checkLeadAlerts(newAgents) {
 
   if (!newReps.length) return;
 
-  if (isAdmin) {
-    // ── ADMIN: all simultaneous leads show together in one banner ──
-    if (newReps.length === 1) {
-      const { name, count, isFirst } = newReps[0];
-      const firstName = getFirstName(name);
-      const quote     = pickQuote(count, isFirst);
-      const plural    = count === 1 ? '' : 's';
-      const msg       = isFirst
-        ? firstName + ' just got their FIRST lead of the day! 🥇'
-        : firstName + ' just transferred — now at ' + count + ' lead' + plural + ' today! 🔥';
-      _renderAlert({ icon: isFirst ? '🥇' : '🔥', name: firstName + ' — New Lead!', msg, quote, firstLead: isFirst });
-    } else {
-      const hasFirst  = newReps.some(r => r.isFirst);
-      const icon      = hasFirst ? '🥇' : '⚡';
-      const title     = newReps.length + ' New Leads Just Hit the Floor!';
-      const agentList = newReps.map(r => {
-        const fn     = getFirstName(r.name);
-        const plural = r.count === 1 ? '' : 's';
-        return r.isFirst
-          ? fn + ' (1st lead! 🥇)'
-          : fn + ' (' + r.count + ' lead' + plural + ')';
-      }).join('  •  ');
-      const maxCount = Math.max(...newReps.map(r => r.count));
-      const quote    = pickQuote(maxCount, hasFirst);
-      _renderAlert({ icon, name: title, msg: agentList, quote, firstLead: hasFirst });
-    }
-  } else {
-    // ── AGENT: sees ONLY their own lead alert, nothing else ──
-    if (!alertViewerName && !alertViewerYtelId) return;
-    const ownReps = newReps.filter(rep => isViewerAgent(rep.agentObj));
-    if (!ownReps.length) return;
-
-    const { name, count, isFirst } = ownReps[0];
+  if (newReps.length === 1) {
+    const { name, count, isFirst } = newReps[0];
     const firstName = getFirstName(name);
     const quote     = pickQuote(count, isFirst);
-    const msg       = PRIVATE_ALERT_MESSAGES[Math.floor(Math.random() * PRIVATE_ALERT_MESSAGES.length)];
-    _renderAlert({ icon: isFirst ? '🥇' : '🔥', name: 'Great job, ' + firstName + '!', msg, quote, firstLead: isFirst });
+    const plural    = count === 1 ? '' : 's';
+    const msg       = isFirst
+      ? firstName + ' just got their FIRST lead of the day! 🥇'
+      : firstName + ' just transferred — now at ' + count + ' lead' + plural + ' today! 🔥';
+    _renderAlert({ icon: isFirst ? '🥇' : '🔥', name: firstName + ' — New Lead!', msg, quote, firstLead: isFirst });
+  } else {
+    const hasFirst  = newReps.some(r => r.isFirst);
+    const icon      = hasFirst ? '🥇' : '⚡';
+    const title     = newReps.length + ' New Leads Just Hit the Floor!';
+    const agentList = newReps.map(r => {
+      const fn     = getFirstName(r.name);
+      const plural = r.count === 1 ? '' : 's';
+      return r.isFirst
+        ? fn + ' (1st lead! 🥇)'
+        : fn + ' (' + r.count + ' lead' + plural + ')';
+    }).join('  •  ');
+    const maxCount = Math.max(...newReps.map(r => r.count));
+    const quote    = pickQuote(maxCount, hasFirst);
+    _renderAlert({ icon, name: title, msg: agentList, quote, firstLead: hasFirst });
   }
 }
 
