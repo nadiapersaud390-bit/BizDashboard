@@ -4,6 +4,8 @@ const KNOWN_NOT_SERIOUS_NUMBERS=['8315969595','6025249999','9545531044','9545998
 
 // ========== SHEET PRANK NUMBERS (loaded live from Google Sheet) ==========
 let sheetPrankNumbers = [];
+// Track the in-flight promise so runLookup can await it if still loading
+let _sheetPrankLoadPromise = null;
 
 async function loadSheetPrankNumbers() {
   try {
@@ -13,39 +15,84 @@ async function loadSheetPrankNumbers() {
     console.log('[Lookup] Sheet prank numbers loaded:', sheetPrankNumbers.length);
   } catch (e) {
     console.warn('[Lookup] Could not load prank numbers from sheet:', e);
+    sheetPrankNumbers = []; // ensure always an array
   }
 }
 
-// Call on page load so sheet-logged numbers are ready immediately
-loadSheetPrankNumbers();
+// Call on page load and store the promise so runLookup can await it
+_sheetPrankLoadPromise = loadSheetPrankNumbers();
 
 // ========== HELPERS ==========
-function normalizePhone(q){return q.replace(/\D/g,'');}
+function normalizePhone(q) { return q.replace(/\D/g, ''); }
 
-function checkKnownBadNumber(q){
+function checkKnownBadNumber(q) {
   const digits = normalizePhone(q);
   if (digits.length < 7) return null;
   const d10 = digits.slice(-10);
 
   // Check BOTH hardcoded list AND sheet-logged numbers
   if (KNOWN_PRANK_NUMBERS.includes(d10) || sheetPrankNumbers.includes(d10))
-    return {type:'prank', label:'🎭 CONFIRMED PRANK CALLER', color:'#ef4444', msg:'This number is on the confirmed prank caller list. End the call professionally and move on.'};
+    return { type: 'prank', label: '🎭 CONFIRMED PRANK CALLER', color: '#ef4444', msg: 'This number is on the confirmed prank caller list. End the call professionally and move on.' };
 
   if (KNOWN_TRUCKING_NUMBERS.includes(d10))
-    return {type:'trucking', label:'🚛 CONFIRMED TRUCKING — DNQ', color:'#f97316', msg:'This number is a confirmed trucking business. They do not qualify. Do not transfer.'};
+    return { type: 'trucking', label: '🚛 CONFIRMED TRUCKING — DNQ', color: '#f97316', msg: 'This number is a confirmed trucking business. They do not qualify. Do not transfer.' };
 
   if (KNOWN_NOT_SERIOUS_NUMBERS.includes(d10))
-    return {type:'notserious', label:'⚠️ NOT A SERIOUS LEAD', color:'#eab308', msg:'This number is flagged as not a serious lead. Proceed with extreme caution or skip.'};
+    return { type: 'notserious', label: '⚠️ NOT A SERIOUS LEAD', color: '#eab308', msg: 'This number is flagged as not a serious lead. Proceed with extreme caution or skip.' };
 
   return null;
 }
 
 function detectPrank(query){const q=query.trim().toLowerCase();const reasons=[];let score=0;const isPhone=/^[\d\s\-\(\)\+\.]+$/.test(query)&&query.replace(/\D/g,'').length>=7;if(isPhone){const d=query.replace(/\D/g,'');if(/^(\d)\1+$/.test(d)){score+=85;reasons.push('All same digits — clearly fake number');}if(['1234567890','0987654321','1234567'].some(s=>d.includes(s.slice(0,7)))){score+=70;reasons.push('Sequential digits — common fake number');}if(['0000000000','1111111111','1234567890','9999999999'].includes(d)){score+=90;reasons.push('Known placeholder/test phone number');}}const fictional=['dunder mifflin','umbrella corp','initech','globex','vandelay','acme corp','nakatomi','aperture','wayne enterprises','stark industries'];if(fictional.some(f=>q.includes(f))){score+=95;reasons.push('Fictional company name detected');}if(/^[a-z]{1,3}$/.test(q)){score+=85;reasons.push('Too short to be a real business name');}if(/(.)\1{3,}/.test(q)){score+=75;reasons.push('Repeated characters — keyboard mashing');}if(/^(asdf|qwer|zxcv|test|fake|blah|lol|haha)/.test(q)){score+=90;reasons.push('Nonsense or test input');}['business name','company name','my business','test business','sample','placeholder'].forEach(p=>{if(q.includes(p)){score+=88;reasons.push('Generic placeholder name');}});['money inc','cash cash','big bucks','easy money','get rich','bank of nigeria','free money'].forEach(j=>{if(q.includes(j)){score+=80;reasons.push('Matches known scam/joke phrase');}});if(/[!@#$%^&*]{2,}/.test(query)){score+=60;reasons.push('Excessive special characters');}const words=q.split(/\s+/).filter(Boolean);if(words.length>1&&new Set(words).size===1){score+=75;reasons.push('All words identical — suspicious');}score=Math.min(score,100);return{prankScore:score,prankReasons:reasons,prankVerdict:score>=80?'definite_prank':score>=56?'likely_prank':score>=26?'suspicious':'clean'};}
 
-function isPhoneNum(q){return /^[\d\s\-\(\)\+\.]+$/.test(q)&&q.replace(/\D/g,'').length>=7;}
-function buildQuery(q){if(isPhoneNum(q))return 'For the phone number '+q+', give me: the business name, the name of the owner, the address, and email if possible';return 'For the business "'+q+'", give me: the business name, the name of the owner, the address, and email if possible';}
+function isPhoneNum(q) { return /^[\d\s\-\(\)\+\.]+$/.test(q) && q.replace(/\D/g, '').length >= 7; }
+function buildQuery(q) { if (isPhoneNum(q)) return 'For the phone number ' + q + ', give me: the business name, the name of the owner, the address, and email if possible'; return 'For the business "' + q + '", give me: the business name, the name of the owner, the address, and email if possible'; }
 
-function runLookup(){const q=document.getElementById('lookup-input').value.trim();if(!q){document.getElementById('lookup-input').focus();return;}const knownBad=checkKnownBadNumber(q);if(knownBad){showKnownBadAlert(knownBad,q);const entry={query:q,prankScore:knownBad.type==='prank'?100:knownBad.type==='trucking'?90:70,prankVerdict:knownBad.type==='prank'?'definite_prank':'suspicious',prankReasons:['Found in known bad number database: '+knownBad.label],timestamp:new Date().toISOString()};lookupHistory.unshift(entry);if(lookupHistory.length>15)lookupHistory=lookupHistory.slice(0,15);try{localStorage.setItem('bizlookup_history',JSON.stringify(lookupHistory));}catch(e){}renderLookupHistory();return;}const prank=detectPrank(q);showPrankResult(prank);const entry={query:q,prankScore:prank.prankScore,prankVerdict:prank.prankVerdict,prankReasons:prank.prankReasons,timestamp:new Date().toISOString()};lookupHistory.unshift(entry);if(lookupHistory.length>15)lookupHistory=lookupHistory.slice(0,15);try{localStorage.setItem('bizlookup_history',JSON.stringify(lookupHistory));}catch(e){}renderLookupHistory();openSite('google');}
+// ========== MAIN LOOKUP — async so it can wait for sheet numbers ==========
+async function runLookup() {
+  const q = document.getElementById('lookup-input').value.trim();
+  if (!q) { document.getElementById('lookup-input').focus(); return; }
+
+  // FIX: Wait for the initial sheet prank load to finish before checking.
+  // This prevents the race condition where the button is clicked before
+  // the async fetch from Google Sheets has returned.
+  if (_sheetPrankLoadPromise) {
+    await _sheetPrankLoadPromise;
+    _sheetPrankLoadPromise = null; // only await once
+  }
+
+  const knownBad = checkKnownBadNumber(q);
+  if (knownBad) {
+    showKnownBadAlert(knownBad, q);
+    const entry = {
+      query: q,
+      prankScore: knownBad.type === 'prank' ? 100 : knownBad.type === 'trucking' ? 90 : 70,
+      prankVerdict: knownBad.type === 'prank' ? 'definite_prank' : 'suspicious',
+      prankReasons: ['Found in known bad number database: ' + knownBad.label],
+      timestamp: new Date().toISOString()
+    };
+    lookupHistory.unshift(entry);
+    if (lookupHistory.length > 15) lookupHistory = lookupHistory.slice(0, 15);
+    try { localStorage.setItem('bizlookup_history', JSON.stringify(lookupHistory)); } catch(e) {}
+    renderLookupHistory();
+    return;
+  }
+
+  const prank = detectPrank(q);
+  showPrankResult(prank);
+  const entry = {
+    query: q,
+    prankScore: prank.prankScore,
+    prankVerdict: prank.prankVerdict,
+    prankReasons: prank.prankReasons,
+    timestamp: new Date().toISOString()
+  };
+  lookupHistory.unshift(entry);
+  if (lookupHistory.length > 15) lookupHistory = lookupHistory.slice(0, 15);
+  try { localStorage.setItem('bizlookup_history', JSON.stringify(lookupHistory)); } catch(e) {}
+  renderLookupHistory();
+  openSite('google');
+}
 
 function showKnownBadAlert(bad,q){const el=document.getElementById('lookup-prank-result');const iconMap={prank:'fas fa-ban',trucking:'fas fa-truck',notserious:'fas fa-exclamation-triangle'};const bgMap={prank:'linear-gradient(135deg,rgba(239,68,68,0.25),rgba(185,28,28,0.35))',trucking:'linear-gradient(135deg,rgba(249,115,22,0.2),rgba(194,65,12,0.3))',notserious:'linear-gradient(135deg,rgba(234,179,8,0.18),rgba(161,98,7,0.28))'};const c=bad.color,icon=iconMap[bad.type],bg=bgMap[bad.type];el.innerHTML='<div style="border-radius:18px;overflow:hidden;border:3px solid '+c+';box-shadow:0 0 40px '+c+'55;animation:fadeSlideIn 0.25s ease-out;"><div style="background:'+bg+';padding:20px 22px;position:relative;overflow:hidden;"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,'+c+'09 10px,'+c+'09 20px);"></div><div style="position:relative;display:flex;align-items:center;gap:16px;"><div style="width:56px;height:56px;border-radius:50%;background:'+c+'22;border:2px solid '+c+'55;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="'+icon+'" style="color:'+c+';font-size:1.3rem;"></i></div><div style="flex:1;"><div style="font-family:Orbitron,sans-serif;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:'+c+';margin-bottom:4px;">'+bad.label+'</div><div style="font-size:12px;font-weight:700;color:#e2e8f0;line-height:1.5;">'+bad.msg+'</div><div style="margin-top:8px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#475569;">Number: <span style="color:'+c+';">'+escapeHtml(q)+'</span> — Found in database</div></div></div></div><div style="background:rgba(2,6,23,0.85);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;"><span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#334155;">Still want to search anyway?</span><button onclick="openSite(\'google\')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:6px 14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#64748b;cursor:pointer;" onmouseover="this.style.color=\'#94a3b8\'" onmouseout="this.style.color=\'#64748b\'">Search Anyway <i class="fas fa-external-link-alt ml-1"></i></button></div></div>';el.classList.remove('hidden');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
 
@@ -53,49 +100,60 @@ function openSite(site){const q=document.getElementById('lookup-input').value.tr
 
 function showPrankResult(prank){const el=document.getElementById('lookup-prank-result');if(!prank||prank.prankScore<26){el.classList.add('hidden');el.innerHTML='';return;}const s=prank.prankScore,isD=s>=80,isP=s>=56,label=isD?'🚨 DEFINITE PRANK — END CALL &amp; MOVE ON':isP?'⚠️ LIKELY PRANK — PROCEED WITH CAUTION':'👀 SUSPICIOUS — VERIFY CAREFULLY',color=isD?'#ef4444':isP?'#f97316':'#eab308',bg=isD?'linear-gradient(135deg,rgba(239,68,68,0.22),rgba(185,28,28,0.32))':isP?'linear-gradient(135deg,rgba(249,115,22,0.18),rgba(194,65,12,0.28))':'linear-gradient(135deg,rgba(234,179,8,0.14),rgba(161,98,7,0.24))';const rHTML=(prank.prankReasons||[]).map(r=>'<div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:8px;padding:8px 12px;"><i class="fas fa-flag" style="color:'+color+';font-size:10px;flex-shrink:0;"></i><span style="font-size:12px;color:#fca5a5;font-weight:700;">'+escapeHtml(r)+'</span></div>').join('');el.innerHTML='<div style="border-radius:18px;overflow:hidden;border:2px solid '+color+';box-shadow:0 0 30px '+color+'44;animation:fadeSlideIn 0.3s ease-out;"><div style="background:'+bg+';padding:18px 20px;border-bottom:1px solid '+color+'30;position:relative;overflow:hidden;"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,'+color+'08 10px,'+color+'08 20px);"></div><div style="position:relative;display:flex;align-items:center;gap:14px;"><div style="width:58px;height:58px;border-radius:50%;background:conic-gradient('+color+' '+s+'%,rgba(255,255,255,0.04) '+s+'%);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;"><div style="position:absolute;inset:6px;border-radius:50%;background:#020617;"></div><span style="position:relative;z-index:1;font-family:Orbitron,sans-serif;font-weight:900;font-size:0.9rem;color:'+color+';">'+s+'</span></div><div><div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:'+color+';margin-bottom:3px;">'+label+'</div><div style="font-size:10px;color:#94a3b8;font-weight:700;">Prank Risk Score: <span style="color:'+color+';font-weight:900;">'+s+'/100</span></div></div></div></div>'+(rHTML?'<div style="background:rgba(2,6,23,0.75);padding:14px;display:flex;flex-direction:column;gap:6px;">'+rHTML+'</div>':'')+'</div>';el.classList.remove('hidden');}
 
-function onLookupInput(val){const q=val.trim(),digits=normalizePhone(q);if(digits.length===10){const bad=checkKnownBadNumber(q);if(bad){showKnownBadAlert(bad,q);return;}}if(!q){const pr=document.getElementById('lookup-prank-result');if(pr){pr.classList.add('hidden');pr.innerHTML='';}}}
+// FIX: Changed digits.length === 10 to >= 10 to also catch 11-digit numbers with country code
+function onLookupInput(val) {
+  const q = val.trim(), digits = normalizePhone(q);
+  if (digits.length >= 10) {
+    const bad = checkKnownBadNumber(q);
+    if (bad) { showKnownBadAlert(bad, q); return; }
+  }
+  if (!q) {
+    const pr = document.getElementById('lookup-prank-result');
+    if (pr) { pr.classList.add('hidden'); pr.innerHTML = ''; }
+  }
+}
 
-async function logPrankCall(){
-  const q=document.getElementById('lookup-input').value.trim();
-  const statusEl=document.getElementById('prank-log-status');
-  if(!q){
+async function logPrankCall() {
+  const q = document.getElementById('lookup-input').value.trim();
+  const statusEl = document.getElementById('prank-log-status');
+  if (!q) {
     document.getElementById('lookup-input').focus();
-    statusEl.style.display='block';
-    statusEl.style.background='rgba(234,179,8,0.12)';
-    statusEl.style.border='1px solid rgba(234,179,8,0.35)';
-    statusEl.style.color='#eab308';
-    statusEl.textContent='⚠️ Paste the prank number first';
-    setTimeout(()=>{statusEl.style.display='none';},3000);
+    statusEl.style.display = 'block';
+    statusEl.style.background = 'rgba(234,179,8,0.12)';
+    statusEl.style.border = '1px solid rgba(234,179,8,0.35)';
+    statusEl.style.color = '#eab308';
+    statusEl.textContent = '⚠️ Paste the prank number first';
+    setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
     return;
   }
-  const btn=document.getElementById('log-prank-btn');
-  btn.disabled=true;
-  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>&nbsp;Logging...';
-  statusEl.style.display='block';
-  statusEl.style.background='rgba(59,130,246,0.1)';
-  statusEl.style.border='1px solid rgba(59,130,246,0.3)';
-  statusEl.style.color='#60a5fa';
-  statusEl.textContent='Sending to sheet...';
-  try{
-    const body=JSON.stringify({action:'logPrank',number:q,timestamp:new Date().toISOString(),loggedBy:'rep'});
-    await fetch(API_URL,{method:'POST',body:body});
-    statusEl.style.background='rgba(34,197,94,0.12)';
-    statusEl.style.border='1px solid rgba(34,197,94,0.35)';
-    statusEl.style.color='#4ade80';
-    statusEl.textContent='✅ Prank number logged to sheet!';
-    document.getElementById('lookup-input').value='';
+  const btn = document.getElementById('log-prank-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>&nbsp;Logging...';
+  statusEl.style.display = 'block';
+  statusEl.style.background = 'rgba(59,130,246,0.1)';
+  statusEl.style.border = '1px solid rgba(59,130,246,0.3)';
+  statusEl.style.color = '#60a5fa';
+  statusEl.textContent = 'Sending to sheet...';
+  try {
+    const body = JSON.stringify({ action: 'logPrank', number: q, timestamp: new Date().toISOString(), loggedBy: 'rep' });
+    await fetch(API_URL, { method: 'POST', body: body });
+    statusEl.style.background = 'rgba(34,197,94,0.12)';
+    statusEl.style.border = '1px solid rgba(34,197,94,0.35)';
+    statusEl.style.color = '#4ade80';
+    statusEl.textContent = '✅ Prank number logged to sheet!';
+    document.getElementById('lookup-input').value = '';
     // Reload sheet prank numbers so the new entry is live immediately
     await loadSheetPrankNumbers();
-    setTimeout(()=>{statusEl.style.display='none';},4000);
-  }catch(e){
-    statusEl.style.background='rgba(239,68,68,0.12)';
-    statusEl.style.border='1px solid rgba(239,68,68,0.35)';
-    statusEl.style.color='#f87171';
-    statusEl.textContent='❌ Failed to log — check connection';
-    setTimeout(()=>{statusEl.style.display='none';},4000);
+    setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+  } catch(e) {
+    statusEl.style.background = 'rgba(239,68,68,0.12)';
+    statusEl.style.border = '1px solid rgba(239,68,68,0.35)';
+    statusEl.style.color = '#f87171';
+    statusEl.textContent = '❌ Failed to log — check connection';
+    setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
   }
-  btn.disabled=false;
-  btn.innerHTML='<i class="fas fa-ban"></i>&nbsp;Log Prank Call &#8594; Sheet';
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-ban"></i>&nbsp;Log Prank Call &#8594; Sheet';
 }
 
 function clearLookup(){document.getElementById('lookup-input').value='';const pr=document.getElementById('lookup-prank-result');if(pr){pr.classList.add('hidden');pr.innerHTML='';}document.getElementById('lookup-input').focus();}
