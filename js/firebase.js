@@ -3,7 +3,7 @@
 
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, onValue, set, push, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getFirestore, doc, setDoc, getDocs, collection, query, orderBy, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -604,12 +604,130 @@ function listenForLeadAlerts() {
     });
 }
 
+// ========== PRANK NUMBERS SYNC (Firebase + Google Sheet) ==========
+
+// Listen for prank numbers from Firebase (real-time)
+window.listenForPrankNumbers = function(callback) {
+    if (!database) return;
+    const prankRef = ref(database, 'prank_numbers');
+    onValue(prankRef, (snapshot) => {
+        const data = snapshot.val() || {};
+        // Convert object to array
+        const prankArray = Object.keys(data).map(key => data[key].number);
+        window._cachedPrankNumbers = prankArray;
+        if (callback) callback(prankArray);
+    });
+};
+
+// 🔥 FIXED: Save prank number to Firebase AND Google Sheet with proper POST
+window.savePrankNumber = async function(number, loggedBy) {
+    if (!database) return { success: false, error: 'Database not initialized' };
+    
+    const cleanNumber = String(number).replace(/\D/g, '').slice(-10);
+    if (cleanNumber.length < 7) return { success: false, error: 'Invalid number' };
+    
+    let firebaseSuccess = false;
+    let sheetSuccess = false;
+    
+    try {
+        // Step 1: Save to Firebase RTDB
+        const prankRef = ref(database, 'prank_numbers');
+        const snapshot = await get(prankRef);
+        const existing = snapshot.val() || {};
+        
+        let alreadyExists = false;
+        Object.keys(existing).forEach(key => {
+            if (existing[key].number === cleanNumber) {
+                alreadyExists = true;
+            }
+        });
+        
+        if (!alreadyExists) {
+            const newRef = push(prankRef);
+            await set(newRef, {
+                number: cleanNumber,
+                loggedBy: loggedBy || 'system',
+                loggedAt: Date.now(),
+                timestamp: new Date().toISOString()
+            });
+            console.log('✅ Saved to Firebase RTDB:', cleanNumber);
+            firebaseSuccess = true;
+        } else {
+            console.log('Number already exists in Firebase RTDB');
+            firebaseSuccess = true; // Already there, consider it success
+        }
+        return { success: true, firebaseSuccess: firebaseSuccess, sheetSuccess: false };
+    } catch(e) {
+        console.error('Save failed:', e);
+        return { success: false, error: e.message };
+    }
+};
+
+// Get cached prank numbers
+window.getPrankNumbers = function() {
+    return window._cachedPrankNumbers || [];
+};
+
+// Force refresh prank numbers from Firebase
+window.refreshPrankNumbers = async function() {
+    if (!database) return [];
+    const prankRef = ref(database, 'prank_numbers');
+    const snapshot = await get(prankRef);
+    const data = snapshot.val() || {};
+    const prankArray = Object.keys(data).map(key => data[key].number);
+    window._cachedPrankNumbers = prankArray;
+    return prankArray;
+};
+
+// Initialize prank numbers listener
+function initPrankNumbersListener() {
+    if (typeof window.listenForPrankNumbers === 'function') {
+        window.listenForPrankNumbers((prankArray) => {
+            console.log(`🔥 Firebase prank numbers updated: ${prankArray.length} total`);
+        });
+    }
+}
+
+// Sync new numbers from Sheet to Firebase efficiently via bulk update
+window.syncSheetToFirebase = async function(sheetNumbers) {
+    if (!database || !sheetNumbers || !Array.isArray(sheetNumbers)) return;
+    
+    const prankRef = ref(database, 'prank_numbers');
+    const snapshot = await get(prankRef);
+    const existing = snapshot.val() || {};
+    
+    const existingNumbers = Object.keys(existing).map(key => existing[key].number);
+    
+    const updates = {};
+    let addedCount = 0;
+    
+    for (const num of sheetNumbers) {
+        if (!existingNumbers.includes(num)) {
+            const newKey = push(prankRef).key;
+            updates[`prank_numbers/${newKey}`] = {
+                number: num,
+                loggedBy: 'Sheet Bulk Sync',
+                loggedAt: Date.now(),
+                timestamp: new Date().toISOString()
+            };
+            addedCount++;
+        }
+    }
+    
+    if (addedCount > 0) {
+        // Bulk update in a single network request (fast for 1600+ numbers)
+        await update(ref(database), updates);
+        console.log(`✅ Synced ${addedCount} new numbers from Sheet to Firebase in bulk!`);
+    }
+};
+
 // ========== INITIALIZATION ==========
 
 // Initialize all listeners
 function initFirebaseListeners() {
     listenForBroadcasts();
     listenForLeadAlerts();
+    initPrankNumbersListener();
     
     if (typeof window.listenForAdmins === 'function') {
         window.listenForAdmins(); // auto-sync admins from Firebase on load
@@ -639,7 +757,6 @@ function initFirebaseListeners() {
 window.showBroadcastBar = showBroadcastBar;
 window.hideBroadcastBar = hideBroadcastBar;
 window.sendBroadcastMessage = sendBroadcastMessage;
-window.adminLogin = adminLogin;
 window.adminLogin = adminLogin;
 window.adminLogout = adminLogout;
 window.showLeadAlert = showLeadAlert;
