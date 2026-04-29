@@ -9,9 +9,15 @@ let _sheetPrankLoadPromise = null;
 
 async function loadSheetPrankNumbers() {
   try {
-    const res = await fetch(API_URL + '?action=getPrankNumbers');
+    // Cache-bust with timestamp so Google's CDN never serves a stale response
+    const res = await fetch(API_URL + '?action=getPrankNumbers&_t=' + Date.now());
     const data = await res.json();
-    sheetPrankNumbers = (data.prankNumbers || []).map(n => String(n).replace(/\D/g, '').slice(-10));
+    // API returns an array of agent objects; prankNumbers lives on data[0]
+    const raw = (Array.isArray(data) ? (data[0] && data[0].prankNumbers) : data.prankNumbers) || [];
+    sheetPrankNumbers = raw
+      .filter(n => n !== '' && n != null)
+      .map(n => String(n).replace(/\D/g, '').slice(-10))
+      .filter(n => n.length >= 7);
     console.log('[Lookup] Sheet prank numbers loaded:', sheetPrankNumbers.length);
   } catch (e) {
     console.warn('[Lookup] Could not load prank numbers from sheet:', e);
@@ -53,13 +59,17 @@ async function runLookup() {
   const q = document.getElementById('lookup-input').value.trim();
   if (!q) { document.getElementById('lookup-input').focus(); return; }
 
-  // FIX: Wait for the initial sheet prank load to finish before checking.
-  // This prevents the race condition where the button is clicked before
-  // the async fetch from Google Sheets has returned.
+  // Wait for initial page-load fetch if still in flight
   if (_sheetPrankLoadPromise) {
     await _sheetPrankLoadPromise;
-    _sheetPrankLoadPromise = null; // only await once
+    _sheetPrankLoadPromise = null;
   }
+
+  // Always fetch fresh — bypasses CDN cache with timestamp.
+  // Guarantees numbers logged moments ago are always found.
+  await loadSheetPrankNumbers();
+
+  console.log('[Lookup] Checking:', normalizePhone(q).slice(-10), '| sheetPrankNumbers:', sheetPrankNumbers);
 
   const knownBad = checkKnownBadNumber(q);
   if (knownBad) {
