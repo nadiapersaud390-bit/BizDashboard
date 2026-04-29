@@ -5,23 +5,50 @@ const KNOWN_NOT_SERIOUS_NUMBERS=['8315969595','6025249999','9545531044','9545998
 // ========== LOAD PRANK NUMBERS FROM SHEET ==========
 // Fetches numbers logged via "Log Prank Call → Sheet" and merges them into
 // KNOWN_PRANK_NUMBERS so live-logged pranks are caught on next page load.
-async function loadPrankNumbersFromSheet(){
-  try{
-    if(typeof API_URL==='undefined'||!API_URL)return;
-    const res=await fetch(API_URL+'?action=getPrankNumbers');
-    if(!res.ok)return;
-    const data=await res.json();
-    if(data&&Array.isArray(data.prankNumbers)){
-      data.prankNumbers.forEach(n=>{
-        const d=String(n).replace(/\D/g,'').slice(-10);
-        if(d.length>=7&&!KNOWN_PRANK_NUMBERS.includes(d)){
-          KNOWN_PRANK_NUMBERS.push(d);
-        }
-      });
-    }
-  }catch(e){
-    // silent fail — hardcoded list still works
+// Tries API_URL first, falls back to LOOKUP_API_URL if defined.
+async function loadPrankNumbersFromSheet() {
+  const urls = [];
+  if (typeof API_URL !== 'undefined' && API_URL) urls.push(API_URL);
+  if (typeof LOOKUP_API_URL !== 'undefined' && LOOKUP_API_URL && LOOKUP_API_URL !== (typeof API_URL !== 'undefined' ? API_URL : '')) urls.push(LOOKUP_API_URL);
+
+  if (!urls.length) {
+    console.warn('[PrankLoader] No API URL defined — skipping sheet load.');
+    return;
   }
+
+  // Cache-bust so Google's CDN doesn't serve a stale response
+  const cacheBust = '&_cb=' + Date.now();
+
+  for (const url of urls) {
+    try {
+      console.log('[PrankLoader] Fetching from:', url + '?action=getPrankNumbers' + cacheBust);
+      const res = await fetch(url + '?action=getPrankNumbers' + cacheBust, { cache: 'no-store' });
+      console.log('[PrankLoader] Response status:', res.status, res.ok ? 'OK' : 'NOT OK');
+      if (!res.ok) {
+        console.warn('[PrankLoader] Non-OK response from', url, '— trying next URL if available.');
+        continue;
+      }
+      const data = await res.json();
+      console.log('[PrankLoader] Data received:', data);
+      if (data && Array.isArray(data.prankNumbers)) {
+        let added = 0;
+        data.prankNumbers.forEach(n => {
+          const d = String(n).replace(/\D/g, '').slice(-10);
+          if (d.length >= 7 && !KNOWN_PRANK_NUMBERS.includes(d)) {
+            KNOWN_PRANK_NUMBERS.push(d);
+            added++;
+          }
+        });
+        console.log('[PrankLoader] ✅ Loaded', data.prankNumbers.length, 'numbers from sheet,', added, 'were new.');
+        return; // success — no need to try fallback URL
+      } else {
+        console.warn('[PrankLoader] Unexpected response shape:', data);
+      }
+    } catch (e) {
+      console.warn('[PrankLoader] Fetch error for', url, ':', e.message);
+    }
+  }
+  console.warn('[PrankLoader] All URLs failed — using hardcoded list only.');
 }
 loadPrankNumbersFromSheet();
 
@@ -35,50 +62,81 @@ function showKnownBadAlert(bad,q){const el=document.getElementById('lookup-prank
 function openSite(site){const q=document.getElementById('lookup-input').value.trim();if(!q){document.getElementById('lookup-input').focus();return;}const isPhone=isPhoneNum(q),digits=q.replace(/\D/g,''),gq=buildQuery(q);const urls={google:'https://www.google.com/search?q='+encodeURIComponent(gq)+'&udm=50',bing:'https://www.bing.com/search?q='+encodeURIComponent(gq)+'&showconv=1',yellowpages:isPhone?'https://www.yellowpages.com/phone-lookup?phone='+digits:'https://www.yellowpages.com/search?search_terms='+encodeURIComponent(q)+'&geo_location_terms=United+States',whitepages:isPhone?'https://www.whitepages.com/phone/'+digits:'https://www.whitepages.com/business/'+encodeURIComponent(q),yelp:'https://www.yelp.com/search?find_desc='+encodeURIComponent(q)+'&find_loc=United+States','411':isPhone?'https://www.411.com/phone/'+digits:'https://www.411.com/business/search?q='+encodeURIComponent(q)};if(urls[site])window.open(urls[site],'_blank');}
 function showPrankResult(prank){const el=document.getElementById('lookup-prank-result');if(!prank||prank.prankScore<26){el.classList.add('hidden');el.innerHTML='';return;}const s=prank.prankScore,isD=s>=80,isP=s>=56,label=isD?'🚨 DEFINITE PRANK — END CALL &amp; MOVE ON':isP?'⚠️ LIKELY PRANK — PROCEED WITH CAUTION':'👀 SUSPICIOUS — VERIFY CAREFULLY',color=isD?'#ef4444':isP?'#f97316':'#eab308',bg=isD?'linear-gradient(135deg,rgba(239,68,68,0.22),rgba(185,28,28,0.32))':isP?'linear-gradient(135deg,rgba(249,115,22,0.18),rgba(194,65,12,0.28))':'linear-gradient(135deg,rgba(234,179,8,0.14),rgba(161,98,7,0.24))';const rHTML=(prank.prankReasons||[]).map(r=>'<div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:8px;padding:8px 12px;"><i class="fas fa-flag" style="color:'+color+';font-size:10px;flex-shrink:0;"></i><span style="font-size:12px;color:#fca5a5;font-weight:700;">'+escapeHtml(r)+'</span></div>').join('');el.innerHTML='<div style="border-radius:18px;overflow:hidden;border:2px solid '+color+';box-shadow:0 0 30px '+color+'44;animation:fadeSlideIn 0.3s ease-out;"><div style="background:'+bg+';padding:18px 20px;border-bottom:1px solid '+color+'30;position:relative;overflow:hidden;"><div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,'+color+'08 10px,'+color+'08 20px);"></div><div style="position:relative;display:flex;align-items:center;gap:14px;"><div style="width:58px;height:58px;border-radius:50%;background:conic-gradient('+color+' '+s+'%,rgba(255,255,255,0.04) '+s+'%);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;"><div style="position:absolute;inset:6px;border-radius:50%;background:#020617;"></div><span style="position:relative;z-index:1;font-family:Orbitron,sans-serif;font-weight:900;font-size:0.9rem;color:'+color+';">'+s+'</span></div><div><div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:'+color+';margin-bottom:3px;">'+label+'</div><div style="font-size:10px;color:#94a3b8;font-weight:700;">Prank Risk Score: <span style="color:'+color+';font-weight:900;">'+s+'/100</span></div></div></div></div>'+(rHTML?'<div style="background:rgba(2,6,23,0.75);padding:14px;display:flex;flex-direction:column;gap:6px;">'+rHTML+'</div>':'')+'</div>';el.classList.remove('hidden');}
 function onLookupInput(val){const q=val.trim(),digits=normalizePhone(q);if(digits.length===10){const bad=checkKnownBadNumber(q);if(bad){showKnownBadAlert(bad,q);return;}}if(!q){const pr=document.getElementById('lookup-prank-result');if(pr){pr.classList.add('hidden');pr.innerHTML='';}}}
-async function logPrankCall(){
-  const q=document.getElementById('lookup-input').value.trim();
-  const statusEl=document.getElementById('prank-log-status');
-  if(!q){
+
+// ========== LOG PRANK CALL ==========
+// Uses mode:'no-cors' for the POST so the browser doesn't block it due to
+// missing CORS headers on the Apps Script response. With no-cors the response
+// is opaque — we can't read it, but the write still reaches the sheet.
+async function logPrankCall() {
+  const q = document.getElementById('lookup-input').value.trim();
+  const statusEl = document.getElementById('prank-log-status');
+
+  if (!q) {
     document.getElementById('lookup-input').focus();
-    statusEl.style.display='block';
-    statusEl.style.background='rgba(234,179,8,0.12)';
-    statusEl.style.border='1px solid rgba(234,179,8,0.35)';
-    statusEl.style.color='#eab308';
-    statusEl.textContent='⚠️ Paste the prank number first';
-    setTimeout(()=>{statusEl.style.display='none';},3000);
+    statusEl.style.display = 'block';
+    statusEl.style.background = 'rgba(234,179,8,0.12)';
+    statusEl.style.border = '1px solid rgba(234,179,8,0.35)';
+    statusEl.style.color = '#eab308';
+    statusEl.textContent = '⚠️ Paste the prank number first';
+    setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
     return;
   }
-  const btn=document.getElementById('log-prank-btn');
-  btn.disabled=true;
-  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>&nbsp;Logging...';
-  statusEl.style.display='block';
-  statusEl.style.background='rgba(59,130,246,0.1)';
-  statusEl.style.border='1px solid rgba(59,130,246,0.3)';
-  statusEl.style.color='#60a5fa';
-  statusEl.textContent='Sending to sheet...';
-  try{
-    const body=JSON.stringify({action:'logPrank',number:q,timestamp:new Date().toISOString(),loggedBy:'rep'});
-    await fetch(API_URL,{method:'POST',body:body});
-    statusEl.style.background='rgba(34,197,94,0.12)';
-    statusEl.style.border='1px solid rgba(34,197,94,0.35)';
-    statusEl.style.color='#4ade80';
-    statusEl.textContent='✅ Prank number logged to sheet!';
-    // Also add to local array immediately so this session catches it right away
-    const d=String(q).replace(/\D/g,'').slice(-10);
-    if(d.length>=7&&!KNOWN_PRANK_NUMBERS.includes(d))KNOWN_PRANK_NUMBERS.push(d);
-    document.getElementById('lookup-input').value='';
-    setTimeout(()=>{statusEl.style.display='none';},4000);
-  }catch(e){
-    statusEl.style.background='rgba(239,68,68,0.12)';
-    statusEl.style.border='1px solid rgba(239,68,68,0.35)';
-    statusEl.style.color='#f87171';
-    statusEl.textContent='❌ Failed to log — check connection';
-    setTimeout(()=>{statusEl.style.display='none';},4000);
+
+  const btn = document.getElementById('log-prank-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>&nbsp;Logging...';
+  statusEl.style.display = 'block';
+  statusEl.style.background = 'rgba(59,130,246,0.1)';
+  statusEl.style.border = '1px solid rgba(59,130,246,0.3)';
+  statusEl.style.color = '#60a5fa';
+  statusEl.textContent = 'Sending to sheet...';
+
+  try {
+    const body = JSON.stringify({ action: 'logPrank', number: q, timestamp: new Date().toISOString(), loggedBy: 'rep' });
+    const targetUrl = (typeof API_URL !== 'undefined' && API_URL) ? API_URL : '';
+
+    console.log('[LogPrank] POSTing to:', targetUrl);
+    console.log('[LogPrank] Body:', body);
+
+    // mode:'no-cors' — Apps Script doPost doesn't return CORS headers,
+    // so a normal fetch would throw a network error even on success.
+    // no-cors lets the request go through; the response will be opaque (unreadable)
+    // but the sheet write succeeds.
+    await fetch(targetUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' }, // text/plain avoids preflight in no-cors
+      body: body
+    });
+
+    console.log('[LogPrank] ✅ POST sent (opaque response expected — this is normal with no-cors).');
+
+    statusEl.style.background = 'rgba(34,197,94,0.12)';
+    statusEl.style.border = '1px solid rgba(34,197,94,0.35)';
+    statusEl.style.color = '#4ade80';
+    statusEl.textContent = '✅ Prank number logged to sheet!';
+
+    // Add to local array immediately so this session catches it right away
+    const d = String(q).replace(/\D/g, '').slice(-10);
+    if (d.length >= 7 && !KNOWN_PRANK_NUMBERS.includes(d)) KNOWN_PRANK_NUMBERS.push(d);
+    document.getElementById('lookup-input').value = '';
+    setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+
+  } catch (e) {
+    console.error('[LogPrank] ❌ POST failed:', e.message);
+    statusEl.style.background = 'rgba(239,68,68,0.12)';
+    statusEl.style.border = '1px solid rgba(239,68,68,0.35)';
+    statusEl.style.color = '#f87171';
+    statusEl.textContent = '❌ Failed to log — check connection';
+    setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
   }
-  btn.disabled=false;
-  btn.innerHTML='<i class="fas fa-ban"></i>&nbsp;Log Prank Call &#8594; Sheet';
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-ban"></i>&nbsp;Log Prank Call &#8594; Sheet';
 }
 
+let lookupHistory = [];
+try { lookupHistory = JSON.parse(localStorage.getItem('bizlookup_history') || '[]'); } catch(e) {}
 function clearLookup(){document.getElementById('lookup-input').value='';const pr=document.getElementById('lookup-prank-result');if(pr){pr.classList.add('hidden');pr.innerHTML='';}document.getElementById('lookup-input').focus();}
 function renderLookupHistory(){const sec=document.getElementById('lookup-history-section'),con=document.getElementById('lookup-history');if(!lookupHistory.length){sec.classList.add('hidden');return;}sec.classList.remove('hidden');con.innerHTML=lookupHistory.map((h,i)=>{const ago=timeAgo(new Date(h.timestamp)),s=h.prankScore||0;const badge=s>=80?'<span style="font-size:9px;font-weight:900;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">🚨 PRANK</span>':s>=56?'<span style="font-size:9px;font-weight:900;background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">⚠️ SUSPECT</span>':s>=26?'<span style="font-size:9px;font-weight:900;background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3);border-radius:20px;padding:2px 7px;margin-left:6px;">👀 CHECK</span>':'';return'<div class="search-history-item" onclick="reloadHistory('+i+')"><div><div class="font-black text-sm text-white">'+escapeHtml(h.query)+badge+'</div><div class="text-[10px] text-slate-600 font-bold mt-0.5 uppercase tracking-wide">'+ago+'</div></div><i class="fas fa-chevron-right text-slate-700 text-xs"></i></div>';}).join('');}
 function reloadHistory(i){const h=lookupHistory[i];if(!h)return;document.getElementById('lookup-input').value=h.query;showPrankResult({prankScore:h.prankScore||0,prankReasons:h.prankReasons||[],prankVerdict:h.prankVerdict||'clean'});}
