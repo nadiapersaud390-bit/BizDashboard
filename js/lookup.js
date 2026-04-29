@@ -11,7 +11,7 @@ let _sheetPrankLoadPromise = null;
 async function loadSheetPrankNumbers() {
   try {
     // Cache-bust timestamp so Google CDN never returns stale data
-    const res = await fetch(API_URL + '?action=getPrankNumbers&_t=' + Date.now());
+    const res = await fetch(LOOKUP_API_URL + '?action=getPrankNumbers&_t=' + Date.now());
     const data = await res.json();
     // FIX: API returns array of agent objects — prankNumbers is on data[0], not data
     const raw = (Array.isArray(data) ? (data[0] && data[0].prankNumbers) : data.prankNumbers) || [];
@@ -26,7 +26,7 @@ async function loadSheetPrankNumbers() {
   }
 }
 
-if (typeof API_URL !== 'undefined') {
+if (typeof LOOKUP_API_URL !== 'undefined') {
   _sheetPrankLoadPromise = loadSheetPrankNumbers();
 }
 
@@ -200,7 +200,7 @@ async function logPrankCall(){
   statusEl.textContent='Sending to sheet...';
   try{
     const body=JSON.stringify({action:'logPrank',number:q,timestamp:new Date().toISOString(),loggedBy:'rep'});
-    await fetch(API_URL,{method:'POST',body:body});
+    await fetch(LOOKUP_API_URL,{method:'POST',body:body});
     statusEl.style.background='rgba(34,197,94,0.12)';
     statusEl.style.border='1px solid rgba(34,197,94,0.35)';
     statusEl.style.color='#4ade80';
