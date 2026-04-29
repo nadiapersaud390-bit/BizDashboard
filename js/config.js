@@ -1,5 +1,5 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbyRxs3TigaCWv8_HAv43kzQOBlk-xRk02kGM3iJrsBIXCU-7E2UuXUkbTwTVeHY5Ucigw/exec';
-const LOOKUP_API_URL = 'https://script.google.com/macros/s/AKfycbwZvLZeHBlE3uK4d9Zp05gUrrpLTHFj3DXrJ_G8vNhdKQkI3rfQEfU2ooLKdjXtG25FbA/exec';
+const LOOKUP_API_URL = 'https://script.google.com/macros/s/AKfycbyRxs3TigaCWv8_HAv43kzQOBlk-xRk02kGM3iJrsBIXCU-7E2UuXUkbTwTVeHY5Ucigw/exec';
 const WEEKLY_PASSWORD = 'bizlevelup2025';
 const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_FULL  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
