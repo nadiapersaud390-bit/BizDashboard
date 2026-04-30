@@ -1181,6 +1181,11 @@ function switchDayView(key) {
 }
 
 function switchTab(tab) {
+    // Stop tab blinking when user switches tabs
+    if (typeof window.stopTabBlink === 'function') {
+        window.stopTabBlink();
+    }
+    
     if (tab === 'weekly') { requestWeekly(); return; }
 
     currentTab = tab;
@@ -1243,25 +1248,13 @@ function updateTabUI() {
     });
 }
 
+// WEEKLY TAB UNLOCKED FOR EVERYONE - No password required
 function requestWeekly() {
-    const isAdmin = sessionStorage.getItem('bizUserRole') === 'admin';
-    if (weeklyUnlocked || isAdmin) {
-        currentTab = 'weekly';
-        updateTabUI();
-        render();
-        renderDaySubTabs();
-        return;
-    }
-
-    const modal = document.getElementById('pw-modal');
-    if (modal) modal.classList.remove('hidden');
-
-    const input = document.getElementById('pw-input');
-    input.value = '';
-    document.getElementById('pw-error').innerText = '';
-    input.classList.remove('error');
-
-    setTimeout(() => input.focus(), 100);
+    // Allow everyone to access weekly tab - no password required
+    currentTab = 'weekly';
+    updateTabUI();
+    render();
+    renderDaySubTabs();
 }
 
 function checkPassword() {
