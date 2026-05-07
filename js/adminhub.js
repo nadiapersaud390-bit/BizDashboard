@@ -2182,3 +2182,341 @@ window.ahSyncRosterFromSheet = async function() {
         console.error('[AdminHub] Roster sync failed:', e);
     }
 };
+
+// ============================================================================
+// 🔐 SECRET REBUTTAL INTEL — Admin 0000 Only (5-tap unlock on REBUTTALS button)
+// ============================================================================
+// Nothing above is changed. This block ONLY adds a tap-counter on the
+// REBUTTALS nav button. When admin 0000 taps it 5× within 2 seconds, a
+// read-only modal renders the same rebuttal usage data that full admins see.
+// No other permissions are unlocked. RESTRICTED_ADMIN_IDS is untouched.
+// ============================================================================
+
+(function init0000RebuttalTap() {
+    // Wait until the DOM is ready
+    function attach() {
+        const currentAdmin = JSON.parse(sessionStorage.getItem('currentAdmin') || '{}');
+        const adminEmail = String(currentAdmin.email || '').toLowerCase();
+
+        // Only wire up for 0000
+        if (adminEmail !== '0000') return;
+
+        // The REBUTTALS tab button — try common id patterns used in BIZ dashboards
+        const btn = document.querySelector('[onclick*="rebuttals"], [data-tab="rebuttals"], #nav-rebuttals, .rebuttals-tab-btn')
+                 || Array.from(document.querySelectorAll('button, a')).find(el =>
+                        /rebuttal/i.test(el.textContent) && !el.id?.includes('ah-tab'));
+
+        if (!btn) {
+            // Retry once more after a short delay (tab may not be painted yet)
+            setTimeout(attach, 1500);
+            return;
+        }
+
+        if (btn._0000TapAttached) return; // idempotent
+        btn._0000TapAttached = true;
+
+        let tapCount = 0;
+        let tapTimer = null;
+
+        btn.addEventListener('click', function handleSecretTap(e) {
+            tapCount++;
+
+            if (tapTimer) clearTimeout(tapTimer);
+            tapTimer = setTimeout(() => { tapCount = 0; }, 2000); // reset after 2 s
+
+            if (tapCount >= 5) {
+                tapCount = 0;
+                clearTimeout(tapTimer);
+                show0000RebuttalModal();
+            }
+        }, true); // capture phase so it fires even if propagation is stopped
+    }
+
+    // Attach right away if DOM ready, otherwise wait
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attach);
+    } else {
+        attach();
+    }
+
+    // Also re-attach whenever the admin hub panel is shown (tab switches)
+    const _origSwitchTab = window.switchTab;
+    window.switchTab = function(tab) {
+        const result = _origSwitchTab ? _origSwitchTab.apply(this, arguments) : undefined;
+        if (tab === 'adminpanel' || tab === 'rebuttals') setTimeout(attach, 300);
+        return result;
+    };
+})();
+
+// ---------------------------------------------------------------------------
+// Build & show the modal for admin 0000
+// ---------------------------------------------------------------------------
+function show0000RebuttalModal() {
+    // Remove any stale instance
+    const old = document.getElementById('_0000-rebuttal-modal');
+    if (old) old.remove();
+
+    const modal = document.createElement('div');
+    modal.id = '_0000-rebuttal-modal';
+    modal.style.cssText = [
+        'position:fixed', 'inset:0', 'z-index:99999',
+        'display:flex', 'align-items:center', 'justify-content:center',
+        'background:rgba(0,0,0,0.85)', 'backdrop-filter:blur(6px)',
+        'padding:16px'
+    ].join(';');
+
+    modal.innerHTML = `
+        <div style="background:#0d1117;border:1px solid rgba(0,255,255,0.15);border-radius:18px;
+                    width:100%;max-width:640px;max-height:90vh;overflow-y:auto;
+                    box-shadow:0 0 40px rgba(0,255,255,0.08);font-family:'Poppins',sans-serif;">
+
+            <!-- Header -->
+            <div style="display:flex;align-items:center;justify-content:space-between;
+                        padding:18px 20px 14px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div>
+                    <div style="font-size:11px;font-weight:900;text-transform:uppercase;
+                                letter-spacing:.2em;color:rgba(0,255,255,0.6);margin-bottom:3px;">
+                        🔐 Rebuttal Usage — Read Only
+                    </div>
+                    <div style="font-size:9px;font-weight:700;text-transform:uppercase;
+                                letter-spacing:.15em;color:#374151;">
+                        Agent Activity · Views vs. Used on Call
+                    </div>
+                </div>
+                <button onclick="document.getElementById('_0000-rebuttal-modal').remove()"
+                        style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+                               color:#9ca3af;border-radius:10px;padding:6px 12px;font-size:11px;
+                               font-weight:900;cursor:pointer;letter-spacing:.05em;">✕ CLOSE</button>
+            </div>
+
+            <!-- Body -->
+            <div id="_0000-modal-body" style="padding:20px;">
+                <div style="text-align:center;color:#4b5563;font-size:10px;
+                            font-weight:700;text-transform:uppercase;letter-spacing:.15em;padding:24px 0;">
+                    <span style="display:inline-block;animation:spin 1s linear infinite;">⟳</span>&nbsp; Loading rebuttal data…
+                </div>
+            </div>
+        </div>
+        <style>
+            @keyframes spin { to { transform: rotate(360deg); } }
+        </style>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Close on backdrop click
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) modal.remove();
+    });
+
+    // Fetch and render data
+    _0000RenderRebuttalData();
+}
+
+function _0000RenderRebuttalData() {
+    const body = document.getElementById('_0000-modal-body');
+    if (!body) return;
+
+    // Subscribe to live data (same path full admins use)
+    if (typeof window.listenToRebuttalUsage === 'function') {
+        window.listenToRebuttalUsage(function(usage) {
+            _0000DrawRebuttal(usage || []);
+        });
+    } else if (window._ahRebuttalUsage) {
+        _0000DrawRebuttal(window._ahRebuttalUsage);
+    } else {
+        body.innerHTML = `
+            <div style="text-align:center;color:#ef4444;font-size:10px;font-weight:700;
+                        text-transform:uppercase;letter-spacing:.15em;padding:24px 0;">
+                Rebuttal usage data not available yet.<br>
+                <span style="color:#4b5563;">Data loads once agents start using rebuttals.</span>
+            </div>`;
+    }
+}
+
+function _0000DrawRebuttal(usage) {
+    const body = document.getElementById('_0000-modal-body');
+    if (!body) return;
+
+    // ── 1. Per-rebuttal summary ──────────────────────────────────────────
+    const perRebuttal = {};
+    usage.forEach(u => {
+        const t = u.rebuttalTitle || 'Untitled';
+        if (!perRebuttal[t]) perRebuttal[t] = { views: 0, uses: 0 };
+        if (u.eventType === 'use') perRebuttal[t].uses++;
+        else perRebuttal[t].views++;
+    });
+    const sortedR = Object.entries(perRebuttal)
+        .sort((a, b) => (b[1].uses - a[1].uses) || (b[1].views - a[1].views));
+
+    // ── 2. Per-agent summary ─────────────────────────────────────────────
+    const agentMap = new Map();
+    function agentKey(u) {
+        const id = String(u.agentId || '').trim();
+        return id ? 'id:' + id : 'name:' + String(u.agentName || 'Unknown').trim().toUpperCase();
+    }
+    usage.forEach(u => {
+        const key = agentKey(u);
+        if (!agentMap.has(key)) {
+            agentMap.set(key, {
+                name: u.agentName || 'Unknown',
+                team: u.team || '',
+                views: 0, uses: 0,
+                perRebuttal: {},
+                lastAt: 0
+            });
+        }
+        const a = agentMap.get(key);
+        if (u.timestamp > a.lastAt) {
+            a.lastAt = u.timestamp;
+            if (u.agentName) a.name = u.agentName;
+            if (u.team) a.team = u.team;
+        }
+        const t = u.rebuttalTitle || 'Untitled';
+        if (!a.perRebuttal[t]) a.perRebuttal[t] = { views: 0, uses: 0 };
+        if (u.eventType === 'use') { a.uses++; a.perRebuttal[t].uses++; }
+        else { a.views++; a.perRebuttal[t].views++; }
+    });
+
+    const agents = Array.from(agentMap.values())
+        .sort((a, b) => (b.uses + b.views) - (a.uses + a.views) || a.name.localeCompare(b.name));
+
+    // ── Helper: css-safe escaping ────────────────────────────────────────
+    function esc(s) {
+        return String(s || '').replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]||m));
+    }
+    function rateColor(rate, total) {
+        if (total === 0) return '#6b7280';
+        if (rate >= 50) return '#34d399';
+        if (rate >= 20) return '#fbbf24';
+        return '#f87171';
+    }
+
+    // ── Build HTML ───────────────────────────────────────────────────────
+    let html = '';
+
+    // Section A: Rebuttal table
+    html += `
+        <div style="margin-bottom:24px;">
+            <div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;
+                        color:rgba(0,255,255,0.5);margin-bottom:12px;">📊 Rebuttal Activity</div>`;
+
+    if (sortedR.length === 0) {
+        html += `<div style="text-align:center;color:#4b5563;font-size:10px;font-weight:700;
+                             text-transform:uppercase;letter-spacing:.12em;padding:20px 0;">
+                    No rebuttal events recorded yet</div>`;
+    } else {
+        html += `<table style="width:100%;border-collapse:collapse;font-size:11px;">
+            <thead><tr style="font-size:8px;font-weight:900;text-transform:uppercase;
+                              letter-spacing:.15em;color:#4b5563;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <th style="padding:8px 6px;text-align:left;">Rebuttal</th>
+                <th style="padding:8px 6px;text-align:center;">Views</th>
+                <th style="padding:8px 6px;text-align:center;">Used</th>
+                <th style="padding:8px 6px;text-align:center;">Use Rate</th>
+            </tr></thead>
+            <tbody>`;
+        sortedR.forEach(([title, c]) => {
+            const total = c.views + c.uses;
+            const rate = total > 0 ? Math.round((c.uses / total) * 100) : 0;
+            const col = rateColor(rate, total);
+            html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                <td style="padding:8px 6px;font-weight:700;color:#f9fafb;">${esc(title)}</td>
+                <td style="padding:8px 6px;text-align:center;color:#9ca3af;font-weight:700;">${c.views}</td>
+                <td style="padding:8px 6px;text-align:center;color:#34d399;font-weight:900;">${c.uses}</td>
+                <td style="padding:8px 6px;text-align:center;font-weight:900;color:${col};">${total > 0 ? rate + '%' : '—'}</td>
+            </tr>`;
+        });
+        html += `</tbody></table>`;
+    }
+    html += `</div>`;
+
+    // Section B: Agent breakdown
+    html += `
+        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;margin-top:4px;">
+            <div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;
+                        color:rgba(0,255,255,0.5);margin-bottom:12px;">👥 Agent Breakdown</div>`;
+
+    if (agents.length === 0) {
+        html += `<div style="text-align:center;color:#4b5563;font-size:10px;font-weight:700;
+                             text-transform:uppercase;letter-spacing:.12em;padding:20px 0;">
+                    No agent activity yet</div>`;
+    } else {
+        agents.forEach(a => {
+            const total = a.views + a.uses;
+            const rate = total > 0 ? Math.round((a.uses / total) * 100) : 0;
+            const col = rateColor(rate, total);
+            const lastSeen = a.lastAt
+                ? new Date(a.lastAt).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                : '—';
+
+            // Per-rebuttal rows for this agent
+            const rRows = Object.entries(a.perRebuttal)
+                .sort((x, y) => (y[1].uses + y[1].views) - (x[1].uses + x[1].views));
+
+            html += `
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+                        border-radius:12px;margin-bottom:10px;overflow:hidden;">
+                <!-- Agent summary row -->
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;">
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:12px;font-weight:900;color:#f9fafb;
+                                    text-transform:uppercase;letter-spacing:.04em;">${esc(a.name)}</div>
+                        <div style="font-size:8px;font-weight:700;text-transform:uppercase;
+                                    letter-spacing:.12em;color:#4b5563;margin-top:2px;">
+                            ${esc(a.team || '—')} · Last ${esc(lastSeen)}
+                        </div>
+                    </div>
+                    <div style="text-align:right;min-width:56px;">
+                        <div style="font-size:10px;font-weight:700;color:#9ca3af;">${a.views} <span style="color:#4b5563;font-size:8px;">views</span></div>
+                        <div style="font-size:10px;font-weight:900;color:#34d399;">${a.uses} <span style="color:#4b5563;font-size:8px;">used</span></div>
+                    </div>
+                    <div style="min-width:44px;text-align:right;">
+                        <div style="font-size:18px;font-weight:900;color:${col};">${total > 0 ? rate + '%' : '—'}</div>
+                        <div style="font-size:7px;font-weight:700;text-transform:uppercase;
+                                    letter-spacing:.12em;color:#374151;">use rate</div>
+                    </div>
+                </div>`;
+
+            // Per-rebuttal detail (always visible in the modal — no need for expand toggle)
+            if (rRows.length > 0) {
+                html += `
+                <div style="border-top:1px solid rgba(255,255,255,0.04);background:rgba(0,0,0,0.25);padding:10px 14px;">
+                    <table style="width:100%;border-collapse:collapse;font-size:10px;">
+                        <thead><tr style="font-size:7px;font-weight:900;text-transform:uppercase;
+                                         letter-spacing:.15em;color:#374151;">
+                            <th style="padding:4px 4px 6px;text-align:left;">Rebuttal</th>
+                            <th style="padding:4px 4px 6px;text-align:center;">Views</th>
+                            <th style="padding:4px 4px 6px;text-align:center;">Used</th>
+                            <th style="padding:4px 4px 6px;text-align:center;">Rate</th>
+                        </tr></thead>
+                        <tbody>`;
+                rRows.forEach(([title, c]) => {
+                    const t2 = c.views + c.uses;
+                    const r2 = t2 > 0 ? Math.round((c.uses / t2) * 100) : 0;
+                    const c2 = rateColor(r2, t2);
+                    html += `<tr style="border-top:1px solid rgba(255,255,255,0.03);">
+                        <td style="padding:5px 4px;color:#d1d5db;font-weight:600;">${esc(title)}</td>
+                        <td style="padding:5px 4px;text-align:center;color:#9ca3af;">${c.views}</td>
+                        <td style="padding:5px 4px;text-align:center;color:#34d399;font-weight:900;">${c.uses}</td>
+                        <td style="padding:5px 4px;text-align:center;font-weight:900;color:${c2};">${t2 > 0 ? r2 + '%' : '—'}</td>
+                    </tr>`;
+                });
+                html += `</tbody></table></div>`;
+            }
+
+            html += `</div>`; // end agent card
+        });
+    }
+
+    html += `</div>`; // end section B
+
+    // Footer note
+    html += `
+        <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);
+                    text-align:center;font-size:8px;font-weight:700;text-transform:uppercase;
+                    letter-spacing:.15em;color:#1f2937;">
+            Read-only view · No changes made to any system data
+        </div>`;
+
+    body.innerHTML = html;
+}
