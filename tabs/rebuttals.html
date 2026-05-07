@@ -52,6 +52,7 @@
     <button id="rb-btn-23" onclick="showRebuttal(23)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">How Pre-Qualified?</button>
     <button id="rb-btn-24" onclick="showRebuttal(24)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Division of What?</button>
     <button id="rb-btn-25" onclick="showRebuttal(25)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Affect Credit?</button>
+    <button id="rb-btn-26" onclick="showRebuttal(26)" style="padding:8px 14px;border-radius:20px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.18s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;">Speak to Manager</button>
 </div>
 
 <!-- No results -->
@@ -664,6 +665,35 @@
             <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
                 <span style="font-size:9px;font-weight:900;text-transform:uppercase;color:#6366f1;letter-spacing:0.08em;">Option C — If they keep pushing</span>
                 <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;margin-top:5px;">"Our full operating name is the Business Loan Division — we're a California-based private lending group. Once I connect you with the senior advisor, they can give you all the company details, licensing info, and program specifics. That's really their area. For right now, I just need to confirm your revenue and time in business."</p>
+            </div>
+            <div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:7px;">
+                <i class="fas fa-arrow-right" style="color:#3b82f6;font-size:10px;flex-shrink:0;"></i>
+                <span style="font-size:12px;font-weight:900;text-transform:uppercase;color:#60a5fa;letter-spacing:0.07em;">Go right back to qualifying questions</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="rb-panel-26" class="rb-panel" style="display:none;animation:fadeSlideIn 0.2s ease;">
+        <div style="font-family:Orbitron,sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#f59e0b;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></div>
+            Manager / Escalation Request
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:15px;font-weight:900;color:white;line-height:1.4;">"I want to speak to a manager or supervisor."</div>
+        </div>
+        <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.18);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+            <div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:#f59e0b;margin-bottom:2px;display:flex;align-items:center;gap:6px;"><i class="fas fa-reply" style="font-size:10px;"></i> Choose Your Response</div>
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
+                <span style="font-size:9px;font-weight:900;text-transform:uppercase;color:#f59e0b;letter-spacing:0.08em;">Option A</span>
+                <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;margin-top:5px;">"I completely understand that you'd like to speak with a manager. At the moment they're currently unavailable, however I'm trained to assist with this matter and I'll do my best to resolve it for you right away."</p>
+            </div>
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
+                <span style="font-size:9px;font-weight:900;text-transform:uppercase;color:#f59e0b;letter-spacing:0.08em;">Option B</span>
+                <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;margin-top:5px;">"I do apologize, the manager is not available at this time. What I can do is assist you immediately and, if needed, ensure your concern is escalated for a callback."</p>
+            </div>
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
+                <span style="font-size:9px;font-weight:900;text-transform:uppercase;color:#f59e0b;letter-spacing:0.08em;">Option C</span>
+                <p style="font-size:15px;font-weight:700;color:white;font-style:italic;line-height:1.7;margin-top:5px;">"I understand your concern and I respect that you'd like a manager involved. Unfortunately they're unavailable right now, but let me see what I can do to help and save you some additional waiting time."</p>
             </div>
             <div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:7px;">
                 <i class="fas fa-arrow-right" style="color:#3b82f6;font-size:10px;flex-shrink:0;"></i>
