@@ -2441,7 +2441,9 @@ function _0000DrawRebuttal(usage) {
                              text-transform:uppercase;letter-spacing:.12em;padding:20px 0;">
                     No agent activity yet</div>`;
     } else {
-        agents.forEach(a => {
+        // Unique id prefix for toggle targets in this render
+        const _modalRId = '_0000ra_' + Date.now();
+        agents.forEach((a, idx) => {
             const total = a.views + a.uses;
             const rate = total > 0 ? Math.round((a.uses / total) * 100) : 0;
             const col = rateColor(rate, total);
@@ -2453,11 +2455,17 @@ function _0000DrawRebuttal(usage) {
             const rRows = Object.entries(a.perRebuttal)
                 .sort((x, y) => (y[1].uses + y[1].views) - (x[1].uses + x[1].views));
 
+            const detailId = `${_modalRId}_${idx}`;
+            const hasDetail = rRows.length > 0;
+
+            // Clickable header row (cursor:pointer only when there is detail to show)
             html += `
             <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
                         border-radius:12px;margin-bottom:10px;overflow:hidden;">
-                <!-- Agent summary row -->
-                <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;">
+                <!-- Agent summary row — click to toggle detail -->
+                <div onclick="${hasDetail ? `(function(){var d=document.getElementById('${detailId}');var a=document.getElementById('${detailId}_arrow');if(d.style.display==='none'){d.style.display='block';a.textContent='▾';}else{d.style.display='none';a.textContent='▸';}})()` : ''}"
+                     style="display:flex;align-items:center;gap:12px;padding:12px 14px;
+                            ${hasDetail ? 'cursor:pointer;' : ''}">
                     <div style="flex:1;min-width:0;">
                         <div style="font-size:12px;font-weight:900;color:#f9fafb;
                                     text-transform:uppercase;letter-spacing:.04em;">${esc(a.name)}</div>
@@ -2475,12 +2483,13 @@ function _0000DrawRebuttal(usage) {
                         <div style="font-size:7px;font-weight:700;text-transform:uppercase;
                                     letter-spacing:.12em;color:#374151;">use rate</div>
                     </div>
+                    ${hasDetail ? `<div id="${detailId}_arrow" style="font-size:12px;color:#4b5563;min-width:12px;">▸</div>` : ''}
                 </div>`;
 
-            // Per-rebuttal detail (always visible in the modal — no need for expand toggle)
-            if (rRows.length > 0) {
+            // Per-rebuttal detail — hidden by default, toggled on click
+            if (hasDetail) {
                 html += `
-                <div style="border-top:1px solid rgba(255,255,255,0.04);background:rgba(0,0,0,0.25);padding:10px 14px;">
+                <div id="${detailId}" style="display:none;border-top:1px solid rgba(255,255,255,0.04);background:rgba(0,0,0,0.25);padding:10px 14px;">
                     <table style="width:100%;border-collapse:collapse;font-size:10px;">
                         <thead><tr style="font-size:7px;font-weight:900;text-transform:uppercase;
                                          letter-spacing:.15em;color:#374151;">
