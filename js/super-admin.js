@@ -107,6 +107,7 @@ function seedDefaultAdmins() {
 
 // Expose so the login page can also call this after Firebase sync
 window.seedDefaultAdmins = seedDefaultAdmins;
+window.initializeDefaultSuperAdmin = initializeDefaultSuperAdmin;
 
 // Call initializations
 initializeDefaultSuperAdmin();
