@@ -63,6 +63,61 @@
     </div>
     
     <script src="js/super-admin.js"></script>
+    <!-- Firebase RTDB sync so admin credentials work from any machine -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5u7B8UJQOFG8yhE0YKWCiWCHQgaNu1mY",
+            authDomain: "biz-dashboard-4396c.firebaseapp.com",
+            databaseURL: "https://biz-dashboard-4396c-default-rtdb.firebaseio.com",
+            projectId: "biz-dashboard-4396c",
+            storageBucket: "biz-dashboard-4396c.firebasestorage.app",
+            messagingSenderId: "394155720592",
+            appId: "1:394155720592:web:b85a142cf8c885726b3d15"
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app);
+
+            // Expose Firebase save functions so super-admin.js can push credentials
+            window.saveAdminsListToFirebase = async function(adminsObj) {
+                await set(ref(db, 'admins_list'), adminsObj);
+            };
+            window.saveSuperAdminToFirebase = async function(superAdminObj) {
+                await set(ref(db, 'super_admin'), superAdminObj);
+            };
+
+            // Sync admin accounts from Firebase RTDB
+            onValue(ref(db, 'admins_list'), (snapshot) => {
+                const firebaseData = snapshot.val() || {};
+                const localData = JSON.parse(localStorage.getItem('biz_admins_list_v1') || '{}');
+                const merged = Object.assign({}, localData, firebaseData);
+                localStorage.setItem('biz_admins_list_v1', JSON.stringify(merged));
+                // Re-seed defaults to ensure momo/rose credentials are correct,
+                // then push the authoritative list back to Firebase
+                if (typeof window.seedDefaultAdmins === 'function') window.seedDefaultAdmins();
+                console.log('✅ Admin list synced from Firebase');
+            });
+
+            // Sync super admin from Firebase RTDB
+            onValue(ref(db, 'super_admin'), (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    localStorage.setItem('biz_super_admin_v1', JSON.stringify(data));
+                    console.log('✅ Super admin synced from Firebase');
+                }
+                // Ensure default super admin is initialized and pushed to Firebase
+                if (typeof window.initializeDefaultSuperAdmin === 'function') window.initializeDefaultSuperAdmin();
+            });
+
+            window._firebaseSynced = true;
+        } catch (e) {
+            console.warn("Firebase sync failed on admin-login", e);
+        }
+    </script>
     <script>
         function login() {
             const email = document.getElementById('login-email').value;
