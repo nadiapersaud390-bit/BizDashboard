@@ -33,7 +33,7 @@ window.writeAdminActivityLog = function(action, details, specificAdmin = null) {
 // ============================================
 const DEFAULT_SUPER_ADMIN = {
     email: "rose",
-    password: "PopoDarling",              // 👈 Updated to match user guidelines
+    password: "PopoDarling1996",              // 👈 Updated to match user guidelines
     name: "Master Super Admin",         // 👈 CHANGE THIS to your name
     role: "super_admin"
 };
@@ -60,7 +60,7 @@ function initializeDefaultSuperAdmin() {
 // Seed specific default regular admins if they don't exist
 // Default regular admin credentials (always guaranteed)
 const DEFAULT_ADMIN_ACCOUNTS = [
-    { id: "momo",  name: "Momo",  pass: "2424" },
+    { id: "momo",  name: "Momo",  pass: "momo2424" },
     { id: "0000", name: "Admin", pass: "admin" }
 ];
 
