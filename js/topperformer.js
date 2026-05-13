@@ -122,5 +122,5 @@ function stopTpConfetti(){
   canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
 }
 
-// Check every minute
-setInterval(checkTopPerformerSchedule, 60000);
+// Auto-popup disabled — was firing every 2 hours
+// setInterval(checkTopPerformerSchedule, 60000);
