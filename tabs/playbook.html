@@ -368,8 +368,8 @@
                 </div>
             </div>
 
-            <!-- CONSTRUCTION -->
-            <div class="industry-card">
+            <!-- CONSTRUCTION — SUPER ADMIN ROSE ONLY -->
+            <div class="industry-card" id="construction-card" style="display:none;">
                 <div class="industry-header" onclick="toggleIndustry(this)">
                     <div class="industry-left">
                         <span class="industry-emoji">🏗️</span>
@@ -520,6 +520,20 @@
 </div>
 
 <script>
+    // Construction card — super admin Rose only
+    (function() {
+        try {
+            var role = (localStorage.getItem('userRole') || '').toLowerCase().trim();
+            var name = (localStorage.getItem('agentName') || localStorage.getItem('userName') || '').toLowerCase().trim();
+            var isSuperAdmin = role === 'super admin' || role === 'superadmin';
+            var isRose = name === 'rose' || name === 'vishrani singh' || name === 'vishrani';
+            if (isSuperAdmin && isRose) {
+                var card = document.getElementById('construction-card');
+                if (card) card.style.display = '';
+            }
+        } catch(e) {}
+    })();
+
     // Toggle Industry function
     function toggleIndustry(header) {
         const card = header.closest('.industry-card');
