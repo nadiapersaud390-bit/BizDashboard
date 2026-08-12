@@ -579,23 +579,23 @@ function checkLeadAlerts(newAgents) {
     let tier = 'regular';
 
     if (isFirst) {
-      heading = firstName + ', you're on the board!';
-      msg = 'You just got your first lead of the day. Keep the momentum going!';
+      heading = firstName + ", you're on the board!";
+      msg = "You just got your first lead of the day. Keep the momentum going!";
       badge = 'First lead';
       tier = 'first';
     } else if (isMilestone) {
       heading = firstName + ', you hit a milestone!';
-      msg = 'Amazing work — you're now at ' + totalCount + ' leads today. Stay locked in and keep pushing!';
+      msg = "Amazing work — you're now at " + totalCount + ' leads today. Stay locked in and keep pushing!';
       badge = 'Milestone unlocked';
       tier = 'milestone';
     } else if (addedCount > 1) {
       heading = 'Excellent work, ' + firstName + '!';
-      msg = 'You just added ' + addedCount + ' new leads and you're now at ' + totalCount + ' leads today!';
+      msg = 'You just added ' + addedCount + " new leads and you're now at " + totalCount + ' leads today!';
       badge = 'Momentum building';
       tier = 'regular';
     } else {
       heading = 'Great job, ' + firstName + '!';
-      msg = 'You just got another lead — you're now at ' + totalCount + ' lead' + totalPlural + ' today!';
+      msg = "You just got another lead — you're now at " + totalCount + ' lead' + totalPlural + ' today!';
       badge = 'Keep pushing';
       tier = 'regular';
     }
