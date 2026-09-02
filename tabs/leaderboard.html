@@ -215,6 +215,51 @@
         text-transform: uppercase;
     }
     .daily-payroll-footer i { margin-right: 6px; }
+
+    .rankings-header-bar {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: end;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding: 0 12px;
+    }
+
+    .daily-payroll-inline {
+        justify-self: center;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(250, 204, 21, 0.28);
+        background: rgba(250, 204, 21, 0.06);
+        color: #fcd34d;
+        text-align: center;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    .daily-payroll-inline i { margin-right: 6px; }
+
+    @media (max-width: 900px) {
+        .rankings-header-bar {
+            grid-template-columns: 1fr;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .rankings-header-bar #ranking-title,
+        .rankings-header-bar #day-indicator {
+            text-align: center;
+        }
+
+        .daily-payroll-inline {
+            white-space: normal;
+            max-width: min(100%, 520px);
+        }
+    }
 </style>
 
 <div id="history-banner" class="hidden mx-2 mb-4">
@@ -455,8 +500,11 @@ window.closeTeamPopup = closeTeamPopup;
 </script>
 
 <!-- Rankings Header -->
-<div class="flex justify-between items-end mb-4 px-3">
+<div class="rankings-header-bar">
     <h2 id="ranking-title" class="header-font text-xs md:text-base font-black tracking-widest text-slate-500 uppercase italic">Live Rankings</h2>
+    <div class="daily-payroll-inline" role="note" aria-label="Payroll status notice">
+        <i class="fas fa-circle-info"></i>These numbers are unofficial until payroll
+    </div>
     <div id="day-indicator" class="text-xs text-blue-500 font-bold uppercase italic">Updating...</div>
 </div>
 
