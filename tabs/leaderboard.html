@@ -200,6 +200,21 @@
     .gold-progress {
         background: linear-gradient(90deg, #b45309, #eab308, #fde68a); box-shadow: 0 0 8px rgba(234,179,8,0.18);
     }
+
+    .daily-payroll-footer {
+        margin: 2px 8px 24px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(250, 204, 21, 0.28);
+        background: rgba(250, 204, 21, 0.06);
+        color: #fcd34d;
+        text-align: center;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+    .daily-payroll-footer i { margin-right: 6px; }
 </style>
 
 <div id="history-banner" class="hidden mx-2 mb-4">
@@ -447,3 +462,8 @@ window.closeTeamPopup = closeTeamPopup;
 
 <!-- Leaderboard Grid -->
 <div id="leaderboard"></div>
+<!-- Payroll Disclaimer -->
+<div class="daily-payroll-footer" role="note">
+    <i class="fas fa-circle-info"></i>These numbers are unofficial until payroll
+</div>
+
