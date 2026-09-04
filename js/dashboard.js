@@ -126,13 +126,12 @@ function subscribeRosterFromFirestore() {
             const state = window._asLastLiveState || null;
             agents = buildAgentsFromRoster(state);
             // Weekly history may have been processed before the roster finished
-            // loading. Rebuild it now so current PR/BB assignments win over stale
-            // team values stored in old reports.
-            if (dayHistory && dayHistory.length > 0) {
-                const refreshedWeekly = calculateWeeklyCumulativeTotals();
-                window._weeklyCumulativeTotals = refreshedWeekly;
-                weeklyAccumulatedData = refreshedWeekly;
-            }
+            // loading. Always rebuild it now: the calculation seeds every active
+            // roster agent at zero, then overlays any uploaded Mon-Fri totals.
+            // This both preserves current PR/BB assignments and keeps 0 agents visible.
+            const refreshedWeekly = calculateWeeklyCumulativeTotals();
+            window._weeklyCumulativeTotals = refreshedWeekly;
+            weeklyAccumulatedData = refreshedWeekly;
             if (agents.length > 0) {
                 agents[0].todayName = (state && state.dateLabel) || (typeof getGuyanaToday === 'function' ? getGuyanaToday() : '');
                 let pr = 0, bb = 0, rm = 0;
@@ -479,14 +478,45 @@ function updateRealTimeLeadTracking(newAgents) {
     }
 }
 
-// Calculate weekly cumulative totals from ALL uploaded days this week
+// Calculate weekly cumulative totals from ALL uploaded days this week.
+// IMPORTANT: seed the map from the CURRENT master roster first so active agents
+// remain visible on the Weekly leaderboard even when their weekly total is 0.
 function calculateWeeklyCumulativeTotals() {
-    if (!dayHistory || dayHistory.length === 0) return {};
-    
     const weeklyTotals = {};
-    
-    // Get ALL days that have data (Monday-Friday) - NOT just completed days
-    const daysWithData = dayHistory.filter(day => day.agents && day.agents.length > 0);
+
+    // Start with every current, displayable roster agent at zero. This also makes
+    // the roster the authoritative source for the person's current PR/BB/RM team.
+    (Array.isArray(fullRoster) ? fullRoster : []).forEach(rosterAgent => {
+        if (!rosterAgent || rosterAgent.hiddenFromDisplay) return;
+
+        const rosterName = rosterAgent.fullName || rosterAgent.name || '';
+        if (!rosterName || /^PH(?![A-Za-z])/i.test(rosterName)) return;
+
+        const resolved = resolveDashboardAgent({
+            agentId: rosterAgent.userId || rosterAgent.ytelId,
+            ytelId: rosterAgent.ytelId || rosterAgent.userId,
+            agentName: rosterName,
+            name: rosterName,
+            rawName: rosterName,
+            team: rosterAgent.team
+        });
+        const agentKey = resolved.id || resolved.key || normalizeDashboardAgentName(resolved.name || rosterName);
+        if (!agentKey) return;
+
+        weeklyTotals[agentKey] = {
+            name: resolved.name || rosterName,
+            ytelId: resolved.id || rosterAgent.userId || rosterAgent.ytelId || '',
+            team: normalizeTeam(resolved.team, resolved.rawName || resolved.name || rosterName),
+            leads: 0
+        };
+    });
+
+    // Get ALL days that have data (Monday-Friday) - NOT just completed days.
+    // If there are no uploaded days yet, return the zero-seeded roster instead
+    // of an empty object so Weekly still shows everybody.
+    const daysWithData = Array.isArray(dayHistory)
+        ? dayHistory.filter(day => day.agents && day.agents.length > 0)
+        : [];
     
     console.log('[Weekly] Days with data:', daysWithData.map(d => `${d.dayName}: ${d.agents.length} agents`));
     
@@ -526,7 +556,7 @@ function calculateWeeklyCumulativeTotals() {
         }
     });
     
-    console.log('[Weekly] Cumulative totals calculated for', Object.keys(weeklyTotals).length, 'agents');
+    console.log('[Weekly] Cumulative totals calculated for', Object.keys(weeklyTotals).length, 'roster agents (including zero totals)');
     return weeklyTotals;
 }
 
@@ -964,7 +994,7 @@ function render() {
                 ytelId: a.ytelId,
                 rawName: a.name
             }))
-            .sort((a, b) => b.leads - a.leads);
+            .sort((a, b) => (b.leads - a.leads) || String(a.name).localeCompare(String(b.name)));
         
         fullList.forEach(a => {
             const leads = a.leads || 0;
